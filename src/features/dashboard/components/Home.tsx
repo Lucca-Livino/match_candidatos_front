@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -14,12 +13,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Bell,
-  Settings,
   UserPlus,
   Briefcase,
   Activity,
-  LogOut,
   MapPin,
   Calendar,
   ArrowRight,
@@ -27,79 +23,33 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { useVagas } from "@/hooks/useVagas";
-import { useCandidatos } from "@/hooks/useCandidatos";
-import type { Vaga } from "@/lib/api";
+import { useVagas } from "@/features/vagas/hooks/useVagas";
+import { useCandidatos } from "@/features/candidatos/hooks/useCandidatos";
+import type { Vaga } from "@/features/vagas/types";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
-interface HomeProps {
-  onLogout: () => void;
-}
+const NAV_ITEMS = [
+  { label: 'Início',     path: '/dashboard' },
+  { label: 'Vagas',      path: '/vagas'     },
+  { label: 'Candidatos', path: '/candidatos'},
+];
 
-const Home: React.FC<HomeProps> = ({ onLogout }) => {
-  const { user, loading: userLoading } = useAuth();
+export function Home() {
   const { vagas, loading: vagasLoading, error: vagasError, refetch: refetchVagas } = useVagas();
-  const { candidatos, loading: candidatosLoading, error: candidatosError } = useCandidatos();
+  const { candidatos, loading: candidatosLoading } = useCandidatos();
 
   const vagasAbertas = vagas.filter(
     (v) => !v.status || v.status.toLowerCase() === 'aberta' || v.status.toLowerCase() === 'ativa'
   );
 
-  const initials = user?.name
-    ? user.name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase()
-    : '?';
-
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
-      {/* Top Banner */}
-      <div className="bg-black py-2 px-8 text-[10px] font-semibold uppercase tracking-[0.15em] text-white flex justify-between items-center">
-        <span>
-          {userLoading ? 'Carregando...' : `BEM-VINDO, ${user?.name?.split(' ')[0]?.toUpperCase() ?? 'USUÁRIO'} | RECRUTADOR`}
-        </span>
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-1 text-white/60 hover:text-white transition-colors text-[10px] uppercase tracking-wider"
-        >
-          <LogOut className="h-3 w-3" />
-          Sair
-        </button>
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-50 h-20 border-b border-outline-variant bg-white/70 backdrop-blur-xl">
-        <div className="container mx-auto flex h-full items-center justify-between px-8 max-w-[1400px]">
-          <div className="flex flex-col leading-none">
-            <span className="text-[20px] font-black tracking-[-0.02em] text-primary">RECURSOS</span>
-            <span className="text-[20px] font-normal text-primary">HUMANOS</span>
-          </div>
-          <nav className="hidden md:flex gap-10">
-            <a href="#" className="text-[14px] font-medium text-on-surface border-b-2 border-on-surface pb-1">Início</a>
-            <a href="#vagas" className="text-[14px] font-medium text-on-surface-variant hover:text-on-surface pb-1">Vagas</a>
-            <a href="#candidatos" className="text-[14px] font-medium text-on-surface-variant hover:text-on-surface pb-1">Candidatos</a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <button className="relative p-2 text-on-surface-variant hover:text-on-surface">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-error" />
-            </button>
-            <button className="p-2 text-on-surface-variant hover:text-on-surface">
-              <Settings className="h-5 w-5" />
-            </button>
-            <Avatar className="h-10 w-10 border border-outline-variant">
-              {user?.image && <AvatarImage src={user.image} alt={user.name} />}
-              <AvatarFallback className="bg-primary text-white text-sm font-bold">
-                {userLoading ? '?' : initials}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-      </header>
+      <Header navItems={NAV_ITEMS} />
 
       <main className="flex-grow">
-        {/* Stats Section */}
         <section className="container mx-auto px-8 max-w-[1400px] mt-12 mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Candidatos stat */}
             <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white">
               <div className="mt-1"><UserPlus className="h-6 w-6 opacity-70" /></div>
               <div className="flex flex-col">
@@ -117,7 +67,6 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
               </div>
             </Card>
 
-            {/* Vagas stat */}
             <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white">
               <div className="mt-1"><Briefcase className="h-6 w-6 opacity-70" /></div>
               <div className="flex flex-col">
@@ -135,7 +84,6 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
               </div>
             </Card>
 
-            {/* Activity stat */}
             <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white">
               <div className="mt-1"><Activity className="h-6 w-6 opacity-70" /></div>
               <div className="flex flex-col">
@@ -155,9 +103,6 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
           </div>
         </section>
 
-
-
-        {/* Vagas Section */}
         <section id="vagas" className="container mx-auto px-8 max-w-[1400px] py-16">
           <div className="flex items-end justify-between mb-10">
             <div className="space-y-2">
@@ -207,7 +152,6 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
 
         <Separator className="opacity-10" />
 
-        {/* Quick Access / Navigation Cards Section */}
         <section id="navegacao-rapida" className="container mx-auto px-8 max-w-[1400px] py-16">
           <div className="flex items-end justify-between mb-10">
             <div className="space-y-2">
@@ -217,11 +161,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Candidatos Recentes Card */}
-            <a 
-              href="#candidatos-recentes" 
-              className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300"
-            >
+            <a href="#candidatos-recentes" className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300">
               <div className="flex flex-col h-full">
                 <div className="mb-8 p-3 w-fit bg-primary/5 rounded-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   <Users className="h-6 w-6" />
@@ -239,11 +179,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
               </div>
             </a>
 
-            {/* Entrevistas Agendadas Card */}
-            <a 
-              href="#entrevistas" 
-              className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300"
-            >
+            <a href="#entrevistas" className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300">
               <div className="flex flex-col h-full">
                 <div className="mb-8 p-3 w-fit bg-primary/5 rounded-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   <Calendar className="h-6 w-6" />
@@ -261,11 +197,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
               </div>
             </a>
 
-            {/* Relatório Trimestral Card */}
-            <a 
-              href="#relatorios" 
-              className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300"
-            >
+            <a href="#relatorios" className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300">
               <div className="flex flex-col h-full">
                 <div className="mb-8 p-3 w-fit bg-primary/5 rounded-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   <Activity className="h-6 w-6" />
@@ -286,41 +218,12 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-primary pt-16 text-white">
-        <div className="container mx-auto px-8 max-w-[1400px]">
-          <div className="flex flex-col lg:flex-row justify-between gap-16 mb-16">
-            <div className="max-w-[300px] space-y-6">
-              <div className="flex flex-col leading-none">
-                <span className="text-[20px] font-black tracking-[-0.02em]">RECURSOS</span>
-                <span className="text-[20px] font-normal">HUMANOS</span>
-              </div>
-              <p className="text-[10px] leading-relaxed opacity-70 tracking-wider">
-                TRANSFORMANDO A GESTÃO DE TALENTOS COM TECNOLOGIA E INTELIGÊNCIA EDITORIAL.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-12 lg:gap-16">
-              <FooterCol title="EMPRESA" links={["SOBRE NÓS", "CARREIRAS"]} />
-              <FooterCol title="RECURSOS" links={["PRIVACIDADE", "TERMOS DE USO"]} />
-              <FooterCol title="SUPORTE" links={["AJUDA", "CONFIGURAÇÕES"]} />
-              <FooterCol title="CONTATO" links={["0800 NOVA HR", "EMAIL"]} />
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row justify-between items-center py-8 border-t border-white/10 gap-6">
-            <p className="text-[10px] opacity-40">© 2024 NOVA INTELLECTUAL ARCHIVE. ALL RIGHTS RESERVED.</p>
-            <div className="flex gap-8">
-              {["LINKEDIN", "TWITTER", "INSTAGRAM"].map(social => (
-                <a key={social} href="#" className="text-[10px] opacity-60 hover:opacity-100">{social}</a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
-};
+}
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+export default Home;
 
 const VagaRow = ({ vaga }: { vaga: Vaga }) => {
   const statusMap: Record<string, { label: string; color: string }> = {
@@ -395,16 +298,3 @@ const EmptyState = ({ icon, message }: { icon: React.ReactNode; message: string 
     <p className="text-[14px]">{message}</p>
   </div>
 );
-
-const FooterCol = ({ title, links }: { title: string; links: string[] }) => (
-  <div className="flex flex-col gap-6">
-    <h4 className="text-[12px] font-bold uppercase tracking-[0.3em]">{title}</h4>
-    <div className="flex flex-col gap-3">
-      {links.map(link => (
-        <a key={link} href="#" className="text-[10px] opacity-60 hover:opacity-100">{link}</a>
-      ))}
-    </div>
-  </div>
-);
-
-export default Home;
