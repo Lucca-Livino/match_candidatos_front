@@ -1,5 +1,5 @@
 import { request } from '@/lib/api';
-import type { Vaga, VagasPaginadasResult } from './types';
+import type { Vaga, VagaPayload, VagasPaginadasResult } from './types';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -15,6 +15,27 @@ export async function getVagas(): Promise<Vaga[]> {
   const res = await request<ApiResponse<Vaga[]> | Vaga[]>('/api/vagas');
   const list = Array.isArray(res) ? res : ((res as ApiResponse<Vaga[]>).data ?? []);
   return (Array.isArray(list) ? list : []).map(normalizeVaga);
+}
+
+export async function getVaga(id: string): Promise<Vaga> {
+  const res = await request<ApiResponse<Vaga>>(`/api/vagas/${id}`);
+  return normalizeVaga(res.data);
+}
+
+export async function createVaga(payload: VagaPayload): Promise<Vaga> {
+  const res = await request<ApiResponse<Vaga>>('/api/vagas', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return normalizeVaga(res.data);
+}
+
+export async function updateVaga(id: string, payload: Partial<VagaPayload>): Promise<Vaga> {
+  const res = await request<ApiResponse<Vaga>>(`/api/vagas/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+  return normalizeVaga(res.data);
 }
 
 export async function getVagasPaginadas(

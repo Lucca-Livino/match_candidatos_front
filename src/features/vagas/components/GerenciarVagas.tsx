@@ -67,9 +67,9 @@ export function GerenciarVagas() {
         <section className="bg-[#1a2b45] text-white">
           <div className="container mx-auto px-8 max-w-[1400px] py-12 flex items-center justify-between">
             <div>
-              <h1 className="text-[36px] font-black tracking-tight mb-2">Gerenciamento de Vagas</h1>
+              <h1 className="text-[36px] font-black tracking-tight mb-2 !text-white">Gerenciamento de Vagas</h1>
               <p className="text-[14px] text-white/70 max-w-[480px] leading-relaxed">
-                Visualize, edite e acompanhe o progresso de todos os processos seletivos ativos na Azure Talent Ledger.
+                Visualize, edite e acompanhe o progresso de todos os processos seletivos ativos na sua empresa.
               </p>
             </div>
             <Button

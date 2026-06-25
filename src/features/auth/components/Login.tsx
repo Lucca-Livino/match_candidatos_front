@@ -133,7 +133,7 @@ export function Login() {
         />
         <div className="absolute inset-0 z-20 flex flex-col justify-end p-16 text-white">
           <span className="text-[12px] font-bold uppercase tracking-[0.3em] mb-4">Nova Editorial HR</span>
-          <h1 className="text-[72px] font-extrabold leading-[1.1] tracking-[-0.05em]">Precisão em Pessoas.</h1>
+          <h1 className="text-[72px] font-extrabold leading-[1.1] tracking-[-0.05em] !text-white">Precisão em Pessoas.</h1>
         </div>
       </div>
     </div>
