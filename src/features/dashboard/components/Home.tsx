@@ -28,12 +28,7 @@ import { useCandidatos } from "@/features/candidatos/hooks/useCandidatos";
 import type { Vaga } from "@/features/vagas/types";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-
-const NAV_ITEMS = [
-  { label: 'Início',     path: '/dashboard' },
-  { label: 'Vagas',      path: '/vagas'     },
-  { label: 'Candidatos', path: '/candidatos'},
-];
+import { NAV_ITEMS } from "@/lib/nav";
 
 export function Home() {
   const { vagas, loading: vagasLoading, error: vagasError, refetch: refetchVagas } = useVagas();

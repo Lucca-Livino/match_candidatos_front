@@ -17,14 +17,7 @@ import { cn } from '@/lib/utils';
 import type { Criterio, VagaPayload } from '../types';
 import { AREAS, STATUSES } from '../constants';
 import { createVaga, updateVaga } from '../api';
-
-const NAV_ITEMS = [
-  { label: 'Início',     path: '/dashboard' },
-  { label: 'Vagas',      path: '/vagas'     },
-  { label: 'Candidatos', path: '/candidatos' },
-  { label: 'Dashboard',  path: '/dashboard' },
-  { label: 'Relatórios', path: '/relatorios' },
-];
+import { NAV_ITEMS } from '@/lib/nav';
 
 const TIPOS_CRITERIO = [
   { value: 'skill_tecnica', label: 'Skill Técnica' },

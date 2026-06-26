@@ -6,7 +6,6 @@ import DashboardPage from '@/pages/auth/DashboardPage';
 import VagasPage from '@/pages/auth/VagasPage';
 import VagaNovaPage from '@/pages/auth/VagaNovaPage';
 import VagaEditarPage from '@/pages/auth/VagaEditarPage';
-
 const router = createBrowserRouter([
   {
     element: <PublicLayout />,

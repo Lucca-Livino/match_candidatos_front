@@ -12,14 +12,7 @@ import { Pagination } from '@/components/layout/pagination';
 import { VagaCard } from './VagaCard';
 import { VagasStats } from './VagasStats';
 import { VagasFilters } from './VagasFilters';
-
-const NAV_ITEMS = [
-  { label: 'Início',     path: '/dashboard' },
-  { label: 'Vagas',      path: '/vagas'     },
-  { label: 'Candidatos', path: '/candidatos'},
-  { label: 'Dashboard',  path: '/dashboard' },
-  { label: 'Relatórios', path: '/relatorios'},
-];
+import { NAV_ITEMS } from '@/lib/nav';
 
 export function GerenciarVagas() {
   const navigate = useNavigate();
