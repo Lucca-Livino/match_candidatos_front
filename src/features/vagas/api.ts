@@ -7,14 +7,17 @@ interface ApiResponse<T> {
   data: T;
 }
 
-function normalizeVaga(v: Vaga & { _id?: string }): Vaga {
-  return { ...v, id: v.id ?? v._id ?? '' };
+function normalizeVaga(v: Vaga & { _id?: string; createdAt?: string }): Vaga {
+  return {
+    ...v,
+    id: v.id ?? v._id ?? '',
+    criadoEm: v.criadoEm ?? v.createdAt,
+  };
 }
 
 export async function getVagas(): Promise<Vaga[]> {
-  const res = await request<ApiResponse<Vaga[]> | Vaga[]>('/api/vagas');
-  const list = Array.isArray(res) ? res : ((res as ApiResponse<Vaga[]>).data ?? []);
-  return (Array.isArray(list) ? list : []).map(normalizeVaga);
+  const res = await request<ApiResponse<VagasPaginadasResult>>('/api/vagas?limit=100');
+  return (res.data?.docs ?? []).map(normalizeVaga);
 }
 
 export async function getVaga(id: string): Promise<Vaga> {
@@ -46,7 +49,7 @@ export async function getVagasPaginadas(
   const params = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (filters.area)   params.set('area', filters.area);
   if (filters.status) params.set('status', filters.status);
-  if (filters.q)      params.set('q', filters.q);
+  if (filters.q)      params.set('titulo', filters.q);
 
   const res = await request<ApiResponse<VagasPaginadasResult> | VagasPaginadasResult>(
     `/api/vagas?${params.toString()}`,

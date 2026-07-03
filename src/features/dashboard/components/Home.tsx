@@ -32,7 +32,7 @@ import { NAV_ITEMS } from "@/lib/nav";
 
 export function Home() {
   const { vagas, loading: vagasLoading, error: vagasError, refetch: refetchVagas } = useVagas();
-  const { candidatos, loading: candidatosLoading } = useCandidatos();
+  const { total: totalCandidatos, loading: candidatosLoading } = useCandidatos();
 
   const vagasAbertas = vagas.filter(
     (v) => !v.status || v.status.toLowerCase() === 'aberta' || v.status.toLowerCase() === 'ativa'
@@ -54,7 +54,7 @@ export function Home() {
                 ) : (
                   <div className="flex items-baseline gap-4">
                     <span className="text-[48px] font-extrabold leading-none tracking-[-0.02em]">
-                      {candidatos.length}
+                      {totalCandidatos}
                     </span>
                     <span className="text-[14px] opacity-70">cadastrados</span>
                   </div>
@@ -88,7 +88,7 @@ export function Home() {
                 ) : (
                   <div className="flex items-baseline gap-4">
                     <span className="text-[48px] font-extrabold leading-none tracking-[-0.02em]">
-                      {vagas.length > 0 ? Math.round((candidatos.length / Math.max(vagas.length, 1)) * 10) : 0}x
+                      {vagas.length > 0 ? Math.round((totalCandidatos / Math.max(vagas.length, 1)) * 10) : 0}x
                     </span>
                     <span className="text-[14px] opacity-70">candidatos/vaga</span>
                   </div>
