@@ -1,9 +1,9 @@
 export interface Candidato {
   id: string;
-  nome?: string;
-  name?: string;
-  email?: string;
-  telefone?: string;
-  localizacao?: string;
-  criadoEm?: string;
+  _id?: string;
+  nome: string;
+  email: string;
+  tipos_permissao?: string[];
+  status_ativo?: boolean;
+  createdAt?: string;
 }

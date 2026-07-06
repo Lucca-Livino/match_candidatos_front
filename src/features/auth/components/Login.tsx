@@ -1,49 +1,14 @@
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useLoginForm } from '../hooks/useLoginForm';
 
 export function Login() {
+  const { email, setEmail, password, setPassword, isLoading, error, handleSubmit } = useLoginForm('/dashboard');
   const navigate = useNavigate();
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError]       = useState<string | null>(null);
-  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string) || '';
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/sign-in/email`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        setError(data?.message || 'Credenciais inválidas. Por favor, tente novamente.');
-        return;
-      }
-
-      if (data?.token) localStorage.setItem('auth_token', data.token);
-      if (data?.user)  localStorage.setItem('auth_user', JSON.stringify(data.user));
-
-      navigate('/dashboard', { replace: true });
-    } catch {
-      setError('Erro ao conectar com a API. Verifique sua conexão.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen bg-background font-sans">
@@ -58,6 +23,7 @@ export function Login() {
                 Insira suas credenciais para acessar seu workspace.
               </CardDescription>
             </CardHeader>
+
             <CardContent className="p-0">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
@@ -74,6 +40,7 @@ export function Login() {
                     className="h-12 rounded-sm border-outline-variant bg-surface-container-lowest px-4 focus:border-secondary focus:ring-2 focus:ring-secondary/20"
                   />
                 </div>
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password" className="text-[12px] font-bold uppercase tracking-[0.3em] text-on-surface">
@@ -106,19 +73,25 @@ export function Login() {
                   disabled={isLoading}
                   className="h-12 w-full rounded-sm bg-gradient-to-r from-primary to-secondary text-[12px] font-bold uppercase tracking-[0.3em] text-white hover:opacity-90 disabled:opacity-50"
                 >
-                  {isLoading ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Autenticando...</>
-                  ) : (
-                    'Entrar'
-                  )}
+                  {isLoading
+                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Autenticando...</>
+                    : 'Entrar'}
                 </Button>
               </form>
             </CardContent>
-            <CardFooter className="p-0 mt-10 justify-center">
+
+            <CardFooter className="p-0 mt-10 flex-col gap-3 items-center">
               <p className="text-[14px] text-on-surface-variant">
                 Não tem uma conta?{' '}
                 <a href="#" className="font-semibold text-secondary hover:underline">Solicitar convite</a>
               </p>
+              <button
+                type="button"
+                onClick={() => navigate('/candidato/login')}
+                className="text-[12px] text-on-surface-variant hover:text-primary transition-colors"
+              >
+                Sou candidato →
+              </button>
             </CardFooter>
           </Card>
         </div>
