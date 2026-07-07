@@ -7,7 +7,7 @@ interface NavItem {
 }
 
 interface NavigationProps {
-  items: NavItem[];
+  items: readonly NavItem[];
   activePath: string;
 }
 
