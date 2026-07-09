@@ -11,7 +11,7 @@ interface NavItem {
 }
 
 interface HeaderProps {
-  navItems: NavItem[];
+  navItems: readonly NavItem[];
 }
 
 function logout(navigate: ReturnType<typeof useNavigate>) {

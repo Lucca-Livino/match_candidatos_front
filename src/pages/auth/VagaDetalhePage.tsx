@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Briefcase, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Briefcase, CheckCircle2, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,6 +11,8 @@ import { getVaga } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
 import { AREA_BADGE } from '@/features/vagas/constants';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { candidatarNaVaga, getCandidaturasIds } from '@/features/candidato/api';
 
 const TIPO_LABEL: Record<string, string> = {
   skill_tecnica: 'Habilidade técnica',
@@ -22,10 +24,15 @@ const TIPO_LABEL: Record<string, string> = {
 export default function VagaDetalhePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [vaga, setVaga]     = useState<Vaga | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState<string | null>(null);
+
+  const [candidatado, setCandidatado] = useState(false);
+  const [enviando, setEnviando]       = useState(false);
+  const [candidaturaErro, setCandidaturaErro] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -34,6 +41,27 @@ export default function VagaDetalhePage() {
       .catch(() => setError('Vaga não encontrada.'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!id || !user) return;
+    getCandidaturasIds(user.id)
+      .then(ids => setCandidatado(ids.includes(id)))
+      .catch(() => { /* silencioso — não bloqueia leitura da vaga */ });
+  }, [id, user]);
+
+  async function handleCandidatar() {
+    if (!id || !user || candidatado || enviando) return;
+    setEnviando(true);
+    setCandidaturaErro(null);
+    try {
+      await candidatarNaVaga(user.id, id);
+      setCandidatado(true);
+    } catch (err) {
+      setCandidaturaErro(err instanceof Error ? err.message : 'Falha ao candidatar-se.');
+    } finally {
+      setEnviando(false);
+    }
+  }
 
   const areaKey = vaga?.area?.toUpperCase() ?? '';
   const areaBadge = AREA_BADGE[areaKey] ?? 'bg-gray-100 text-gray-600';
@@ -82,11 +110,24 @@ export default function VagaDetalhePage() {
               )}
 
               <div className="mt-6 pt-5 border-t border-gray-100">
-                <Button
-                  className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl px-8 h-11 text-[14px] font-medium hover:opacity-90 transition-opacity"
-                >
-                  Candidatar-se
-                </Button>
+                {candidatado ? (
+                  <div className="flex items-center gap-2 text-[14px] font-medium text-emerald-600">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Você já se candidatou a esta vaga
+                  </div>
+                ) : (
+                  <Button
+                    disabled={enviando || !user}
+                    onClick={handleCandidatar}
+                    className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl px-8 h-11 text-[14px] font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
+                  >
+                    {enviando && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    {enviando ? 'Enviando…' : 'Candidatar-se'}
+                  </Button>
+                )}
+                {candidaturaErro && (
+                  <p className="mt-3 text-[13px] text-red-600">{candidaturaErro}</p>
+                )}
               </div>
             </div>
 
