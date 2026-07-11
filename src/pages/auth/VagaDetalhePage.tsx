@@ -13,6 +13,15 @@ import { AREA_BADGE } from '@/features/vagas/constants';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { candidatarNaVaga, getCandidaturasIds } from '@/features/candidato/api';
+import {
+  QuestionarioResponder,
+  getQuestionarioAtivoDaVaga,
+  enviarRespostasQuestionario,
+  validarRespostas,
+  montarRespostas,
+  type Questionario,
+  type RespostaLocal,
+} from '@/features/questionarios';
 
 const TIPO_LABEL: Record<string, string> = {
   skill_tecnica: 'Habilidade técnica',
@@ -34,6 +43,9 @@ export default function VagaDetalhePage() {
   const [enviando, setEnviando]       = useState(false);
   const [candidaturaErro, setCandidaturaErro] = useState<string | null>(null);
 
+  const [questionario, setQuestionario] = useState<Questionario | null>(null);
+  const [respostas, setRespostas]       = useState<Record<string, RespostaLocal>>({});
+
   useEffect(() => {
     if (!id) return;
     getVaga(id)
@@ -41,6 +53,17 @@ export default function VagaDetalhePage() {
       .catch(() => setError('Vaga não encontrada.'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    getQuestionarioAtivoDaVaga(id)
+      .then(setQuestionario)
+      .catch(() => { /* silencioso — vaga pode não ter questionário */ });
+  }, [id]);
+
+  function setResposta(perguntaId: string, next: RespostaLocal) {
+    setRespostas(prev => ({ ...prev, [perguntaId]: next }));
+  }
 
   useEffect(() => {
     if (!id || !user) return;
@@ -51,9 +74,23 @@ export default function VagaDetalhePage() {
 
   async function handleCandidatar() {
     if (!id || !user || candidatado || enviando) return;
-    setEnviando(true);
     setCandidaturaErro(null);
+
+    // Questionário obrigatório: valida respostas antes de candidatar.
+    if (questionario) {
+      const erro = validarRespostas(questionario.perguntas, respostas);
+      if (erro) { setCandidaturaErro(erro); return; }
+    }
+
+    setEnviando(true);
     try {
+      if (questionario) {
+        await enviarRespostasQuestionario({
+          questionarioId: questionario.id,
+          usuarioId: user.id,
+          respostas: montarRespostas(questionario.perguntas, respostas),
+        });
+      }
       await candidatarNaVaga(user.id, id);
       setCandidatado(true);
     } catch (err) {
@@ -109,26 +146,12 @@ export default function VagaDetalhePage() {
                 <p className="text-[14px] text-on-surface-variant leading-relaxed">{vaga.descricao}</p>
               )}
 
-              <div className="mt-6 pt-5 border-t border-gray-100">
-                {candidatado ? (
-                  <div className="flex items-center gap-2 text-[14px] font-medium text-emerald-600">
-                    <CheckCircle2 className="h-5 w-5" />
-                    Você já se candidatou a esta vaga
-                  </div>
-                ) : (
-                  <Button
-                    disabled={enviando || !user}
-                    onClick={handleCandidatar}
-                    className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl px-8 h-11 text-[14px] font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
-                  >
-                    {enviando && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    {enviando ? 'Enviando…' : 'Candidatar-se'}
-                  </Button>
-                )}
-                {candidaturaErro && (
-                  <p className="mt-3 text-[13px] text-red-600">{candidaturaErro}</p>
-                )}
-              </div>
+              {candidatado && (
+                <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-2 text-[14px] font-medium text-emerald-600">
+                  <CheckCircle2 className="h-5 w-5" />
+                  Você já se candidatou a esta vaga
+                </div>
+              )}
             </div>
 
             {/* Requisitos */}
@@ -165,12 +188,41 @@ export default function VagaDetalhePage() {
                           <p className="text-[12px] text-on-surface-variant mt-1">{c.descricao}</p>
                         )}
                       </div>
-                      <span className="text-[12px] text-on-surface-variant whitespace-nowrap">
-                        {c.peso_percentual}%
-                      </span>
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Questionário — obrigatório para candidatar */}
+            {!candidatado && questionario && (
+              <QuestionarioResponder
+                questionario={questionario}
+                respostas={respostas}
+                onChange={setResposta}
+                disabled={enviando}
+              />
+            )}
+
+            {/* Ação de candidatura */}
+            {!candidatado && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
+                {questionario && (
+                  <p className="text-[13px] text-on-surface-variant mb-4">
+                    Responda o questionário acima para concluir sua candidatura.
+                  </p>
+                )}
+                <Button
+                  disabled={enviando || !user}
+                  onClick={handleCandidatar}
+                  className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl px-8 h-11 text-[14px] font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
+                >
+                  {enviando && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {enviando ? 'Enviando…' : 'Candidatar-se'}
+                </Button>
+                {candidaturaErro && (
+                  <p className="mt-3 text-[13px] text-red-600">{candidaturaErro}</p>
+                )}
               </div>
             )}
           </div>
