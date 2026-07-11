@@ -1,6 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import {
+  QuestionarioSection,
+  carregarQuestionarioDaVaga,
+  salvarQuestionarioCompleto,
+  validarQuestionario,
+  emptyQuestionarioForm,
+  type QuestionarioForm,
+} from '@/features/questionarios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +22,6 @@ import {
 } from '@/components/ui/select';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { cn } from '@/lib/utils';
 import type { Criterio, VagaPayload } from '../types';
 import { AREAS, STATUSES } from '../constants';
 import { createVaga, updateVaga } from '../api';
@@ -30,7 +38,8 @@ function emptyCriterio(): Criterio {
   return {
     nome: '',
     tipo_criterio: 'skill_tecnica',
-    peso_percentual: 10,
+    // Peso removido do UI por ora (voltará unificado). Backend exige 1..100 — default 1.
+    peso_percentual: 1,
     obrigatorio: false,
     descricao: '',
   };
@@ -44,6 +53,7 @@ interface VagaFormProps {
 
 export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [titulo, setTitulo]                   = useState(initial?.titulo ?? '');
   const [area, setArea]                       = useState(initial?.area ?? '');
@@ -52,11 +62,28 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
   const [status, setStatus]                   = useState(initial?.status ?? 'ativa');
   const [criterios, setCriterios]             = useState<Criterio[]>(initial?.criterio_vaga ?? []);
 
+  // Questionário (obrigatório): `questionario` é o estado editável;
+  // `originalQuestionario` é o snapshot do servidor, usado para reconciliar no save.
+  const [questionario, setQuestionario]                 = useState<QuestionarioForm>(() => emptyQuestionarioForm());
+  const [originalQuestionario, setOriginalQuestionario] = useState<QuestionarioForm | null>(null);
+
   const [saving, setSaving]   = useState(false);
   const [error, setError]     = useState<string | null>(null);
 
-  const somaPesos = criterios.reduce((acc, c) => acc + Number(c.peso_percentual || 0), 0);
-  const pesoExcede = somaPesos > 100;
+  // Id da vaga já criada nesta sessão de formulário (modo criar) — evita
+  // duplicar a vaga se o passo do questionário falhar e o usuário reenviar.
+  const [vagaCriadaId, setVagaCriadaId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (mode !== 'editar' || !vagaId) return;
+    carregarQuestionarioDaVaga(vagaId)
+      .then((form) => {
+        // Questionário é obrigatório: se a vaga ainda não tem, começa um vazio.
+        setQuestionario(form ?? emptyQuestionarioForm());
+        setOriginalQuestionario(form ? structuredClone(form) : null);
+      })
+      .catch(() => { /* silencioso — vaga pode não ter questionário ainda */ });
+  }, [mode, vagaId]);
 
   function addCriterio() {
     setCriterios(prev => [...prev, emptyCriterio()]);
@@ -72,7 +99,11 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (pesoExcede) return;
+
+    // Questionário é obrigatório.
+    const erroQuest = validarQuestionario(questionario);
+    if (erroQuest) { setError(erroQuest); return; }
+    if (!user?.name) { setError('Não foi possível identificar o usuário para criar o questionário.'); return; }
 
     const payload: VagaPayload = {
       titulo: titulo.trim(),
@@ -86,11 +117,39 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
     setSaving(true);
     setError(null);
     try {
-      if (mode === 'criar') {
-        await createVaga(payload);
-      } else {
+      // 1. Vaga — cria ou atualiza; resolve o id para vincular o questionário.
+      let idVaga: string;
+      if (mode === 'editar') {
         await updateVaga(vagaId!, payload);
+        idVaga = vagaId!;
+      } else if (vagaCriadaId) {
+        // Reenvio após falha do questionário: reaproveita a vaga já criada.
+        await updateVaga(vagaCriadaId, payload);
+        idVaga = vagaCriadaId;
+      } else {
+        idVaga = (await createVaga(payload)).id;
+        setVagaCriadaId(idVaga);
       }
+
+      // 2. Questionário (obrigatório).
+      // No modo criar, sincroniza com o que já existe no servidor (retentativa)
+      // para reconciliar em vez de duplicar.
+      let form = questionario;
+      let original = originalQuestionario;
+      if (mode === 'criar') {
+        const existente = await carregarQuestionarioDaVaga(idVaga);
+        if (existente) {
+          form = { ...questionario, id: existente.id };
+          original = existente;
+        }
+      }
+      await salvarQuestionarioCompleto({
+        vagaId: idVaga,
+        criadoPor: user!.name,
+        form,
+        original,
+      });
+
       navigate('/vagas');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar vaga.');
@@ -220,15 +279,6 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                   <h2 className="text-[14px] font-bold uppercase tracking-wider text-on-surface-variant">
                     Critérios de Avaliação
                   </h2>
-                  {criterios.length > 0 && (
-                    <p className={cn(
-                      'text-[12px] mt-0.5',
-                      pesoExcede ? 'text-red-600 font-semibold' : 'text-on-surface-variant'
-                    )}>
-                      Soma dos pesos: {somaPesos}%
-                      {pesoExcede && ' — não pode ultrapassar 100%'}
-                    </p>
-                  )}
                 </div>
                 <Button
                   type="button"
@@ -297,33 +347,19 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold">Peso % *</Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={100}
-                          value={c.peso_percentual}
-                          onChange={e => updateCriterio(idx, 'peso_percentual', Number(e.target.value))}
-                          required
+                    <div className="space-y-1.5">
+                      <Label className="text-[12px] font-semibold">Obrigatório</Label>
+                      <div className="flex items-center gap-2 h-9 px-3">
+                        <input
+                          type="checkbox"
+                          id={`obrig-${idx}`}
+                          checked={c.obrigatorio}
+                          onChange={e => updateCriterio(idx, 'obrigatorio', e.target.checked)}
+                          className="h-4 w-4 rounded border-input accent-primary"
                         />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold">Obrigatório</Label>
-                        <div className="flex items-center gap-2 h-9 px-3">
-                          <input
-                            type="checkbox"
-                            id={`obrig-${idx}`}
-                            checked={c.obrigatorio}
-                            onChange={e => updateCriterio(idx, 'obrigatorio', e.target.checked)}
-                            className="h-4 w-4 rounded border-input accent-primary"
-                          />
-                          <label htmlFor={`obrig-${idx}`} className="text-[13px] text-on-surface-variant">
-                            Sim, é obrigatório
-                          </label>
-                        </div>
+                        <label htmlFor={`obrig-${idx}`} className="text-[13px] text-on-surface-variant">
+                          Sim, é obrigatório
+                        </label>
                       </div>
                     </div>
 
@@ -341,6 +377,9 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
               </div>
             </div>
 
+            {/* Questionário da vaga */}
+            <QuestionarioSection value={questionario} onChange={setQuestionario} />
+
             {/* Ações */}
             <div className="flex items-center justify-between pt-2">
               <Button
@@ -354,7 +393,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
               </Button>
               <Button
                 type="submit"
-                disabled={saving || pesoExcede || !titulo.trim() || !area || !descricao.trim()}
+                disabled={saving || !titulo.trim() || !area || !descricao.trim()}
                 className="bg-[#1a2b45] text-white hover:bg-[#1a2b45]/90 text-[12px] font-bold uppercase tracking-wider px-8"
               >
                 {saving
