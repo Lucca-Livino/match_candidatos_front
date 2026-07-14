@@ -11,9 +11,13 @@ export function useAuth() {
     const cached = localStorage.getItem('auth_user');
     if (cached) {
       try {
-        setUser(JSON.parse(cached) as AuthUser);
-        setLoading(false);
-        return;
+        const parsed = JSON.parse(cached) as AuthUser;
+        // Cache do login (better-auth) pode não ter o papel; nesse caso busca /me.
+        if (parsed.tipos_permissao?.length) {
+          setUser(parsed);
+          setLoading(false);
+          return;
+        }
       } catch {
         localStorage.removeItem('auth_user');
       }
