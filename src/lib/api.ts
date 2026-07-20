@@ -20,12 +20,22 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
   });
 
   if (res.status === 401) {
+    // Determina o login correto pelo papel antes de limpar o cache.
+    let loginPath = '/login';
+    try {
+      const cached = localStorage.getItem('auth_user');
+      const papel = cached ? (JSON.parse(cached).tipos_permissao?.[0] as string | undefined) : undefined;
+      if (papel === 'candidato') loginPath = '/candidato/login';
+    } catch {
+      /* cache inválido — usa login padrão */
+    }
+
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     if (_onUnauthorized) {
       _onUnauthorized();
     } else {
-      window.location.replace('/login');
+      window.location.replace(loginPath);
     }
     throw new Error('Não autorizado');
   }
