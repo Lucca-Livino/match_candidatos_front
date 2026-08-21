@@ -1,5 +1,16 @@
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || '';
 
+/** Erro de API que preserva o status HTTP, para o chamador decidir o que tolerar. */
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
 let _onUnauthorized: (() => void) | null = null;
 
 export function registerUnauthorizedHandler(fn: () => void) {
@@ -37,12 +48,12 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
     } else {
       window.location.replace(loginPath);
     }
-    throw new Error('Não autorizado');
+    throw new ApiError('Não autorizado', 401);
   }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error((body as { message?: string })?.message ?? `Erro ${res.status}`);
+    throw new ApiError((body as { message?: string })?.message ?? `Erro ${res.status}`, res.status);
   }
 
   return res.json() as Promise<T>;
