@@ -110,7 +110,6 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
       area,
       descricao: descricao.trim(),
       requisitos_gerais: requisitos.trim(),
-      status,
       criterio_vaga: criterios,
     };
 
@@ -120,13 +119,16 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
       // 1. Vaga — cria ou atualiza; resolve o id para vincular o questionário.
       let idVaga: string;
       if (mode === 'editar') {
-        await updateVaga(vagaId!, payload);
+        await updateVaga(vagaId!, { ...payload, status });
         idVaga = vagaId!;
       } else if (vagaCriadaId) {
-        // Reenvio após falha do questionário: reaproveita a vaga já criada.
+        // Reenvio após falha do questionário: reaproveita a vaga já criada,
+        // ainda sem aplicar o status (o questionário pode falhar de novo).
         await updateVaga(vagaCriadaId, payload);
         idVaga = vagaCriadaId;
       } else {
+        // A vaga nasce pausada no servidor. O status escolhido so e aplicado
+        // depois que o questionario existe (passo 3).
         idVaga = (await createVaga(payload)).id;
         setVagaCriadaId(idVaga);
       }
@@ -149,6 +151,12 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
         form,
         original,
       });
+
+      // 3. Status escolhido — só agora, porque a API exige um questionário
+      // ativo para ativar a vaga.
+      if (mode === 'criar' && status !== 'pausada') {
+        await updateVaga(idVaga, { status });
+      }
 
       navigate('/vagas');
     } catch (err) {
@@ -234,6 +242,11 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                  {mode === 'criar' && status === 'ativa' && (
+                    <p className="text-[12px] text-on-surface-variant">
+                      A vaga sera ativada apos o questionario ser salvo.
+                    </p>
+                  )}
                 </div>
               </div>
 

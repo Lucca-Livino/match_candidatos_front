@@ -27,7 +27,9 @@ export interface VagaPayload {
   area: string;
   descricao: string;
   requisitos_gerais?: string;
-  status: string;
+  // Opcional: na criacao a vaga nasce sempre pausada no servidor e o status
+  // so e aplicado depois que o questionario existe.
+  status?: string;
   criterio_vaga: Criterio[];
 }
 
