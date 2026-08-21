@@ -13,6 +13,7 @@ import { AREA_BADGE } from '@/features/vagas/constants';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { candidatarNaVaga, getCandidaturasIds } from '@/features/candidato/api';
+import { ApiError } from '@/lib/api';
 import {
   QuestionarioResponder,
   getQuestionarioAtivoDaVaga,
@@ -84,6 +85,15 @@ export default function VagaDetalhePage() {
 
     setEnviando(true);
     try {
+      // A candidatura vem primeiro: a API exige que ela exista para iniciar o
+      // questionario, e e ela que recebe o resultado da triagem ao finalizar.
+      // 409 aqui significa reenvio apos falha no questionario — segue adiante.
+      try {
+        await candidatarNaVaga(user.id, id);
+      } catch (err) {
+        if (!(err instanceof ApiError) || err.status !== 409) throw err;
+      }
+
       if (questionario) {
         await enviarRespostasQuestionario({
           questionarioId: questionario.id,
@@ -91,9 +101,10 @@ export default function VagaDetalhePage() {
           respostas: montarRespostas(questionario.perguntas, respostas),
         });
       }
-      await candidatarNaVaga(user.id, id);
       setCandidatado(true);
     } catch (err) {
+      // A candidatura pode ter sido criada antes da falha no questionario.
+      // Reenviar retoma a resposta em andamento, sem duplicar nada.
       setCandidaturaErro(err instanceof Error ? err.message : 'Falha ao candidatar-se.');
     } finally {
       setEnviando(false);
