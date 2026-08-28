@@ -15,6 +15,7 @@ import CandidaturaDetalhePage from '@/pages/auth/CandidaturaDetalhePage';
 import CandidatoVagasPage from '@/pages/auth/CandidatoVagasPage';
 import CandidatosPage from '@/pages/auth/CandidatosPage';
 import VagaCandidatosPage from '@/pages/auth/VagaCandidatosPage';
+import SuporteConfiguracaoPage from '@/pages/auth/SuporteConfiguracaoPage';
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,13 @@ const router = createBrowserRouter([
       { path: '/perfil',                        element: <PerfilPage /> },
       { path: '/minhas-candidaturas',           element: <MinhasCandidaturasPage /> },
       { path: '/minhas-candidaturas/:vagaId',   element: <CandidaturaDetalhePage /> },
+    ],
+  },
+  // Área do suporte
+  {
+    element: <RoleLayout area="suporte" />,
+    children: [
+      { path: '/suporte/configuracao',          element: <SuporteConfiguracaoPage /> },
     ],
   },
 ]);

@@ -25,7 +25,7 @@ export function Header({ navItems }: HeaderProps) {
 
   const papel = papelDe(user);
   const isCandidato = papel === 'candidato';
-  const areaLabel = isCandidato ? 'CANDIDATO' : 'RECRUTADOR';
+  const areaLabel = papel === 'candidato' ? 'CANDIDATO' : papel === 'suporte' ? 'SUPORTE' : 'RECRUTADOR';
   const homePath = homeDoPapel(papel);
   const loginPath = loginDoPapel(papel);
 
