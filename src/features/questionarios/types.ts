@@ -39,6 +39,8 @@ export interface OpcaoForm {
   id?: string;
   texto: string;
   correta: boolean;
+  /** Ordem que a opção tem na API. Ausente em opção nova (o save atribui). */
+  ordem?: number;
 }
 
 /** Pergunta no editor. `id` ausente = nova. */

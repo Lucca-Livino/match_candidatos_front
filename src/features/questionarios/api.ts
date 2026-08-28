@@ -163,7 +163,7 @@ export function toQuestionarioForm(q: Questionario): QuestionarioForm {
         opcoes: (p.opcaoResposta ?? [])
           .slice()
           .sort((a, b) => a.ordem - b.ordem)
-          .map((o) => ({ id: o.id, texto: o.texto, correta: o.correta === 1 })),
+          .map((o) => ({ id: o.id, texto: o.texto, correta: o.correta === 1, ordem: o.ordem })),
       })),
   };
 }
@@ -267,7 +267,7 @@ async function reconcileOpcoes(
   }
 
   // Próxima ordem livre (não há reorder de opção; ordens antigas ficam estáveis).
-  let proximaOrdem = originalOpcoes.reduce((max, o) => Math.max(max, o.ordem), 0) + 1;
+  let proximaOrdem = originalOpcoes.reduce((max, o) => Math.max(max, o.ordem ?? 0), 0) + 1;
 
   // Fase 1: cria/atualiza tudo como correta=0 (evita conflito de "já existe correta").
   const resolvidas: { id: string; correta: boolean }[] = [];
