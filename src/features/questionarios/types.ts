@@ -15,6 +15,13 @@ export interface Pergunta {
   questionarioId?: string;
   enunciado: string;
   tipoResposta: TipoResposta;
+  /**
+   * Sempre 1. Mantido por compatibilidade com o schema da API.
+   * A triagem por IA avalia as respostas de forma holística e infere a
+   * relevância de cada pergunta pelo enunciado — não use este campo.
+   * (O peso que a IA realmente pondera é `peso_percentual`, dos critérios
+   * da vaga, e não tem relação com este.)
+   */
   peso: number;
   obrigatoria: 0 | 1;
   ordem: number;
@@ -48,6 +55,7 @@ export interface PerguntaForm {
   id?: string;
   enunciado: string;
   tipoResposta: TipoResposta;
+  /** Sempre 1 — ver nota em `Pergunta.peso`. Não expor no editor. */
   peso: number;
   obrigatoria: boolean;
   opcoes: OpcaoForm[];
