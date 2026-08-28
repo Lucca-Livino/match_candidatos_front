@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth, papelDe, homeDoPapel, papelPermitidoNaArea } from '@/features/auth';
+import { useAuth, papelDe, homeDoPapel, papelPermitidoNaArea, type Area } from '@/features/auth';
 
 interface RoleLayoutProps {
-  area: 'recrutador' | 'candidato';
+  area: Area;
 }
 
 // Guarda de rota por papel: separa a área do recrutador da área do candidato.
