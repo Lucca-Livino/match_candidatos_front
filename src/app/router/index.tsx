@@ -16,6 +16,7 @@ import CandidatoVagasPage from '@/pages/auth/CandidatoVagasPage';
 import CandidatosPage from '@/pages/auth/CandidatosPage';
 import VagaCandidatosPage from '@/pages/auth/VagaCandidatosPage';
 import SuporteConfiguracaoPage from '@/pages/auth/SuporteConfiguracaoPage';
+import SuporteAvaliacoesPage from '@/pages/auth/SuporteAvaliacoesPage';
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
   {
     element: <RoleLayout area="suporte" />,
     children: [
+      { path: '/suporte/avaliacoes',            element: <SuporteAvaliacoesPage /> },
       { path: '/suporte/configuracao',          element: <SuporteConfiguracaoPage /> },
     ],
   },

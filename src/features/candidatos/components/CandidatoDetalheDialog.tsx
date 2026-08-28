@@ -1,4 +1,4 @@
-import { Mail, GraduationCap, Briefcase, Wrench, Award, Sparkles } from 'lucide-react';
+import { Mail, GraduationCap, Briefcase, Wrench, Award } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -56,22 +56,6 @@ export function CandidatoDetalheDialog({ candidatura, onClose }: CandidatoDetalh
           <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-600">
             {error}
           </div>
-        )}
-
-        {candidatura?.avaliadoEm && (
-          <section className="rounded-md border border-outline-variant bg-[#f8f9fc] p-4">
-            <h3 className="text-[14px] font-semibold text-primary flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-secondary" />
-              Análise automática
-            </h3>
-            <p className="text-[13px] text-on-surface-variant mt-2 whitespace-pre-line">
-              {candidatura.justificativa || candidatura.motivoIncompat_ || 'Sem observações.'}
-            </p>
-            <p className="text-[12px] text-on-surface-variant mt-3">
-              Resultado sugerido pelo sistema. A decisão final é sua — a triagem não elimina
-              candidatos.
-            </p>
-          </section>
         )}
 
         {loading ? (

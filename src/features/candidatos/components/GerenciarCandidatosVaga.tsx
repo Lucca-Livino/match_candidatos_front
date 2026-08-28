@@ -15,35 +15,6 @@ import type { CandidaturaVaga } from '../types';
 
 const COLUNAS: StatusCandidatura[] = ['inscrito', 'em_analise', 'aprovado', 'reprovado'];
 
-// Resultado binario da triagem. Nao existe porcentagem nem posicao: o score
-// bruto fica na API como registro de auditoria e a lista chega na ordem de
-// inscricao. Mostrar nota aqui reintroduziria o vies de ancoragem que a
-// triagem sem ranking existe para evitar.
-function BadgeTriagem({
-  compativel,
-  avaliadoEm,
-}: {
-  compativel?: number;
-  avaliadoEm?: string | null;
-}) {
-  if (!avaliadoEm) {
-    return (
-      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">
-        Aguardando análise
-      </span>
-    );
-  }
-  return (compativel ?? 0) >= 1 ? (
-    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
-      Compatível
-    </span>
-  ) : (
-    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-900">
-      Não compatível
-    </span>
-  );
-}
-
 // Fluxo espelha a regra do backend (CandidaturaService.validarTransicaoStatus).
 const TRANSICOES: Record<StatusCandidatura, StatusCandidatura[]> = {
   inscrito:   ['em_analise'],
@@ -183,12 +154,6 @@ function CandidatoCard({ candidatura, movendo, onMover, onVer }: CandidatoCardPr
               <span className="truncate">{email}</span>
             </p>
           )}
-          <div className="mt-1.5">
-            <BadgeTriagem
-              compativel={candidatura.compativel}
-              avaliadoEm={candidatura.avaliadoEm}
-            />
-          </div>
         </div>
       </button>
 
