@@ -1,0 +1,23 @@
+services:
+  front:
+    container_name: match-de-curriculos-front
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '${FRONT_PORT:-5173}:5173'
+    volumes:
+      # Codigo montado do host: o Vite recompila sem rebuild da imagem.
+      - .:/usr/src/app
+      # Volume anonimo preserva o node_modules instalado na imagem (linux) em
+      # vez de deixar o bind mount cobri-lo com o do host (windows).
+      - /usr/src/app/node_modules
+    environment:
+      # Dentro do container "localhost" e o proprio container. O proxy do Vite
+      # precisa do host para alcancar a API que roda no compose do back-end.
+      - VITE_API_PROXY_TARGET=http://host.docker.internal:5000
+      # Polling: em bind mount no Windows o Vite nao recebe eventos de arquivo.
+      - CHOKIDAR_USEPOLLING=true
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    restart: unless-stopped
