@@ -10,3 +10,11 @@ export async function getAvaliacoes(filtros: FiltrosAuditoria = {}): Promise<Ava
   const res = await request<Envelope<AvaliacaoAuditoria[]>>(`/api/avaliacoes${query}`);
   return res.data;
 }
+
+/**
+ * Reprocessa a triagem de uma candidatura pendente. So o backend decide se
+ * pode: fora de 'inscrito' responde 409, e o painel apenas nao oferece o botao.
+ */
+export async function reavaliarCandidatura(vagaId: string, usuarioId: string): Promise<void> {
+  await request(`/api/vagas/${vagaId}/candidaturas/${usuarioId}/reavaliar`, { method: 'POST' });
+}
