@@ -11,3 +11,8 @@ export const CANDIDATO_NAV_ITEMS = [
   { label: 'Candidaturas',  path: '/minhas-candidaturas' },
   { label: 'Meu Perfil',    path: '/perfil'              },
 ] as const;
+
+export const SUPORTE_NAV_ITEMS = [
+  { label: 'Avaliações',   path: '/suporte/avaliacoes'   },
+  { label: 'Configuração', path: '/suporte/configuracao' },
+] as const;

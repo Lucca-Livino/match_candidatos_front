@@ -1,4 +1,4 @@
-export type Papel = 'administrador' | 'recrutador' | 'candidato';
+export type Papel = 'administrador' | 'recrutador' | 'candidato' | 'suporte';
 
 export interface AuthUser {
   id: string;
