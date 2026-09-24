@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { GRAU_LABEL, NIVEL_LABEL, NIVEL_BADGE } from '@/features/perfil/constants';
+import { ContatoLinhas } from '@/features/perfil';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { useCandidatoDetalhe } from '../hooks/useCandidatoDetalhe';
 import { formatarData, formatarPeriodo } from '../format';
@@ -46,6 +47,11 @@ export function CandidatoDetalheDialog({ candidatura, onClose }: CandidatoDetalh
                   {email}
                 </p>
               )}
+              <ContatoLinhas
+                telefone={candidatura?.candidato?.telefone}
+                cidade={candidatura?.candidato?.cidade}
+                linkedin={candidatura?.candidato?.linkedin}
+              />
             </div>
             {statusCfg && (
               <Badge className={cn('border-none text-[11px] font-medium', statusCfg.badge)}>

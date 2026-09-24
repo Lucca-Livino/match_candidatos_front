@@ -25,7 +25,14 @@ export interface CandidaturaVaga {
   avaliadoEm?: string | null;
   criadoEm?: string;
   atualizadoEm?: string;
-  candidato: { id: string; nome: string; email: string } | null;
+  candidato: {
+    id: string;
+    nome: string;
+    email: string;
+    telefone?: string;
+    linkedin?: string;
+    cidade?: string;
+  } | null;
 }
 
 /** Ficha de impressão. Montada pela API campo a campo: nunca traz dados da triagem. */
