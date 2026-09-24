@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FormDialog, Field } from './FormDialog';
+import { ContatoLinhas } from './ContatoLinhas';
 import { getUsuario, updateUsuario } from '../api';
-import type { UsuarioPerfil } from '../types';
+import type { UsuarioPerfil, UsuarioUpdatePayload } from '../types';
 
 export function DadosSection({ userId }: { userId: string }) {
   const [usuario, setUsuario] = useState<UsuarioPerfil | null>(null);
@@ -17,6 +18,9 @@ export function DadosSection({ userId }: { userId: string }) {
   const [nome, setNome]     = useState('');
   const [email, setEmail]   = useState('');
   const [senha, setSenha]   = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [cidade, setCidade]     = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -33,6 +37,9 @@ export function DadosSection({ userId }: { userId: string }) {
     setNome(usuario.nome);
     setEmail(usuario.email);
     setSenha('');
+    setTelefone(usuario.telefone ?? '');
+    setLinkedin(usuario.linkedin ?? '');
+    setCidade(usuario.cidade ?? '');
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -41,10 +48,14 @@ export function DadosSection({ userId }: { userId: string }) {
     setSaving(true);
     setSaveError(null);
     try {
-      const payload: { nome?: string; email?: string; senha?: string } = {};
+      const payload: UsuarioUpdatePayload = {};
       if (nome !== usuario?.nome)   payload.nome = nome;
       if (email !== usuario?.email) payload.email = email;
       if (senha.trim())             payload.senha = senha.trim();
+      // "" é enviado de propósito: é como a API limpa um contato já salvo.
+      if (telefone.trim() !== (usuario?.telefone ?? '')) payload.telefone = telefone.trim();
+      if (linkedin.trim() !== (usuario?.linkedin ?? '')) payload.linkedin = linkedin.trim();
+      if (cidade.trim()   !== (usuario?.cidade ?? ''))   payload.cidade   = cidade.trim();
 
       if (Object.keys(payload).length === 0) {
         setDialogOpen(false);
@@ -96,6 +107,7 @@ export function DadosSection({ userId }: { userId: string }) {
           <div className="space-y-1">
             <p className="text-[17px] font-semibold text-primary">{usuario.nome}</p>
             <p className="text-[14px] text-on-surface-variant">{usuario.email}</p>
+            <ContatoLinhas telefone={usuario.telefone} cidade={usuario.cidade} linkedin={usuario.linkedin} />
             {usuario.tipos_permissao && usuario.tipos_permissao.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-2">
                 {usuario.tipos_permissao.map((t) => (
@@ -126,6 +138,18 @@ export function DadosSection({ userId }: { userId: string }) {
         <Field label="Nova senha (deixe em branco para manter)">
           <Input type="password" value={senha} minLength={8} placeholder="Mínimo 8 caracteres"
             onChange={(e) => setSenha(e.target.value)} />
+        </Field>
+        <Field label="Telefone">
+          <Input type="tel" value={telefone} maxLength={20} placeholder="(11) 99999-9999"
+            onChange={(e) => setTelefone(e.target.value)} />
+        </Field>
+        <Field label="Cidade">
+          <Input value={cidade} maxLength={120} placeholder="São Paulo"
+            onChange={(e) => setCidade(e.target.value)} />
+        </Field>
+        <Field label="LinkedIn">
+          <Input value={linkedin} maxLength={255} placeholder="linkedin.com/in/seu-perfil"
+            onChange={(e) => setLinkedin(e.target.value)} />
         </Field>
       </FormDialog>
     </>

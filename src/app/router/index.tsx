@@ -17,6 +17,7 @@ import CandidatosPage from '@/pages/auth/CandidatosPage';
 import VagaCandidatosPage from '@/pages/auth/VagaCandidatosPage';
 import SuporteConfiguracaoPage from '@/pages/auth/SuporteConfiguracaoPage';
 import SuporteAvaliacoesPage from '@/pages/auth/SuporteAvaliacoesPage';
+import FichaCandidatoPage from '@/pages/auth/FichaCandidatoPage';
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,13 @@ const router = createBrowserRouter([
     children: [
       { path: '/suporte/avaliacoes',            element: <SuporteAvaliacoesPage /> },
       { path: '/suporte/configuracao',          element: <SuporteConfiguracaoPage /> },
+    ],
+  },
+  // Impressão: ficha do candidato, sem header/footer (recrutador, admin, suporte)
+  {
+    element: <RoleLayout area="impressao" />,
+    children: [
+      { path: '/impressao/vagas/:vagaId/candidatos/:usuarioId', element: <FichaCandidatoPage /> },
     ],
   },
 ]);

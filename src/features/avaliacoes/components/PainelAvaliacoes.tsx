@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AlertCircle, AlertTriangle, ChevronDown, ChevronRight, RefreshCw } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ChevronDown, ChevronRight, Printer, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { urlFichaCandidatura } from '@/features/candidatos';
 import { getAvaliacoes, reavaliarCandidatura } from '../api';
 import type { AvaliacaoAuditoria } from '../types';
 
@@ -308,12 +309,26 @@ function DetalheJustificativa({
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
-        {podeReavaliar ? (
-          <Button type="button" size="sm" variant="outline" disabled={reavaliando} onClick={handleReavaliar}>
-            <RefreshCw className={`h-4 w-4 mr-1 ${reavaliando ? 'animate-spin' : ''}`} />
-            {reavaliando ? 'Reavaliando…' : 'Reavaliar'}
+        <div className="flex items-center gap-2">
+          {podeReavaliar && (
+            <Button type="button" size="sm" variant="outline" disabled={reavaliando} onClick={handleReavaliar}>
+              <RefreshCw className={`h-4 w-4 mr-1 ${reavaliando ? 'animate-spin' : ''}`} />
+              {reavaliando ? 'Reavaliando…' : 'Reavaliar'}
+            </Button>
+          )}
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={urlFichaCandidatura(a.vagaId, a.usuarioId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Printer className="h-4 w-4" />
+              Ficha do candidato
+            </a>
           </Button>
-        ) : (
+        </div>
+        {!podeReavaliar && (
           <p className="text-[12px] text-on-surface-variant">
             Reavaliação indisponível: candidatura já está em <strong>{a.status}</strong>.
           </p>

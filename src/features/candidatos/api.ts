@@ -1,5 +1,5 @@
 import { request } from '@/lib/api';
-import type { Candidato, CandidaturaVaga } from './types';
+import type { Candidato, CandidaturaVaga, FichaCandidatura } from './types';
 import type { StatusCandidatura } from '@/features/candidato/api';
 
 interface ApiResponse<T> {
@@ -41,4 +41,19 @@ export async function atualizarStatusCandidatura(
     },
   );
   return res.data;
+}
+
+export async function getFichaCandidatura(
+  vagaId: string,
+  usuarioId: string,
+): Promise<FichaCandidatura> {
+  const res = await request<ApiResponse<FichaCandidatura>>(
+    `/api/vagas/${vagaId}/candidaturas/${usuarioId}/ficha`,
+  );
+  return res.data;
+}
+
+/** Rota do front da ficha de impressão (abre em nova aba). */
+export function urlFichaCandidatura(vagaId: string, usuarioId: string): string {
+  return `/impressao/vagas/${vagaId}/candidatos/${usuarioId}`;
 }

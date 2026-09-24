@@ -23,6 +23,15 @@ import {
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import type { Criterio, VagaPayload } from '../types';
+import {
+  PESO_MIN,
+  PESO_MAX,
+  PESO_TOTAL,
+  PESO_VAZIO,
+  somarPesos,
+  pesoParaNovoCriterio,
+  validarPesos,
+} from '../criterioPesos';
 import { AREAS, STATUSES } from '../constants';
 import { createVaga, updateVaga } from '../api';
 import { NAV_ITEMS } from '@/lib/nav';
@@ -34,12 +43,11 @@ const TIPOS_CRITERIO = [
   { value: 'certificacao',  label: 'Certificação'  },
 ] as const;
 
-function emptyCriterio(): Criterio {
+function emptyCriterio(pesoInicial: number): Criterio {
   return {
     nome: '',
     tipo_criterio: 'skill_tecnica',
-    // Peso removido do UI por ora (voltará unificado). Backend exige 1..100 — default 1.
-    peso_percentual: 1,
+    peso_percentual: pesoInicial,
     obrigatorio: false,
     descricao: '',
   };
@@ -61,6 +69,8 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
   const [requisitos, setRequisitos]           = useState(initial?.requisitos_gerais ?? '');
   const [status, setStatus]                   = useState(initial?.status ?? 'ativa');
   const [criterios, setCriterios]             = useState<Criterio[]>(initial?.criterio_vaga ?? []);
+
+  const somaPesos = somarPesos(criterios);
 
   // Questionário (obrigatório): `questionario` é o estado editável;
   // `originalQuestionario` é o snapshot do servidor, usado para reconciliar no save.
@@ -86,7 +96,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
   }, [mode, vagaId]);
 
   function addCriterio() {
-    setCriterios(prev => [...prev, emptyCriterio()]);
+    setCriterios(prev => [...prev, emptyCriterio(pesoParaNovoCriterio(prev))]);
   }
 
   function removeCriterio(idx: number) {
@@ -99,6 +109,11 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Pesos dos critérios: mesma regra do backend, verificada antes do envio
+    // para que o recrutador veja o erro no campo e não como falha da API.
+    const erroPesos = validarPesos(criterios);
+    if (erroPesos) { setError(erroPesos); return; }
 
     // Questionário é obrigatório.
     const erroQuest = validarQuestionario(questionario);
@@ -292,6 +307,16 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                   <h2 className="text-[14px] font-bold uppercase tracking-wider text-on-surface-variant">
                     Critérios de Avaliação
                   </h2>
+                  {criterios.length > 0 && (
+                    <p
+                      className={`text-[12px] mt-1 ${
+                        somaPesos > PESO_TOTAL ? 'text-red-600 font-semibold' : 'text-on-surface-variant'
+                      }`}
+                    >
+                      Soma dos pesos: {somaPesos}% de {PESO_TOTAL}%
+                      {somaPesos < PESO_TOTAL && ` (${PESO_TOTAL - somaPesos}% disponíveis)`}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="button"
@@ -360,19 +385,45 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                       </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <Label className="text-[12px] font-semibold">Obrigatório</Label>
-                      <div className="flex items-center gap-2 h-9 px-3">
-                        <input
-                          type="checkbox"
-                          id={`obrig-${idx}`}
-                          checked={c.obrigatorio}
-                          onChange={e => updateCriterio(idx, 'obrigatorio', e.target.checked)}
-                          className="h-4 w-4 rounded border-input accent-primary"
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label htmlFor={`peso-${idx}`} className="text-[12px] font-semibold">
+                          Peso (%) *
+                        </Label>
+                        <Input
+                          id={`peso-${idx}`}
+                          type="number"
+                          inputMode="numeric"
+                          value={c.peso_percentual === PESO_VAZIO ? '' : c.peso_percentual}
+                          onChange={e => updateCriterio(
+                            idx,
+                            'peso_percentual',
+                            e.target.value === '' ? PESO_VAZIO : Number(e.target.value),
+                          )}
+                          min={PESO_MIN}
+                          max={PESO_MAX}
+                          step={1}
+                          required
                         />
-                        <label htmlFor={`obrig-${idx}`} className="text-[13px] text-on-surface-variant">
-                          Sim, é obrigatório
-                        </label>
+                        <p className="text-[11px] text-on-surface-variant">
+                          Quanto este critério pesa no score da candidatura.
+                        </p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label className="text-[12px] font-semibold">Obrigatório</Label>
+                        <div className="flex items-center gap-2 h-9 px-3">
+                          <input
+                            type="checkbox"
+                            id={`obrig-${idx}`}
+                            checked={c.obrigatorio}
+                            onChange={e => updateCriterio(idx, 'obrigatorio', e.target.checked)}
+                            className="h-4 w-4 rounded border-input accent-primary"
+                          />
+                          <label htmlFor={`obrig-${idx}`} className="text-[13px] text-on-surface-variant">
+                            Sim, é obrigatório
+                          </label>
+                        </div>
                       </div>
                     </div>
 

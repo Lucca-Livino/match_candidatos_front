@@ -1,4 +1,4 @@
-import { Mail, GraduationCap, Briefcase, Wrench, Award } from 'lucide-react';
+import { Mail, GraduationCap, Briefcase, Wrench, Award, Printer } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -6,11 +6,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { GRAU_LABEL, NIVEL_LABEL, NIVEL_BADGE } from '@/features/perfil/constants';
+import { ContatoLinhas } from '@/features/perfil';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { useCandidatoDetalhe } from '../hooks/useCandidatoDetalhe';
+import { formatarData, formatarPeriodo } from '../format';
+import { urlFichaCandidatura } from '../api';
 import type { CandidaturaVaga } from '../types';
 
 interface CandidatoDetalheDialogProps {
@@ -43,6 +47,11 @@ export function CandidatoDetalheDialog({ candidatura, onClose }: CandidatoDetalh
                   {email}
                 </p>
               )}
+              <ContatoLinhas
+                telefone={candidatura?.candidato?.telefone}
+                cidade={candidatura?.candidato?.cidade}
+                linkedin={candidatura?.candidato?.linkedin}
+              />
             </div>
             {statusCfg && (
               <Badge className={cn('border-none text-[11px] font-medium', statusCfg.badge)}>
@@ -133,6 +142,21 @@ export function CandidatoDetalheDialog({ candidatura, onClose }: CandidatoDetalh
             </Secao>
           </div>
         )}
+
+        {candidatura && (
+          <div className="flex justify-end border-t border-outline-variant pt-4">
+            <Button asChild variant="outline" size="sm">
+              <a
+                href={urlFichaCandidatura(candidatura.vagaId, candidatura.usuarioId)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Printer className="h-4 w-4" />
+                Imprimir / PDF
+              </a>
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -159,16 +183,4 @@ function Secao({ icon: Icon, titulo, vazio, children }: SecaoProps) {
       )}
     </div>
   );
-}
-
-function formatarData(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
-}
-
-function formatarPeriodo(inicio: string, fim: string | null): string {
-  const ini = formatarData(inicio);
-  const f = fim ? formatarData(fim) : 'Atual';
-  return `${ini} – ${f}`;
 }

@@ -16,7 +16,9 @@ export default defineConfig({
       // Redireciona todas as chamadas /api para o servidor Express
       // Isso elimina CORS e faz os cookies de sessão funcionarem automaticamente
       '/api': {
-        target: 'http://localhost:5000',
+        // Em container "localhost" é o próprio container: o compose passa
+        // host.docker.internal para alcançar a API rodando no host.
+        target: process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:5000',
         changeOrigin: true,
       },
     },

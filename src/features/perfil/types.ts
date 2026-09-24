@@ -70,10 +70,18 @@ export interface UsuarioPerfil {
   email: string;
   tipos_permissao?: string[];
   status_ativo?: boolean;
+  /** Contato opcional. String vazia = não informado. */
+  telefone?: string;
+  /** Sempre na forma canônica https://www.linkedin.com/in/<perfil> (a API normaliza). */
+  linkedin?: string;
+  cidade?: string;
 }
 
 export interface UsuarioUpdatePayload {
   nome?: string;
   email?: string;
   senha?: string;
+  telefone?: string;
+  linkedin?: string;
+  cidade?: string;
 }
