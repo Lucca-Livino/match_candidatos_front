@@ -26,6 +26,15 @@ export function loginDoPapel(papel: Papel | null): string {
   return papel === 'candidato' ? '/candidato/login' : '/login';
 }
 
+// Cada área tem sua própria rota de perfil: o router monta uma árvore por
+// área, e um path único compartilhado casaria sempre com a primeira delas,
+// jogando recrutador e suporte para dentro da área do candidato.
+export function perfilDoPapel(papel: Papel | null): string {
+  if (papel === 'candidato') return '/perfil';
+  if (papel === 'suporte') return '/suporte/perfil';
+  return '/recrutador/perfil';
+}
+
 export function papelPermitidoNaArea(papel: Papel | null, area: Area): boolean {
   if (!papel) return false;
   if (area === 'candidato') return papel === 'candidato';

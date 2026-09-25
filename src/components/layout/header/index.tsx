@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth, papelDe, homeDoPapel, loginDoPapel } from '@/features/auth';
+import { useAuth, papelDe, homeDoPapel, loginDoPapel, perfilDoPapel } from '@/features/auth';
 import { Navigation } from './navigation';
 import { UserMenu } from './user-menu';
 
@@ -24,7 +24,6 @@ export function Header({ navItems }: HeaderProps) {
   const { user, loading } = useAuth();
 
   const papel = papelDe(user);
-  const isCandidato = papel === 'candidato';
   const areaLabel = papel === 'candidato' ? 'CANDIDATO' : papel === 'suporte' ? 'SUPORTE' : 'RECRUTADOR';
   const homePath = homeDoPapel(papel);
   const loginPath = loginDoPapel(papel);
@@ -53,8 +52,8 @@ export function Header({ navItems }: HeaderProps) {
           <UserMenu
             user={user}
             loading={loading}
-            perfilPath="/perfil"
-            showPerfil={isCandidato}
+            perfilPath={perfilDoPapel(papel)}
+            showPerfil={papel !== null}
             onLogout={() => logout(navigate, loginPath)}
           />
         </div>

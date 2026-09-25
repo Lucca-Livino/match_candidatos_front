@@ -10,6 +10,8 @@ import VagaEditarPage from '@/pages/auth/VagaEditarPage';
 import CandidatoHomePage from '@/pages/auth/CandidatoHomePage';
 import VagaDetalhePage from '@/pages/auth/VagaDetalhePage';
 import PerfilPage from '@/pages/auth/PerfilPage';
+import RecrutadorPerfilPage from '@/pages/auth/RecrutadorPerfilPage';
+import SuportePerfilPage from '@/pages/auth/SuportePerfilPage';
 import MinhasCandidaturasPage from '@/pages/auth/MinhasCandidaturasPage';
 import CandidaturaDetalhePage from '@/pages/auth/CandidaturaDetalhePage';
 import CandidatoVagasPage from '@/pages/auth/CandidatoVagasPage';
@@ -38,6 +40,7 @@ const router = createBrowserRouter([
       { path: '/vagas/:id/editar',              element: <VagaEditarPage /> },
       { path: '/vagas/:id/candidatos',          element: <VagaCandidatosPage /> },
       { path: '/candidatos',                    element: <CandidatosPage /> },
+      { path: '/recrutador/perfil',             element: <RecrutadorPerfilPage /> },
     ],
   },
   // Área do candidato
@@ -58,6 +61,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/suporte/avaliacoes',            element: <SuporteAvaliacoesPage /> },
       { path: '/suporte/configuracao',          element: <SuporteConfiguracaoPage /> },
+      { path: '/suporte/perfil',                element: <SuportePerfilPage /> },
     ],
   },
   // Impressão: ficha do candidato, sem header/footer (recrutador, admin, suporte)
