@@ -1,0 +1,174 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
+
+/* ─── Design Tokens (Tailwind v4 @theme) ────────────────────────────────────
+   Valores diretos aqui – não usar var(), senão o Tailwind não gera as utilities
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Tipografia */
+  --font-sans: 'Manrope', system-ui, sans-serif;
+
+  /* Superfícies */
+  --color-background:                #f6fafd;
+  --color-foreground:                #171c1f;
+  --color-surface:                   #f6fafd;
+  --color-surface-dim:               #d6dbdd;
+  --color-surface-low:               #f0f4f7;
+  --color-surface-container:         #eaeef1;
+  --color-surface-container-lowest:  #ffffff;
+  --color-surface-container-high:    #e5e9ec;
+
+  /* Primária – Navy profundo */
+  --color-primary:                   #001227;
+  --color-primary-foreground:        #ffffff;
+  --color-on-primary:                #ffffff;
+  --color-on-primary-container:      #ffffff;
+
+  /* Secundária – Azul funcional */
+  --color-secondary:                 #2b638a;
+  --color-secondary-foreground:      #ffffff;
+  --color-secondary-container:       #2b638a;
+  --color-on-secondary:              #ffffff;
+
+  /* Erro */
+  --color-error:                     #ba1a1a;
+  --color-error-foreground:          #ffffff;
+  --color-error-container:           #ffdad6;
+  --color-on-error-container:        #93000a;
+
+  /* Destructive (alias shadcn) */
+  --color-destructive:               #ba1a1a;
+  --color-destructive-foreground:    #ffffff;
+
+  /* Bordas / Inputs */
+  --color-outline:                   #73777f;
+  --color-outline-variant:           #c3c6cf;
+  --color-border:                    #c3c6cf;
+  --color-input:                     #c3c6cf;
+
+  /* Texto sobre superfície */
+  --color-on-surface:                #171c1f;
+  --color-on-surface-variant:        #43474e;
+
+  /* Muted (shadcn) */
+  --color-muted:                     #eaeef1;
+  --color-muted-foreground:          #43474e;
+
+  /* Accent (shadcn) */
+  --color-accent:                    #f0f4f7;
+  --color-accent-foreground:         #171c1f;
+
+  /* Ring (shadcn focus) */
+  --color-ring:                      #2b638a;
+
+  /* Card & Popover (shadcn) */
+  --color-card:                      #ffffff;
+  --color-card-foreground:           #171c1f;
+  --color-popover:                   #ffffff;
+  --color-popover-foreground:        #171c1f;
+
+  /* Cores extras */
+  --color-navy-deep:                 #091A31;
+  --color-white:                     #ffffff;
+
+  /* Border radius */
+  --radius-sm:                       2px;
+  --radius-md:                       4px;
+  --radius-lg:                       8px;
+  --radius-full:                     9999px;
+  --radius:                          8px;
+
+  /* Sombras */
+  --shadow-standard: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+}
+
+/* ─── Tokens brutos para uso em CSS manual (via var()) ───────────────────── */
+:root {
+  --background:               #f6fafd;
+  --foreground:               #171c1f;
+  --surface:                  #f6fafd;
+  --surface-dim:              #d6dbdd;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low:    #f0f4f7;
+  --surface-container:        #eaeef1;
+  --surface-container-high:   #e5e9ec;
+  --on-surface:               #171c1f;
+  --on-surface-variant:       #43474e;
+  --outline:                  #73777f;
+  --outline-variant:          #c3c6cf;
+  --primary:                  #001227;
+  --on-primary:               #ffffff;
+  --secondary:                #2b638a;
+  --on-secondary:             #ffffff;
+  --error:                    #ba1a1a;
+  --on-error:                 #ffffff;
+  --error-container:          #ffdad6;
+  --on-error-container:       #93000a;
+  --deep-navy:                #091A31;
+  --glass-surface:            rgba(255,255,255,0.7);
+  --sans:                     'Manrope', system-ui, sans-serif;
+  --rounded-sm:               2px;
+  --rounded:                  4px;
+  --rounded-lg:               8px;
+  --rounded-full:             9999px;
+
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--on-surface);
+  background-color: var(--background);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 800;
+  color: var(--on-surface);
+  letter-spacing: -0.03em;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+  transition: all 150ms ease;
+}
+
+a {
+  color: var(--secondary);
+  text-decoration: none;
+  transition: opacity 150ms ease;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* ─── Impressão (ficha do candidato) ─────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
