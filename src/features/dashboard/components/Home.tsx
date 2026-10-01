@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,18 +22,34 @@ import {
   ArrowRight,
   RefreshCw,
   Users,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVagas } from "@/features/vagas/hooks/useVagas";
 import { useCandidatos } from "@/features/candidatos/hooks/useCandidatos";
+import { getRelatorioGeral, useRelatorio } from "@/features/relatorios";
 import type { Vaga } from "@/features/vagas/types";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { NAV_ITEMS } from "@/lib/nav";
 
+// Links com cara de card: sem a cor/opacidade padrão de <a> e com anel de foco visível.
+const FOCO = 'rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+const CARD_LINK = `group block text-white hover:opacity-100 ${FOCO}`;
+const ATALHO = `group block p-8 bg-surface-container-low border border-outline-variant hover:bg-surface-container hover:shadow-standard hover:opacity-100 transition-all duration-300 ${FOCO}`;
+
 export function Home() {
   const { vagas, loading: vagasLoading, error: vagasError, refetch: refetchVagas } = useVagas();
-  const { total: totalCandidatos, loading: candidatosLoading } = useCandidatos();
+  const { somenteCandidatos, loading: candidatosLoading } = useCandidatos();
+  const totalCandidatos = somenteCandidatos.length;
+
+  // Cobertura = candidaturas recebidas por vaga ativa (mesma base de /relatorios).
+  const buscarResumo = useCallback(() => getRelatorioGeral('tudo'), []);
+  const { dados: resumo, loading: resumoLoading } = useRelatorio(buscarResumo);
+  const vagasAtivas = resumo?.vagas.porStatus.ativa ?? 0;
+  const cobertura = resumo && vagasAtivas > 0
+    ? (resumo.candidaturas.total / vagasAtivas).toLocaleString('pt-BR', { maximumFractionDigits: 1 })
+    : '—';
 
   const vagasAbertas = vagas.filter(
     (v) => !v.status || v.status.toLowerCase() === 'aberta' || v.status.toLowerCase() === 'ativa'
@@ -45,7 +62,8 @@ export function Home() {
       <main className="flex-grow">
         <section className="container mx-auto px-8 max-w-[1400px] mt-12 mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white">
+            <Link to="/candidatos" className={CARD_LINK}>
+            <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white h-full transition-colors group-hover:bg-primary/90">
               <div className="mt-1"><UserPlus className="h-6 w-6 opacity-70" /></div>
               <div className="flex flex-col">
                 <span className="text-[12px] font-bold uppercase tracking-[0.3em] opacity-60 mb-4">CANDIDATOS</span>
@@ -61,8 +79,10 @@ export function Home() {
                 )}
               </div>
             </Card>
+            </Link>
 
-            <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white">
+            <Link to="/vagas" className={CARD_LINK}>
+            <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white h-full transition-colors group-hover:bg-primary/90">
               <div className="mt-1"><Briefcase className="h-6 w-6 opacity-70" /></div>
               <div className="flex flex-col">
                 <span className="text-[12px] font-bold uppercase tracking-[0.3em] opacity-60 mb-4">VAGAS EM ABERTO</span>
@@ -78,23 +98,26 @@ export function Home() {
                 )}
               </div>
             </Card>
+            </Link>
 
-            <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white">
+            <Link to="/relatorios" className={CARD_LINK}>
+            <Card className="bg-primary border-none p-10 flex gap-6 items-start shadow-standard rounded-md text-white h-full transition-colors group-hover:bg-primary/90">
               <div className="mt-1"><Activity className="h-6 w-6 opacity-70" /></div>
               <div className="flex flex-col">
-                <span className="text-[12px] font-bold uppercase tracking-[0.3em] opacity-60 mb-4">TAXA DE COBERTURA</span>
-                {vagasLoading || candidatosLoading ? (
+                <span className="text-[12px] font-bold uppercase tracking-[0.3em] opacity-60 mb-4">COBERTURA DAS VAGAS</span>
+                {resumoLoading && !resumo ? (
                   <Skeleton className="h-12 w-20 bg-white/20" />
                 ) : (
                   <div className="flex items-baseline gap-4">
                     <span className="text-[48px] font-extrabold leading-none tracking-[-0.02em]">
-                      {vagas.length > 0 ? Math.round((totalCandidatos / Math.max(vagas.length, 1)) * 10) : 0}x
+                      {cobertura}
                     </span>
-                    <span className="text-[14px] opacity-70">candidatos/vaga</span>
+                    <span className="text-[14px] opacity-70">candidaturas por vaga ativa</span>
                   </div>
                 )}
               </div>
             </Card>
+            </Link>
           </div>
         </section>
 
@@ -156,59 +179,59 @@ export function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <a href="#candidatos-recentes" className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300">
+            <Link to="/candidatos" className={ATALHO}>
               <div className="flex flex-col h-full">
                 <div className="mb-8 p-3 w-fit bg-primary/5 rounded-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   <Users className="h-6 w-6" />
                 </div>
                 <div className="space-y-3">
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">LISTAGEM</span>
-                  <h3 className="text-[20px] font-black uppercase tracking-tight text-primary">Candidatos Recentes</h3>
+                  <h3 className="text-[20px] font-black uppercase tracking-tight text-primary">Candidatos</h3>
                   <p className="text-[13px] text-on-surface-variant leading-relaxed">
-                    Acompanhe os últimos perfis cadastrados e analise novas compatibilidades no sistema.
+                    Consulte os perfis cadastrados na plataforma e seus dados de contato.
                   </p>
                 </div>
                 <div className="mt-12 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
-                  Acessar candidatos <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  Acessar candidatos <ArrowRight aria-hidden="true" className="h-3 w-3 motion-safe:group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </a>
+            </Link>
 
-            <a href="#entrevistas" className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300">
+            <Link to="/vagas/nova" className={ATALHO}>
               <div className="flex flex-col h-full">
                 <div className="mb-8 p-3 w-fit bg-primary/5 rounded-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                  <Calendar className="h-6 w-6" />
+                  <Plus className="h-6 w-6" />
                 </div>
                 <div className="space-y-3">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">AGENDA</span>
-                  <h3 className="text-[20px] font-black uppercase tracking-tight text-primary">Entrevistas Agendadas</h3>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">VAGAS</span>
+                  <h3 className="text-[20px] font-black uppercase tracking-tight text-primary">Nova vaga</h3>
                   <p className="text-[13px] text-on-surface-variant leading-relaxed">
-                    Gerencie seu cronograma de entrevistas e compromissos agendados para a semana.
+                    Publique uma vaga com critérios de avaliação e questionário para os candidatos.
                   </p>
                 </div>
                 <div className="mt-12 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
-                  Ver calendário <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  Criar vaga <ArrowRight aria-hidden="true" className="h-3 w-3 motion-safe:group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </a>
+            </Link>
 
-            <a href="#relatorios" className="group block p-8 bg-surface-container-low border border-outline-variant rounded-md hover:bg-surface-container hover:shadow-standard transition-all duration-300">
+            <Link to="/relatorios" className={ATALHO}>
               <div className="flex flex-col h-full">
                 <div className="mb-8 p-3 w-fit bg-primary/5 rounded-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   <Activity className="h-6 w-6" />
                 </div>
                 <div className="space-y-3">
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">ANÁLISE</span>
-                  <h3 className="text-[20px] font-black uppercase tracking-tight text-primary">Relatório Trimestral</h3>
+                  <h3 className="text-[20px] font-black uppercase tracking-tight text-primary">Relatórios</h3>
                   <p className="text-[13px] text-on-surface-variant leading-relaxed">
-                    Analise as métricas de desempenho e cobertura de vagas do último trimestre fiscal.
+                    Acompanhe o funil de candidaturas, as vagas por status e área e a evolução no tempo.
                   </p>
                 </div>
                 <div className="mt-12 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
-                  Gerar relatório <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  Ver relatórios <ArrowRight aria-hidden="true" className="h-3 w-3 motion-safe:group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </a>
+            </Link>
           </div>
         </section>
       </main>

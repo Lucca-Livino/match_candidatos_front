@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Users, Mail, Search } from 'lucide-react';
+import { Users, Mail, Search, RotateCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Header } from '@/components/layout/header';
@@ -8,14 +9,8 @@ import { NAV_ITEMS } from '@/lib/nav';
 import { useCandidatos } from '../hooks/useCandidatos';
 
 export function TodosCandidatos() {
-  const { candidatos, loading, error } = useCandidatos();
+  const { somenteCandidatos, loading, error, recarregar } = useCandidatos();
   const [q, setQ] = useState('');
-
-  // Só usuários com papel de candidato.
-  const somenteCandidatos = useMemo(
-    () => candidatos.filter(c => (c.tipos_permissao ?? ['candidato']).includes('candidato')),
-    [candidatos],
-  );
 
   const filtrados = useMemo(() => {
     const termo = q.trim().toLowerCase();
@@ -30,25 +25,24 @@ export function TodosCandidatos() {
       <Header navItems={NAV_ITEMS} />
 
       <main className="flex-grow">
-        <section className="bg-[#1a2b45] text-white">
-          <div className="container mx-auto px-8 max-w-[1400px] py-12">
-            <h1 className="text-[36px] font-black tracking-tight mb-2 !text-white">Candidatos</h1>
-            <p className="text-[14px] text-white/70 max-w-[480px] leading-relaxed">
-              Todos os candidatos cadastrados na plataforma.
-            </p>
-          </div>
+        <section className="container mx-auto px-8 max-w-[1400px] pt-10">
+          <h1 className="text-[28px] font-black tracking-tight leading-tight text-balance text-primary mb-1">Candidatos</h1>
+          <p className="text-[14px] text-on-surface-variant max-w-[480px] leading-relaxed">
+            Todos os candidatos cadastrados na plataforma.
+          </p>
         </section>
 
-        <section className="container mx-auto px-8 max-w-[1400px] py-10">
+        <section className="container mx-auto px-8 max-w-[1400px] py-8">
           <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-            <div className="relative w-full max-w-[360px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
+            <div role="search" className="relative w-full max-w-[360px]">
+              <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
               <input
-                type="text"
+                type="search"
+                aria-label="Buscar candidatos por nome ou e-mail"
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 placeholder="Buscar por nome ou e-mail"
-                className="w-full h-10 pl-9 pr-4 rounded-md border border-outline-variant bg-white text-[14px] focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-10 pl-9 pr-4 rounded-md border border-outline-variant bg-white text-base md:text-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
             <span className="text-[13px] text-on-surface-variant flex items-center gap-1.5">
@@ -58,8 +52,12 @@ export function TodosCandidatos() {
           </div>
 
           {error && (
-            <div className="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-600">
+            <div role="alert" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md bg-error-container px-4 py-3 text-[13px] text-on-error-container">
               {error}
+              <Button variant="outline" size="sm" className="gap-1.5 bg-white" onClick={recarregar}>
+                <RotateCw className="h-3.5 w-3.5" />
+                Tentar novamente
+              </Button>
             </div>
           )}
 
@@ -78,14 +76,14 @@ export function TodosCandidatos() {
                     {c.nome.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-semibold text-primary truncate">{c.nome}</p>
+                    <p className="text-[14px] font-semibold text-primary truncate" title={c.nome}>{c.nome}</p>
                     <p className="text-[12px] text-on-surface-variant flex items-center gap-1 truncate">
-                      <Mail className="h-3 w-3 flex-shrink-0" />
-                      <span className="truncate">{c.email}</span>
+                      <Mail aria-hidden="true" className="h-3 w-3 flex-shrink-0" />
+                      <span className="truncate" title={c.email}>{c.email}</span>
                     </p>
                   </div>
                   {c.status_ativo === false && (
-                    <Badge className="bg-red-50 text-red-600 border-none text-[11px]">Inativo</Badge>
+                    <Badge className="bg-error-container text-on-error-container border-none text-[11px]">Inativo</Badge>
                   )}
                 </div>
               ))}
