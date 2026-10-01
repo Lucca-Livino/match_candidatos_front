@@ -17,6 +17,8 @@ import CandidaturaDetalhePage from '@/pages/auth/CandidaturaDetalhePage';
 import CandidatoVagasPage from '@/pages/auth/CandidatoVagasPage';
 import CandidatosPage from '@/pages/auth/CandidatosPage';
 import VagaCandidatosPage from '@/pages/auth/VagaCandidatosPage';
+import RelatoriosPage from '@/pages/auth/RelatoriosPage';
+import VagaRelatorioPage from '@/pages/auth/VagaRelatorioPage';
 import SuporteConfiguracaoPage from '@/pages/auth/SuporteConfiguracaoPage';
 import SuporteAvaliacoesPage from '@/pages/auth/SuporteAvaliacoesPage';
 import FichaCandidatoPage from '@/pages/auth/FichaCandidatoPage';
@@ -39,7 +41,9 @@ const router = createBrowserRouter([
       { path: '/vagas/nova',                    element: <VagaNovaPage /> },
       { path: '/vagas/:id/editar',              element: <VagaEditarPage /> },
       { path: '/vagas/:id/candidatos',          element: <VagaCandidatosPage /> },
+      { path: '/vagas/:id/relatorio',           element: <VagaRelatorioPage /> },
       { path: '/candidatos',                    element: <CandidatosPage /> },
+      { path: '/relatorios',                    element: <RelatoriosPage /> },
       { path: '/recrutador/perfil',             element: <RecrutadorPerfilPage /> },
     ],
   },
