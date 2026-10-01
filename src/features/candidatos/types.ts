@@ -25,6 +25,9 @@ export interface CandidaturaVaga {
   avaliadoEm?: string | null;
   criadoEm?: string;
   atualizadoEm?: string;
+  /** Última reabertura (aprovado/reprovado -> em análise). */
+  reabertoPor?: string | null;
+  reabertoEm?: string | null;
   candidato: {
     id: string;
     nome: string;
