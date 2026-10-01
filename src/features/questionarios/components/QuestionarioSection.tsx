@@ -71,7 +71,7 @@ export function QuestionarioSection({ value, onChange }: QuestionarioSectionProp
           placeholder="Orientações gerais para o candidato antes de responder..."
           maxLength={2000}
           rows={3}
-          className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+          className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-y"
         />
       </div>
 
@@ -90,7 +90,7 @@ export function QuestionarioSection({ value, onChange }: QuestionarioSectionProp
 
       {/* Perguntas */}
       <div className="pt-2 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-[13px] font-bold uppercase tracking-wider text-on-surface-variant">
             Perguntas
           </h3>

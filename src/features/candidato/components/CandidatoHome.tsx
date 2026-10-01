@@ -66,7 +66,7 @@ export function CandidatoHome() {
             <p className="text-[12px] font-semibold uppercase tracking-widest text-white/60 mb-2">
               Olá, {firstName}
             </p>
-            <h1 className="text-[28px] font-bold leading-tight text-white! mb-1">
+            <h1 className="text-[28px] font-bold leading-tight text-white mb-1">
               Candidate-se nas vagas disponíveis
             </h1>
             <p className="text-[15px] text-white/70">

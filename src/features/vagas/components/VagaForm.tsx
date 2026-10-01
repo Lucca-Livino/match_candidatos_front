@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, Undo2 } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import {
   QuestionarioSection,
@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -79,6 +80,18 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
   const [saving, setSaving]   = useState(false);
   const [error, setError]     = useState<string | null>(null);
+  const errorRef              = useRef<HTMLDivElement>(null);
+
+  // Último critério removido, para permitir desfazer.
+  const [removido, setRemovido] = useState<{ criterio: Criterio; idx: number } | null>(null);
+
+  // O aviso fica no topo do formulário e o botão de salvar no fim: sem isto o
+  // erro aparece fora da tela e parece que nada aconteceu.
+  useEffect(() => {
+    if (!error) return;
+    errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    errorRef.current?.focus({ preventScroll: true });
+  }, [error]);
 
   // Id da vaga já criada nesta sessão de formulário (modo criar) — evita
   // duplicar a vaga se o passo do questionário falhar e o usuário reenviar.
@@ -100,7 +113,15 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
   }
 
   function removeCriterio(idx: number) {
+    setRemovido({ criterio: criterios[idx], idx });
     setCriterios(prev => prev.filter((_, i) => i !== idx));
+  }
+
+  function desfazerRemocao() {
+    if (!removido) return;
+    const { criterio, idx } = removido;
+    setCriterios(prev => [...prev.slice(0, idx), criterio, ...prev.slice(idx)]);
+    setRemovido(null);
   }
 
   function updateCriterio<K extends keyof Criterio>(idx: number, key: K, value: Criterio[K]) {
@@ -109,6 +130,8 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!area) { setError('Selecione a área da vaga.'); return; }
 
     // Pesos dos critérios: mesma regra do backend, verificada antes do envio
     // para que o recrutador veja o erro no campo e não como falha da API.
@@ -186,24 +209,27 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
       <Header navItems={NAV_ITEMS} />
 
       <main className="flex-grow">
-        <section className="bg-[#1a2b45] text-white">
-          <div className="container mx-auto px-8 max-w-[1400px] py-12">
-            <h1 className="text-[36px] font-black tracking-tight mb-2">
-              {mode === 'criar' ? 'Nova Vaga' : 'Editar Vaga'}
-            </h1>
-            <p className="text-[14px] text-white/70 max-w-[480px] leading-relaxed">
-              {mode === 'criar'
-                ? 'Preencha os dados para criar uma nova vaga no sistema.'
-                : 'Atualize as informações da vaga abaixo.'}
-            </p>
-          </div>
+        <section className="container mx-auto px-8 max-w-[900px] pt-10">
+          <h1 className="text-[28px] font-black tracking-tight leading-tight text-balance text-primary mb-1">
+            {mode === 'criar' ? 'Nova Vaga' : 'Editar Vaga'}
+          </h1>
+          <p className="text-[14px] text-on-surface-variant max-w-[480px] leading-relaxed">
+            {mode === 'criar'
+              ? 'Preencha os dados para criar uma nova vaga no sistema.'
+              : 'Atualize as informações da vaga abaixo.'}
+          </p>
         </section>
 
-        <section className="container mx-auto px-8 max-w-[900px] py-12">
+        <section className="container mx-auto px-8 max-w-[900px] py-8">
           <form onSubmit={handleSubmit} className="space-y-8">
 
             {error && (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-md px-4 py-3 text-[13px]">
+              <div
+                ref={errorRef}
+                role="alert"
+                tabIndex={-1}
+                className="flex items-center gap-2 bg-error-container text-on-error-container rounded-md px-4 py-3 text-[13px] focus:outline-none"
+              >
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 {error}
               </div>
@@ -228,10 +254,10 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="area" className="text-[13px] font-semibold">Área *</Label>
-                  <Select value={area} onValueChange={setArea} required>
+                  <Select value={area} onValueChange={setArea}>
                     <SelectTrigger id="area">
                       <SelectValue placeholder="Selecione a área" />
                     </SelectTrigger>
@@ -259,7 +285,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                   </Select>
                   {mode === 'criar' && status === 'ativa' && (
                     <p className="text-[12px] text-on-surface-variant">
-                      A vaga sera ativada apos o questionario ser salvo.
+                      A vaga será ativada após o questionário ser salvo.
                     </p>
                   )}
                 </div>
@@ -267,7 +293,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
               <div className="space-y-1.5">
                 <Label htmlFor="descricao" className="text-[13px] font-semibold">Descrição *</Label>
-                <textarea
+                <Textarea
                   id="descricao"
                   value={descricao}
                   onChange={e => setDescricao(e.target.value)}
@@ -276,7 +302,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                   minLength={10}
                   maxLength={3000}
                   rows={5}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                  className="resize-y"
                 />
                 <p className="text-[11px] text-on-surface-variant text-right">
                   {descricao.length}/3000
@@ -285,14 +311,14 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
               <div className="space-y-1.5">
                 <Label htmlFor="requisitos" className="text-[13px] font-semibold">Requisitos Gerais</Label>
-                <textarea
+                <Textarea
                   id="requisitos"
                   value={requisitos}
                   onChange={e => setRequisitos(e.target.value)}
                   placeholder="Liste os requisitos gerais esperados para a vaga..."
                   maxLength={2000}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                  className="resize-y"
                 />
                 <p className="text-[11px] text-on-surface-variant text-right">
                   {requisitos.length}/2000
@@ -302,7 +328,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
             {/* Critérios de avaliação */}
             <div className="bg-white border border-outline-variant rounded-md p-6 space-y-5">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-[14px] font-bold uppercase tracking-wider text-on-surface-variant">
                     Critérios de Avaliação
@@ -310,7 +336,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                   {criterios.length > 0 && (
                     <p
                       className={`text-[12px] mt-1 ${
-                        somaPesos > PESO_TOTAL ? 'text-red-600 font-semibold' : 'text-on-surface-variant'
+                        somaPesos > PESO_TOTAL ? 'text-error font-semibold' : 'text-on-surface-variant'
                       }`}
                     >
                       Soma dos pesos: {somaPesos}% de {PESO_TOTAL}%
@@ -330,6 +356,16 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                 </Button>
               </div>
 
+              {removido && (
+                <div role="status" className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-surface-low px-4 py-2.5 text-[13px] text-on-surface-variant">
+                  <span>Critério {removido.idx + 1}{removido.criterio.nome ? ` (${removido.criterio.nome})` : ''} removido.</span>
+                  <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-on-surface" onClick={desfazerRemocao}>
+                    <Undo2 className="h-3.5 w-3.5" />
+                    Desfazer
+                  </Button>
+                </div>
+              )}
+
               {criterios.length === 0 && (
                 <p className="text-[13px] text-on-surface-variant text-center py-6">
                   Nenhum critério adicionado. Critérios são opcionais.
@@ -342,22 +378,26 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                     key={idx}
                     className="border border-outline-variant rounded-md p-4 space-y-3 relative"
                   >
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Remover critério ${idx + 1}`}
                       onClick={() => removeCriterio(idx)}
-                      className="absolute top-3 right-3 text-on-surface-variant hover:text-red-500 transition-colors"
+                      className="absolute top-2 right-2 text-on-surface-variant hover:text-error"
                     >
                       <Trash2 className="h-4 w-4" />
-                    </button>
+                    </Button>
 
                     <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
                       Critério {idx + 1}
                     </p>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold">Nome *</Label>
+                        <Label htmlFor={`nome-${idx}`} className="text-[12px] font-semibold">Nome *</Label>
                         <Input
+                          id={`nome-${idx}`}
                           value={c.nome}
                           onChange={e => updateCriterio(idx, 'nome', e.target.value)}
                           placeholder="Ex: React, Node.js, Inglês..."
@@ -368,12 +408,12 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold">Tipo *</Label>
+                        <Label htmlFor={`tipo-${idx}`} className="text-[12px] font-semibold">Tipo *</Label>
                         <Select
                           value={c.tipo_criterio}
                           onValueChange={v => updateCriterio(idx, 'tipo_criterio', v as Criterio['tipo_criterio'])}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id={`tipo-${idx}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -385,7 +425,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label htmlFor={`peso-${idx}`} className="text-[12px] font-semibold">
                           Peso (%) *
@@ -411,7 +451,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold">Obrigatório</Label>
+                        <Label htmlFor={`obrig-${idx}`} className="text-[12px] font-semibold">Obrigatório</Label>
                         <div className="flex items-center gap-2 h-9 px-3">
                           <input
                             type="checkbox"
@@ -428,8 +468,9 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label className="text-[12px] font-semibold">Descrição do critério</Label>
+                      <Label htmlFor={`desc-criterio-${idx}`} className="text-[12px] font-semibold">Descrição do critério</Label>
                       <Input
+                        id={`desc-criterio-${idx}`}
                         value={c.descricao ?? ''}
                         onChange={e => updateCriterio(idx, 'descricao', e.target.value)}
                         placeholder="Detalhe o que é esperado..."
@@ -445,7 +486,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
             <QuestionarioSection value={questionario} onChange={setQuestionario} />
 
             {/* Ações */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
               <Button
                 type="button"
                 variant="outline"
@@ -457,8 +498,8 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
               </Button>
               <Button
                 type="submit"
-                disabled={saving || !titulo.trim() || !area || !descricao.trim()}
-                className="bg-[#1a2b45] text-white hover:bg-[#1a2b45]/90 text-[12px] font-bold uppercase tracking-wider px-8"
+                disabled={saving}
+                className="text-[12px] font-bold uppercase tracking-wider px-8"
               >
                 {saving
                   ? mode === 'criar' ? 'Criando...' : 'Salvando...'

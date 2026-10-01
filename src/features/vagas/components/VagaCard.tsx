@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Calendar, MoreVertical } from 'lucide-react';
+import { Users, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Vaga } from '../types';
 import { AREA_BADGE, STATUS_CONFIG, FINISHED_STATUSES } from '../constants';
@@ -33,13 +33,10 @@ export function VagaCard({ vaga }: VagaCardProps) {
         cfg.border
       )}
     >
-      <div className="flex items-start justify-between px-5 pt-5 pb-3">
+      <div className="flex items-start px-5 pt-5 pb-3">
         <Badge className={cn('text-[10px] font-bold uppercase tracking-wider border-none', areaBadgeClass)}>
           {areaKey || '—'}
         </Badge>
-        <Button variant="ghost" size="icon" className="h-7 w-7 -mt-1 -mr-1 text-on-surface-variant">
-          <MoreVertical className="h-4 w-4" />
-        </Button>
       </div>
 
       <div className="px-5 pb-4">
@@ -49,7 +46,7 @@ export function VagaCard({ vaga }: VagaCardProps) {
       <div className="px-5 pb-3 flex items-center gap-4 text-[12px] text-on-surface-variant">
         <span className="flex items-center gap-1">
           <Users className="h-3.5 w-3.5 flex-shrink-0" />
-          {vaga.totalCandidatos ?? 0} Candidatos
+          {vaga.totalCandidatos ?? 0} {vaga.totalCandidatos === 1 ? 'Candidato' : 'Candidatos'}
         </span>
         {date && (
           <span className="flex items-center gap-1">
@@ -72,7 +69,7 @@ export function VagaCard({ vaga }: VagaCardProps) {
             <>
               <Button
                 size="sm"
-                className="bg-[#1a2b45] text-white hover:bg-[#1a2b45]/90 text-[11px] font-bold uppercase tracking-wider h-8"
+                className="text-[11px] font-bold uppercase tracking-wider h-8"
                 onClick={() => navigate(`/vagas/${vaga.id}/relatorio`)}
               >
                 Relatório
@@ -90,7 +87,7 @@ export function VagaCard({ vaga }: VagaCardProps) {
             <>
               <Button
                 size="sm"
-                className="bg-primary text-white hover:bg-primary/90 text-[11px] font-bold uppercase tracking-wider h-8"
+                className="text-[11px] font-bold uppercase tracking-wider h-8"
                 onClick={() => navigate(`/vagas/${vaga.id}/candidatos`)}
               >
                 Ver Candidatos

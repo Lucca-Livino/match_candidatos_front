@@ -25,20 +25,22 @@ export function VagasFilters({
   onQChange, onAreaChange, onStatusChange, onOrdemChange,
 }: VagasFiltersProps) {
   return (
-    <section className="border-b border-outline-variant bg-white shadow-sm">
-      <div className="container mx-auto px-8 max-w-[1400px] py-5 flex flex-col sm:flex-row gap-3 items-center">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
+    <section>
+      <div role="search" className="container mx-auto px-8 max-w-[1400px] pt-8 flex flex-col lg:flex-row gap-3 lg:items-center">
+        <div className="relative w-full lg:flex-[2]">
+          <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
           <Input
+            type="search"
+            aria-label="Buscar vagas"
             value={q}
             onChange={e => onQChange(e.target.value)}
             placeholder="Buscar por título da vaga, ID ou palavra-chave..."
-            className="pl-9 text-[13px] border-outline-variant"
+            className="pl-9 border-outline-variant bg-white"
           />
         </div>
 
         <Select value={area || '_all'} onValueChange={v => onAreaChange(v === '_all' ? '' : v)}>
-          <SelectTrigger className="min-w-[160px] text-[13px] border-outline-variant">
+          <SelectTrigger aria-label="Filtrar por departamento" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
             <SelectValue placeholder="Departamento" />
           </SelectTrigger>
           <SelectContent>
@@ -48,7 +50,7 @@ export function VagasFilters({
         </Select>
 
         <Select value={status || '_all'} onValueChange={v => onStatusChange(v === '_all' ? '' : v)}>
-          <SelectTrigger className="min-w-[160px] text-[13px] border-outline-variant">
+          <SelectTrigger aria-label="Filtrar por status" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
             <SelectValue placeholder="Status: Todos" />
           </SelectTrigger>
           <SelectContent>
@@ -62,7 +64,7 @@ export function VagasFilters({
         </Select>
 
         <Select value={ordem} onValueChange={onOrdemChange}>
-          <SelectTrigger className="min-w-[180px] text-[13px] border-outline-variant">
+          <SelectTrigger aria-label="Ordenar vagas" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

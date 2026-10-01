@@ -1,6 +1,9 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useAuth, papelDe, homeDoPapel, loginDoPapel, perfilDoPapel } from '@/features/auth';
-import { Navigation } from './navigation';
+import { Navigation, MobileNavigation } from './navigation';
 import { UserMenu } from './user-menu';
 
 interface NavItem {
@@ -22,33 +25,23 @@ export function Header({ navItems }: HeaderProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user, loading } = useAuth();
+  const [menuAberto, setMenuAberto] = useState(false);
 
   const papel = papelDe(user);
-  const areaLabel = papel === 'candidato' ? 'CANDIDATO' : papel === 'suporte' ? 'SUPORTE' : 'RECRUTADOR';
   const homePath = homeDoPapel(papel);
   const loginPath = loginDoPapel(papel);
 
   return (
-    <>
-      {/* Top Banner */}
-      <div className="bg-black py-2 px-8 text-[10px] font-semibold uppercase tracking-[0.15em] text-white flex justify-between items-center">
-        <span>
-          {loading
-            ? 'Carregando...'
-            : `BEM-VINDO, ${user?.name?.split(' ')[0]?.toUpperCase() ?? 'USUÁRIO'} | ${areaLabel}`}
-        </span>
-      </div>
+    <header className="sticky top-0 z-50 border-b border-outline-variant bg-white/70 backdrop-blur-xl print:hidden">
+      <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-8 max-w-[1400px]">
+        <Link to={homePath} className="flex flex-col leading-none text-primary hover:opacity-100">
+          <span className="text-[20px] font-black tracking-[-0.02em]">RECURSOS</span>
+          <span className="text-[20px] font-normal">HUMANOS</span>
+        </Link>
 
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 h-20 border-b border-outline-variant bg-white/70 backdrop-blur-xl">
-        <div className="container mx-auto flex h-full items-center justify-between px-8 max-w-[1400px]">
-          <button onClick={() => navigate(homePath)} className="flex flex-col leading-none">
-            <span className="text-[20px] font-black tracking-[-0.02em] text-primary">RECURSOS</span>
-            <span className="text-[20px] font-normal text-primary">HUMANOS</span>
-          </button>
+        <Navigation items={navItems} activePath={pathname} />
 
-          <Navigation items={navItems} activePath={pathname} />
-
+        <div className="flex items-center gap-2">
           <UserMenu
             user={user}
             loading={loading}
@@ -56,8 +49,30 @@ export function Header({ navItems }: HeaderProps) {
             showPerfil={papel !== null}
             onLogout={() => logout(navigate, loginPath)}
           />
+          {navItems.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-10 w-10 text-on-surface"
+              aria-label="Menu"
+              aria-expanded={menuAberto}
+              aria-controls="menu-principal"
+              onClick={() => setMenuAberto(a => !a)}
+            >
+              {menuAberto ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          )}
         </div>
-      </header>
-    </>
+      </div>
+
+      {menuAberto && (
+        <MobileNavigation
+          id="menu-principal"
+          items={navItems}
+          activePath={pathname}
+          onNavigate={() => setMenuAberto(false)}
+        />
+      )}
+    </header>
   );
 }
