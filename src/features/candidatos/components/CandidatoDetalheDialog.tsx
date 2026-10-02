@@ -15,24 +15,28 @@ import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { useCandidatoDetalhe } from '../hooks/useCandidatoDetalhe';
 import { formatarData, formatarPeriodo } from '../format';
 import { urlFichaCandidatura } from '../api';
-import type { CandidaturaVaga } from '../types';
+import type { Candidato, CandidaturaVaga } from '../types';
 
 interface CandidatoDetalheDialogProps {
-  candidatura: CandidaturaVaga | null;
+  /** Aberto a partir de uma vaga: mostra status e ficha de impressão. */
+  candidatura?: CandidaturaVaga | null;
+  /** Aberto a partir da lista geral: só o currículo, sem vínculo com vaga. */
+  candidato?: Candidato | null;
   onClose: () => void;
 }
 
-export function CandidatoDetalheDialog({ candidatura, onClose }: CandidatoDetalheDialogProps) {
-  const usuarioId = candidatura?.usuarioId ?? null;
+export function CandidatoDetalheDialog({ candidatura, candidato, onClose }: CandidatoDetalheDialogProps) {
+  const usuarioId = candidatura?.usuarioId ?? candidato?.id ?? candidato?._id ?? null;
   const { formacoes, experiencias, habilidades, certificacoes, loading, error } =
     useCandidatoDetalhe(usuarioId);
 
-  const nome = candidatura?.candidato?.nome ?? 'Candidato';
-  const email = candidatura?.candidato?.email;
+  const contato = candidatura?.candidato ?? candidato;
+  const nome = contato?.nome ?? 'Candidato';
+  const email = contato?.email;
   const statusCfg = candidatura ? STATUS_CANDIDATURA_CONFIG[candidatura.status] : null;
 
   return (
-    <Dialog open={!!candidatura} onOpenChange={o => !o && onClose()}>
+    <Dialog open={!!candidatura || !!candidato} onOpenChange={o => !o && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <div className="flex items-start gap-4">
@@ -48,9 +52,9 @@ export function CandidatoDetalheDialog({ candidatura, onClose }: CandidatoDetalh
                 </p>
               )}
               <ContatoLinhas
-                telefone={candidatura?.candidato?.telefone}
-                cidade={candidatura?.candidato?.cidade}
-                linkedin={candidatura?.candidato?.linkedin}
+                telefone={contato?.telefone}
+                cidade={contato?.cidade}
+                linkedin={contato?.linkedin}
               />
             </div>
             {statusCfg && (
