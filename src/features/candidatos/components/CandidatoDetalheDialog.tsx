@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { GRAU_LABEL, NIVEL_LABEL, NIVEL_BADGE } from '@/features/perfil/constants';
+import { GRAU_LABEL, NIVEL_LABEL, NIVEL_BADGE, SITUACAO_LABEL, periodoFormacao } from '@/features/perfil/constants';
 import { ContatoLinhas } from '@/features/perfil';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { useCandidatoDetalhe } from '../hooks/useCandidatoDetalhe';
@@ -120,7 +120,7 @@ export function CandidatoDetalheDialog({ candidatura, candidato, onClose }: Cand
                       {f.instituicao} · {GRAU_LABEL[f.grau]}
                     </p>
                     <p className="text-[12px] text-on-surface-variant mt-0.5">
-                      {f.anoInicio}{f.anoConclusao ? ` – ${f.anoConclusao}` : ' – Em andamento'} · {f.situacao}
+                      {periodoFormacao(f.anoInicio, f.anoConclusao, f.situacao)} · {SITUACAO_LABEL[f.situacao] ?? f.situacao}
                     </p>
                   </div>
                 ))}

@@ -5,6 +5,12 @@ export type GrauAcademico =
   | 'mestrado'
   | 'doutorado';
 
+export type SituacaoFormacao =
+  | 'cursando'
+  | 'concluido'
+  | 'trancado'
+  | 'incompleto';
+
 export type NivelHabilidade =
   | 'basico'
   | 'intermediario'
@@ -17,7 +23,7 @@ export interface Formacao {
   instituicao: string;
   curso: string;
   grau: GrauAcademico;
-  situacao: string;
+  situacao: SituacaoFormacao;
   anoInicio: number;
   anoConclusao: number | null;
 }
