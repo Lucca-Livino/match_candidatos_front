@@ -1,12 +1,13 @@
 import type { AuthUser, Papel } from './types';
 
-export type Area = 'recrutador' | 'candidato' | 'suporte' | 'impressao';
+export type Area = 'recrutador' | 'candidato' | 'suporte' | 'admin' | 'impressao';
 
-// Papéis de recrutador/admin compartilham a área do recrutador.
-const AREA_RECRUTADOR: Papel[] = ['recrutador', 'administrador'];
+// O administrador tem área própria: ele cuida das contas internas e não opera
+// vagas nem candidaturas, assim como o suporte não opera.
+const AREA_RECRUTADOR: Papel[] = ['recrutador'];
 
-// Ficha de impressão: os três papéis internos. O candidato fica de fora.
-const AREA_IMPRESSAO: Papel[] = [...AREA_RECRUTADOR, 'suporte'];
+// Ficha de impressão: quem lida com candidatos. O candidato e o admin ficam de fora.
+const AREA_IMPRESSAO: Papel[] = ['recrutador', 'suporte'];
 
 export function papelDe(user: AuthUser | null): Papel | null {
   return user?.tipos_permissao?.[0] ?? null;
@@ -19,6 +20,7 @@ export function isCandidato(user: AuthUser | null): boolean {
 export function homeDoPapel(papel: Papel | null): string {
   if (papel === 'candidato') return '/candidato';
   if (papel === 'suporte') return '/suporte/configuracao';
+  if (papel === 'administrador') return '/admin/usuarios';
   return '/dashboard';
 }
 
@@ -32,6 +34,7 @@ export function loginDoPapel(papel: Papel | null): string {
 export function perfilDoPapel(papel: Papel | null): string {
   if (papel === 'candidato') return '/perfil';
   if (papel === 'suporte') return '/suporte/perfil';
+  if (papel === 'administrador') return '/admin/perfil';
   return '/recrutador/perfil';
 }
 
@@ -39,6 +42,7 @@ export function papelPermitidoNaArea(papel: Papel | null, area: Area): boolean {
   if (!papel) return false;
   if (area === 'candidato') return papel === 'candidato';
   if (area === 'suporte') return papel === 'suporte';
+  if (area === 'admin') return papel === 'administrador';
   if (area === 'impressao') return AREA_IMPRESSAO.includes(papel);
   return AREA_RECRUTADOR.includes(papel);
 }
