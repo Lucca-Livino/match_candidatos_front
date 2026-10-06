@@ -22,6 +22,9 @@ import VagaRelatorioPage from '@/pages/auth/VagaRelatorioPage';
 import SuporteConfiguracaoPage from '@/pages/auth/SuporteConfiguracaoPage';
 import SuporteAvaliacoesPage from '@/pages/auth/SuporteAvaliacoesPage';
 import FichaCandidatoPage from '@/pages/auth/FichaCandidatoPage';
+import AtivarContaPage from '@/pages/public/AtivarContaPage';
+import AdminUsuariosPage from '@/pages/auth/AdminUsuariosPage';
+import AdminPerfilPage from '@/pages/auth/AdminPerfilPage';
 
 const router = createBrowserRouter([
   {
@@ -29,9 +32,10 @@ const router = createBrowserRouter([
     children: [
       { path: '/login',           element: <LoginPage /> },
       { path: '/candidato/login', element: <CandidatoLoginPage /> },
+      { path: '/ativar-conta',    element: <AtivarContaPage /> },
     ],
   },
-  // Área do recrutador (recrutador / administrador)
+  // Área do recrutador
   {
     element: <RoleLayout area="recrutador" />,
     children: [
@@ -68,7 +72,15 @@ const router = createBrowserRouter([
       { path: '/suporte/perfil',                element: <SuportePerfilPage /> },
     ],
   },
-  // Impressão: ficha do candidato, sem header/footer (recrutador, admin, suporte)
+  // Área do administrador: contas internas (convite, situação, exclusão)
+  {
+    element: <RoleLayout area="admin" />,
+    children: [
+      { path: '/admin/usuarios',                element: <AdminUsuariosPage /> },
+      { path: '/admin/perfil',                  element: <AdminPerfilPage /> },
+    ],
+  },
+  // Impressão: ficha do candidato, sem header/footer (recrutador, suporte)
   {
     element: <RoleLayout area="impressao" />,
     children: [
