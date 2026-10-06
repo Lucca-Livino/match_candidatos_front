@@ -6,6 +6,30 @@ import type { AuthUser } from '../types';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string) || '';
 
+const MENSAGEM_BLOQUEIO: Record<string, string> = {
+  CONTA_DESATIVADA: 'Esta conta está desativada. Procure o administrador.',
+  CONVITE_PENDENTE: 'Ative sua conta pelo link enviado por e-mail.',
+};
+
+/**
+ * O better-auth autentica conta desativada normalmente; quem barra é a nossa
+ * API, no /me. Consultado com fetch direto porque o cliente comum trata todo
+ * 401 como sessão expirada e redireciona antes de a mensagem chegar à tela.
+ */
+async function bloqueioDaConta(token: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/me`, {
+      credentials: 'include',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.status !== 401) return null;
+    const body = (await res.json().catch(() => null)) as { code?: string } | null;
+    return (body?.code && MENSAGEM_BLOQUEIO[body.code]) || null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * @param destinoPadrao Para onde ir quando o papel não puder ser determinado.
  */
@@ -56,6 +80,14 @@ export function useLoginForm(destinoPadrao: string) {
       if (!response.ok) {
         setError(data?.message || 'Credenciais inválidas. Tente novamente.');
         return;
+      }
+
+      if (data?.token) {
+        const bloqueio = await bloqueioDaConta(data.token);
+        if (bloqueio) {
+          setError(bloqueio);
+          return;
+        }
       }
 
       // O token precisa estar salvo antes do getMe: é ele que autentica a chamada.
