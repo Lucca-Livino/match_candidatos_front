@@ -39,7 +39,12 @@ export function PainelUsuarios() {
     setCarregando(true);
     setErro(null);
     try {
-      setPagina(await listarUsuariosInternos(filtros));
+      const resultado = await listarUsuariosInternos(filtros);
+      setPagina(resultado);
+      // Página atual ficou além do fim (ex.: última linha removida): volta à última.
+      if (resultado.totalPages > 0 && (filtros.page ?? 1) > resultado.totalPages) {
+        setFiltros((f) => ({ ...f, page: resultado.totalPages }));
+      }
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Falha ao carregar usuários.');
     } finally {
