@@ -14,7 +14,6 @@ import {
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Pagination } from '@/components/layout/pagination';
-import { useAuth } from '@/features/auth/hooks/useAuth';
 import { getVagasPaginadas } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
 import { AREAS } from '@/features/vagas/constants';
@@ -25,7 +24,6 @@ const LIMIT = 9;
 
 export function CandidatoHome() {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const [vagas, setVagas]           = useState<Vaga[]>([]);
   const [loading, setLoading]       = useState(true);
@@ -53,8 +51,6 @@ export function CandidatoHome() {
   useEffect(() => { fetchVagas(); }, [fetchVagas]);
   useEffect(() => { setPage(1); }, [area, q]);
 
-  const firstName = user?.name?.split(' ')[0] ?? 'candidato';
-
   return (
     <div className="flex flex-col min-h-screen bg-[#f8f9fc] font-sans">
       <Header navItems={CANDIDATO_NAV_ITEMS} />
@@ -63,9 +59,6 @@ export function CandidatoHome() {
       <section className="bg-gradient-to-r from-primary to-secondary text-white">
         <div className="container mx-auto px-8 max-w-[1400px] py-10">
           <div className="mb-6">
-            <p className="text-[12px] font-semibold uppercase tracking-widest text-white/60 mb-2">
-              Olá, {firstName}
-            </p>
             <h1 className="text-[28px] font-bold leading-tight text-white mb-1">
               Candidate-se nas vagas disponíveis
             </h1>
@@ -77,13 +70,15 @@ export function CandidatoHome() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 max-w-2xl">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
+            <div className="group relative flex-1">
+              {/* Clara sobre o azul; escurece quando o campo fica branco no foco. */}
+              <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/70 group-focus-within:text-on-surface-variant" />
               <Input
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 placeholder="Buscar por título ou palavra-chave..."
-                className="pl-10 rounded-xl h-11 border-white/20 bg-white/15 text-white placeholder:text-white/50 focus:bg-white focus:text-primary focus:placeholder:text-on-surface-variant"
+                aria-label="Buscar vagas por título ou palavra-chave"
+                className="pl-10 rounded-xl h-11 border-white/20 bg-white/15 text-white placeholder:text-white/70 focus:bg-white focus:text-primary focus:placeholder:text-on-surface-variant"
               />
             </div>
             <Select value={area || '_all'} onValueChange={v => setArea(v === '_all' ? '' : v)}>

@@ -18,7 +18,7 @@ function toDateInput(iso: string | null): string {
 }
 
 function fmt(iso: string | null): string {
-  if (!iso) return 'atual';
+  if (!iso) return 'Atual';
   return new Date(iso).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
 }
 
@@ -28,6 +28,9 @@ export function ExperienciaSection({ userId }: { userId: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Experiencia | null>(null);
   const [form, setForm] = useState<ExperienciaPayload>(EMPTY);
+  // Trabalho atual e o que manda dataFim = null. Fica separado do campo para
+  // que um "Fim" vazio por esquecimento nao vire emprego atual sem querer.
+  const [atual, setAtual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Experiencia | null>(null);
@@ -35,6 +38,7 @@ export function ExperienciaSection({ userId }: { userId: string }) {
   function openCreate() {
     setEditing(null);
     setForm(EMPTY);
+    setAtual(false);
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -45,6 +49,7 @@ export function ExperienciaSection({ userId }: { userId: string }) {
       empresa: x.empresa, cargo: x.cargo, descricaoAtivida_: x.descricaoAtivida_,
       dataInicio: toDateInput(x.dataInicio), dataFim: toDateInput(x.dataFim) || null,
     });
+    setAtual(!x.dataFim);
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -53,7 +58,7 @@ export function ExperienciaSection({ userId }: { userId: string }) {
     setSaving(true);
     setSaveError(null);
     try {
-      const payload: ExperienciaPayload = { ...form, dataFim: form.dataFim || null };
+      const payload: ExperienciaPayload = { ...form, dataFim: atual ? null : form.dataFim || null };
       if (editing) await updateExperiencia(userId, editing.id, payload);
       else         await createExperiencia(userId, payload);
       setDialogOpen(false);
@@ -126,9 +131,23 @@ export function ExperienciaSection({ userId }: { userId: string }) {
               onChange={(e) => setForm({ ...form, dataInicio: e.target.value })} />
           </Field>
           <Field label="Fim">
-            <Input type="date" value={form.dataFim ?? ''} placeholder="Atual"
+            <Input type="date" value={atual ? '' : form.dataFim ?? ''}
+              min={form.dataInicio || undefined}
+              required={!atual} disabled={atual}
               onChange={(e) => setForm({ ...form, dataFim: e.target.value || null })} />
           </Field>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="experiencia-atual"
+            checked={atual}
+            onChange={(e) => setAtual(e.target.checked)}
+            className="h-4 w-4 rounded border-input accent-primary"
+          />
+          <label htmlFor="experiencia-atual" className="text-[13px] text-on-surface-variant">
+            Trabalho atual 
+          </label>
         </div>
       </FormDialog>
 

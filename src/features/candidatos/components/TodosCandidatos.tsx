@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Users, Mail, Search, RotateCw } from 'lucide-react';
+import { Users, Mail, Search, RotateCw, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -7,10 +7,13 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { NAV_ITEMS } from '@/lib/nav';
 import { useCandidatos } from '../hooks/useCandidatos';
+import { CandidatoDetalheDialog } from './CandidatoDetalheDialog';
+import type { Candidato } from '../types';
 
 export function TodosCandidatos() {
   const { somenteCandidatos, loading, error, recarregar } = useCandidatos();
   const [q, setQ] = useState('');
+  const [selecionado, setSelecionado] = useState<Candidato | null>(null);
 
   const filtrados = useMemo(() => {
     const termo = q.trim().toLowerCase();
@@ -71,7 +74,13 @@ export function TodosCandidatos() {
           ) : (
             <div className="bg-white border border-outline-variant rounded-md overflow-hidden divide-y divide-outline-variant">
               {filtrados.map(c => (
-                <div key={c.id ?? c._id} className="flex items-center gap-4 px-5 py-4 hover:bg-muted/20 transition-colors">
+                <button
+                  key={c.id ?? c._id}
+                  type="button"
+                  onClick={() => setSelecionado(c)}
+                  aria-label={`Ver currículo de ${c.nome}`}
+                  className="w-full text-left flex items-center gap-4 px-5 py-4 hover:bg-muted/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[14px] font-bold flex-shrink-0">
                     {c.nome.charAt(0).toUpperCase()}
                   </div>
@@ -85,7 +94,8 @@ export function TodosCandidatos() {
                   {c.status_ativo === false && (
                     <Badge className="bg-error-container text-on-error-container border-none text-[11px]">Inativo</Badge>
                   )}
-                </div>
+                  <ChevronRight aria-hidden="true" className="h-4 w-4 text-on-surface-variant flex-shrink-0" />
+                </button>
               ))}
             </div>
           )}
@@ -93,6 +103,8 @@ export function TodosCandidatos() {
       </main>
 
       <Footer />
+
+      <CandidatoDetalheDialog candidato={selecionado} onClose={() => setSelecionado(null)} />
     </div>
   );
 }
