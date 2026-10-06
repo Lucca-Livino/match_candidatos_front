@@ -81,10 +81,6 @@ export function Login() {
             </CardContent>
 
             <CardFooter className="p-0 mt-10 flex-col gap-3 items-center">
-              <p className="text-[14px] text-on-surface-variant">
-                Não tem uma conta?{' '}
-                <a href="#" className="font-semibold text-secondary hover:underline">Solicitar convite</a>
-              </p>
               <button
                 type="button"
                 onClick={() => navigate('/candidato/login')}
