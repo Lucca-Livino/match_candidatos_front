@@ -32,9 +32,12 @@ const router = createBrowserRouter([
     children: [
       { path: '/login',           element: <LoginPage /> },
       { path: '/candidato/login', element: <CandidatoLoginPage /> },
-      { path: '/ativar-conta',    element: <AtivarContaPage /> },
     ],
   },
+  // Fora do PublicLayout de propósito: ele manda quem já tem sessão para a
+  // própria home, e o link do convite precisa abrir mesmo num navegador em que
+  // outra conta (o próprio admin, por exemplo) está logada.
+  { path: '/ativar-conta', element: <AtivarContaPage /> },
   // Área do recrutador
   {
     element: <RoleLayout area="recrutador" />,
