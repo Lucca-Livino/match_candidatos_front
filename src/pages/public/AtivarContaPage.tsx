@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,13 @@ const REGRAS = [
 export default function AtivarContaPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const token = params.get('token') ?? '';
+  // O token é lido uma única vez e mantido em estado; a URL é limpa logo após
+  // a montagem para que ele não fique no histórico nem na barra de endereço.
+  const [token] = useState(() => params.get('token') ?? '');
+
+  useEffect(() => {
+    window.history.replaceState(null, '', window.location.pathname);
+  }, []);
 
   const [senha, setSenha] = useState('');
   const [confirmacao, setConfirmacao] = useState('');
@@ -37,6 +43,9 @@ export default function AtivarContaPage() {
     setErro(null);
     try {
       await ativarConta(token, senha);
+      // Encerra qualquer outra sessão deste navegador: /login redireciona quem tem token.
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
       setConcluido(true);
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Não foi possível ativar a conta.');
