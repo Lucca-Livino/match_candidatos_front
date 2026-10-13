@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { GraduationCap, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { CatalogoCombobox } from '@/components/CatalogoCombobox';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { SectionShell } from './SectionShell';
 import { FormDialog, Field } from './FormDialog';
@@ -22,7 +23,7 @@ import type { Formacao, FormacaoPayload, GrauAcademico, SituacaoFormacao } from 
 type FormacaoForm = Omit<FormacaoPayload, 'situacao'> & { situacao: SituacaoFormacao | '' };
 
 const EMPTY: FormacaoForm = {
-  instituicao: '', curso: '', grau: 'graduacao', situacao: '', anoInicio: new Date().getFullYear(), anoConclusao: null,
+  instituicao: '', curso: '', grau: 'graduacao', situacao: '', anoInicio: new Date().getFullYear(), anoConclusao: null, areaId: null,
 };
 
 const ROTULO_ANO_FINAL: Record<SituacaoFormacao | '', string> = {
@@ -39,6 +40,8 @@ export function FormacaoSection({ userId }: { userId: string }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Formacao | null>(null);
   const [form, setForm] = useState<FormacaoForm>(EMPTY);
+  // Texto do combobox de area: so de tela, o que vai ao servidor e o areaId.
+  const [areaTexto, setAreaTexto] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Formacao | null>(null);
@@ -46,6 +49,7 @@ export function FormacaoSection({ userId }: { userId: string }) {
   function openCreate() {
     setEditing(null);
     setForm(EMPTY);
+    setAreaTexto('');
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -56,8 +60,9 @@ export function FormacaoSection({ userId }: { userId: string }) {
       instituicao: f.instituicao, curso: f.curso, grau: f.grau,
       // Registro antigo com texto livre abre sem situação e obriga a escolher.
       situacao: f.situacao in SITUACAO_LABEL ? f.situacao : '',
-      anoInicio: f.anoInicio, anoConclusao: f.anoConclusao,
+      anoInicio: f.anoInicio, anoConclusao: f.anoConclusao, areaId: f.areaId ?? null,
     });
+    setAreaTexto('');
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -130,6 +135,14 @@ export function FormacaoSection({ userId }: { userId: string }) {
         <Field label="Curso">
           <Input value={form.curso} maxLength={180} required
             onChange={(e) => setForm({ ...form, curso: e.target.value })} />
+        </Field>
+        <Field label="Área do curso (opcional)">
+          <CatalogoCombobox tipo="area_curso" texto={areaTexto} itemId={form.areaId ?? null} avisoForaDoCatalogo
+            placeholder={form.areaId && !areaTexto ? 'Área já vinculada do catálogo' : undefined}
+            onChange={({ texto, itemId }) => { setAreaTexto(texto); setForm({ ...form, areaId: itemId }); }} />
+          <p className="mt-1 text-[11px] text-on-surface-variant">
+            Ligue à área do catálogo para comprovar requisitos obrigatórios.
+          </p>
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Grau">

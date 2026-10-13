@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Briefcase, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { CatalogoCombobox } from '@/components/CatalogoCombobox';
 import { SectionShell } from './SectionShell';
 import { FormDialog, Field } from './FormDialog';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -10,7 +11,7 @@ import { listExperiencias, createExperiencia, updateExperiencia, deleteExperienc
 import type { Experiencia, ExperienciaPayload } from '../types';
 
 const EMPTY: ExperienciaPayload = {
-  empresa: '', cargo: '', descricaoAtivida_: '', dataInicio: '', dataFim: null,
+  empresa: '', cargo: '', descricaoAtivida_: '', dataInicio: '', dataFim: null, areaId: null,
 };
 
 function toDateInput(iso: string | null): string {
@@ -31,6 +32,8 @@ export function ExperienciaSection({ userId }: { userId: string }) {
   // Trabalho atual e o que manda dataFim = null. Fica separado do campo para
   // que um "Fim" vazio por esquecimento nao vire emprego atual sem querer.
   const [atual, setAtual] = useState(false);
+  // Texto do combobox de area: so de tela, o que vai ao servidor e o areaId.
+  const [areaTexto, setAreaTexto] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Experiencia | null>(null);
@@ -38,6 +41,7 @@ export function ExperienciaSection({ userId }: { userId: string }) {
   function openCreate() {
     setEditing(null);
     setForm(EMPTY);
+    setAreaTexto('');
     setAtual(false);
     setSaveError(null);
     setDialogOpen(true);
@@ -48,7 +52,9 @@ export function ExperienciaSection({ userId }: { userId: string }) {
     setForm({
       empresa: x.empresa, cargo: x.cargo, descricaoAtivida_: x.descricaoAtivida_,
       dataInicio: toDateInput(x.dataInicio), dataFim: toDateInput(x.dataFim) || null,
+      areaId: x.areaId ?? null,
     });
+    setAreaTexto('');
     setAtual(!x.dataFim);
     setSaveError(null);
     setDialogOpen(true);
@@ -120,6 +126,14 @@ export function ExperienciaSection({ userId }: { userId: string }) {
         <Field label="Cargo">
           <Input value={form.cargo} maxLength={180} required
             onChange={(e) => setForm({ ...form, cargo: e.target.value })} />
+        </Field>
+        <Field label="Área de atuação (opcional)">
+          <CatalogoCombobox tipo="area_atuacao" texto={areaTexto} itemId={form.areaId ?? null} avisoForaDoCatalogo
+            placeholder={form.areaId && !areaTexto ? 'Área já vinculada do catálogo' : undefined}
+            onChange={({ texto, itemId }) => { setAreaTexto(texto); setForm({ ...form, areaId: itemId }); }} />
+          <p className="mt-1 text-[11px] text-on-surface-variant">
+            Ligue à área do catálogo para comprovar requisitos obrigatórios.
+          </p>
         </Field>
         <Field label="Descrição das atividades">
           <Textarea value={form.descricaoAtivida_} maxLength={3000} required rows={4}
