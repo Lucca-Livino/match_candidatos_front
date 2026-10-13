@@ -23,7 +23,8 @@ import {
 } from '@/components/ui/select';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import type { Criterio, VagaPayload } from '../types';
+import type { Criterio, Requisito, VagaPayload } from '../types';
+import { RequisitoFields } from './RequisitoFields';
 import {
   PESO_MIN,
   PESO_MAX,
@@ -52,6 +53,24 @@ function emptyCriterio(pesoInicial: number): Criterio {
     obrigatorio: false,
     descricao: '',
   };
+}
+
+// Remove `rotulo` (so da tela) e `requisito` de critério não obrigatório;
+// normaliza os campos que a API recusa quando mal tipados.
+function montarCriterioParaEnvio(c: Criterio): Criterio {
+  const { requisito, ...resto } = c;
+  if (!c.obrigatorio || !requisito) return resto;
+  let req: Requisito;
+  if (c.tipo_criterio === 'formacao') {
+    req = { grauMinimo: requisito.grauMinimo, areaId: requisito.areaId ?? null, aceitaCursando: requisito.aceitaCursando === true };
+  } else if (c.tipo_criterio === 'experiencia') {
+    req = { areaId: requisito.areaId, mesesMinimos: Math.max(0, Math.trunc(Number(requisito.mesesMinimos) || 0)) };
+  } else if (c.tipo_criterio === 'certificacao') {
+    req = { itemId: requisito.itemId };
+  } else {
+    req = { itemId: requisito.itemId, ...(requisito.nivelMinimo ? { nivelMinimo: requisito.nivelMinimo } : {}) };
+  }
+  return { ...resto, requisito: req };
 }
 
 interface VagaFormProps {
@@ -138,6 +157,27 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
     const erroPesos = validarPesos(criterios);
     if (erroPesos) { setError(erroPesos); return; }
 
+    // Critério obrigatório precisa de requisito verificável do catálogo.
+    const semRequisito = criterios.find(c => {
+      if (!c.obrigatorio) return false;
+      const r = c.requisito;
+      if (c.tipo_criterio === 'formacao') return !r?.grauMinimo;
+      if (c.tipo_criterio === 'experiencia') return !r?.areaId;
+      return !r?.itemId;
+    });
+    if (semRequisito) {
+      setError(`O critério '${semRequisito.nome}' é obrigatório e precisa de um requisito do catálogo.`);
+      return;
+    }
+
+    // Texto de área digitado sem escolher da lista não pode virar "qualquer área".
+    const areaSoTexto = criterios.find(c =>
+      c.obrigatorio && c.tipo_criterio === 'formacao' && c.requisito?.rotulo?.trim() && !c.requisito.areaId);
+    if (areaSoTexto) {
+      setError("Escolha a área do catálogo ou deixe o campo vazio para qualquer área (critério '" + areaSoTexto.nome + "').");
+      return;
+    }
+
     // Questionário é obrigatório.
     const erroQuest = validarQuestionario(questionario);
     if (erroQuest) { setError(erroQuest); return; }
@@ -148,7 +188,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
       area,
       descricao: descricao.trim(),
       requisitos_gerais: requisitos.trim(),
-      criterio_vaga: criterios,
+      criterio_vaga: criterios.map(montarCriterioParaEnvio),
     };
 
     setSaving(true);
@@ -411,7 +451,10 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                         <Label htmlFor={`tipo-${idx}`} className="text-[12px] font-semibold">Tipo *</Label>
                         <Select
                           value={c.tipo_criterio}
-                          onValueChange={v => updateCriterio(idx, 'tipo_criterio', v as Criterio['tipo_criterio'])}
+                          onValueChange={v => {
+                            updateCriterio(idx, 'tipo_criterio', v as Criterio['tipo_criterio']);
+                            updateCriterio(idx, 'requisito', undefined);
+                          }}
                         >
                           <SelectTrigger id={`tipo-${idx}`}>
                             <SelectValue />
@@ -466,6 +509,10 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                         </div>
                       </div>
                     </div>
+
+                    {c.obrigatorio && (
+                      <RequisitoFields idx={idx} criterio={c} onChange={req => updateCriterio(idx, 'requisito', req)} />
+                    )}
 
                     <div className="space-y-1.5">
                       <Label htmlFor={`desc-criterio-${idx}`} className="text-[12px] font-semibold">Descrição do critério</Label>

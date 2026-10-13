@@ -13,6 +13,17 @@ export interface Vaga {
   criterio_vaga?: Criterio[];
 }
 
+export interface Requisito {
+  itemId?: string;
+  nivelMinimo?: 'basico' | 'intermediario' | 'avancado' | 'especialista';
+  grauMinimo?: 'tecnico' | 'graduacao' | 'pos_graduacao' | 'mestrado' | 'doutorado';
+  areaId?: string | null;
+  aceitaCursando?: boolean;
+  mesesMinimos?: number;
+  // So para exibir o nome escolhido no combobox; o servidor ignora.
+  rotulo?: string;
+}
+
 export interface Criterio {
   _id?: string;
   nome: string;
@@ -20,6 +31,7 @@ export interface Criterio {
   peso_percentual: number;
   obrigatorio: boolean;
   descricao?: string;
+  requisito?: Requisito;
 }
 
 export interface VagaPayload {
