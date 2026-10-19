@@ -78,7 +78,7 @@ export function useLoginForm(destinoPadrao: string) {
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        setError(data?.message || 'Credenciais inválidas. Tente novamente.');
+        setError('Credenciais inválidas. Tente novamente.');
         return;
       }
 
