@@ -12,6 +12,7 @@ import { listarCandidaturas, type Candidatura } from '@/features/candidato/api';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { getVaga } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
+import { rotuloArea } from '@/features/vagas/constants';
 
 interface CandidaturaComVaga extends Candidatura {
   vaga: Vaga | null;
@@ -94,7 +95,7 @@ export default function MinhasCandidaturasPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       {c.vaga?.area && (
                         <Badge className="rounded-full text-xs font-medium px-3 py-0.5 border-none bg-gray-100 text-gray-600">
-                          {c.vaga.area}
+                          {rotuloArea(c.vaga.area)}
                         </Badge>
                       )}
                     </div>

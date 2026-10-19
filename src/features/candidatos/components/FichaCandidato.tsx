@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Mail, Phone, MapPin, Link } from 'lucide-react';
 import { GRAU_LABEL, NIVEL_LABEL, SITUACAO_LABEL, periodoFormacao } from '@/features/perfil/constants';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
+import { rotuloArea } from '@/features/vagas/constants';
 import { formatarData, formatarDataCompleta, formatarPeriodo } from '../format';
 import type { FichaCandidatura } from '../types';
 
@@ -25,7 +26,7 @@ export function FichaCandidato({ ficha }: { ficha: FichaCandidatura }) {
           )}
         </div>
         <p className="mt-3 text-neutral-700">
-          <span className="font-semibold">Vaga:</span> {vaga.titulo} ({vaga.area})
+          <span className="font-semibold">Vaga:</span> {vaga.titulo} ({rotuloArea(vaga.area)})
           {' · '}
           <span className="font-semibold">Status:</span> {STATUS_CANDIDATURA_CONFIG[candidatura.status]?.label ?? candidatura.status}
           {candidatura.criadoEm && <> · <span className="font-semibold">Inscrição:</span> {formatarDataCompleta(candidatura.criadoEm)}</>}

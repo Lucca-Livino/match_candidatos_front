@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { AREAS, STATUSES } from '../constants';
+import { AREAS, STATUSES, STATUS_VAGA_LABEL, rotuloArea } from '../constants';
 
 export interface VagasFiltersProps {
   q: string;
@@ -40,12 +40,12 @@ export function VagasFilters({
         </div>
 
         <Select value={area || '_all'} onValueChange={v => onAreaChange(v === '_all' ? '' : v)}>
-          <SelectTrigger aria-label="Filtrar por departamento" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
-            <SelectValue placeholder="Departamento" />
+          <SelectTrigger aria-label="Filtrar por área" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
+            <SelectValue placeholder="Área" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="_all">Departamento</SelectItem>
-            {AREAS.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+            <SelectItem value="_all">Área: Todas</SelectItem>
+            {AREAS.map(a => <SelectItem key={a} value={a}>{rotuloArea(a)}</SelectItem>)}
           </SelectContent>
         </Select>
 
@@ -57,7 +57,7 @@ export function VagasFilters({
             <SelectItem value="_all">Status: Todos</SelectItem>
             {STATUSES.map(s => (
               <SelectItem key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+                {STATUS_VAGA_LABEL[s]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -69,7 +69,7 @@ export function VagasFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="recentes">Ordenar: Recentes</SelectItem>
-            <SelectItem value="antigos">Ordenar: Antigos</SelectItem>
+            <SelectItem value="antigos">Ordenar: Antigas</SelectItem>
             <SelectItem value="titulo">Ordenar: Título</SelectItem>
           </SelectContent>
         </Select>

@@ -23,7 +23,7 @@ const COR_ETAPA: Record<StatusCandidatura, string> = {
 const STATUS_VAGA: Record<StatusVaga, { rotulo: string; cor: string }> = {
   ativa:     { rotulo: 'Ativa',     cor: '#059669' },
   pausada:   { rotulo: 'Pausada',   cor: '#ca8a04' },
-  arquivada: { rotulo: 'Arquivada', cor: '#64748b' },
+  arquivada: { rotulo: 'Encerrada', cor: '#64748b' },
 };
 
 export const itensFunil = (porStatus: Record<StatusCandidatura, number>): ItemGrafico[] =>

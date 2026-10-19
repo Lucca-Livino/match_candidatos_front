@@ -9,7 +9,7 @@ import { Footer } from '@/components/layout/footer';
 import { cn } from '@/lib/utils';
 import { getVaga } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
-import { AREA_BADGE } from '@/features/vagas/constants';
+import { AREA_BADGE, rotuloArea } from '@/features/vagas/constants';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { candidatarNaVaga, getCandidaturasIds } from '@/features/candidato/api';
@@ -142,7 +142,7 @@ export default function VagaDetalhePage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <Badge className={cn('rounded-full text-xs font-medium px-3 py-0.5 border-none', areaBadge)}>
-                  {vaga.area}
+                  {rotuloArea(vaga.area)}
                 </Badge>
                 <span className="text-[12px] text-on-surface-variant whitespace-nowrap">
                   {vaga.criadoEm
@@ -220,7 +220,7 @@ export default function VagaDetalhePage() {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
                 {questionario && (
                   <p className="text-[13px] text-on-surface-variant mb-4">
-                    Responda o questionário acima para concluir sua candidatura.
+                    Responda ao questionário acima para concluir sua candidatura.
                   </p>
                 )}
                 <Button

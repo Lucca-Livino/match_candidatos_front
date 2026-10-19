@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, AlertTriangle, ChevronDown, ChevronRight, Printer, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { urlFichaCandidatura } from '@/features/candidatos';
 import { getAvaliacoes, reavaliarCandidatura } from '../api';
 import type { AvaliacaoAuditoria } from '../types';
@@ -306,7 +307,7 @@ function DetalheJustificativa({
         ) : (
           <p className="text-[13px] text-on-surface-variant">
             {a.avaliadoEm
-              ? 'A triagem rodou mas não gravou justificativa.'
+              ? 'A triagem rodou, mas não gravou justificativa.'
               : 'Candidatura ainda não avaliada.'}
 
           </p>
@@ -335,7 +336,7 @@ function DetalheJustificativa({
         </div>
         {!podeReavaliar && (
           <p className="text-[12px] text-on-surface-variant">
-            Reavaliação indisponível: candidatura já está em <strong>{a.status}</strong>.
+            Reavaliação indisponível: candidatura já está em <strong>{STATUS_CANDIDATURA_CONFIG[a.status]?.label ?? a.status}</strong>.
           </p>
         )}
         {erroReavaliar && (

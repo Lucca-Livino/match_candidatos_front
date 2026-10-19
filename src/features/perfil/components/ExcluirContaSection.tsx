@@ -76,11 +76,11 @@ export function ExcluirContaSection({ email, papel }: ExcluirContaSectionProps) 
           <DialogHeader>
             <DialogTitle>Excluir sua conta</DialogTitle>
             <DialogDescription>
-              Para confirmar, digite o email da sua conta: <strong>{email}</strong>
+              Para confirmar, digite o e-mail da sua conta: <strong>{email}</strong>
             </DialogDescription>
           </DialogHeader>
 
-          <Field label="Email da conta">
+          <Field label="E-mail da conta">
             <Input
               value={confirmacao}
               onChange={(e) => setConfirmacao(e.target.value)}

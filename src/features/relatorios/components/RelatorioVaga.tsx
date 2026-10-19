@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
+import { rotuloArea } from '@/features/vagas/constants';
 import { getRelatorioVaga } from '../api';
 import { useRelatorio } from '../hooks/useRelatorio';
 import { descricaoPeriodo, detalheTaxa, formatarData, formatarPercentual } from '../format';
@@ -113,7 +114,7 @@ export function RelatorioVaga() {
 }
 
 function descricaoVaga(vaga: Dados['vaga']) {
-  const partes = [vaga.area, rotuloStatusVaga(vaga.status)];
+  const partes = [rotuloArea(vaga.area), rotuloStatusVaga(vaga.status)];
   if (vaga.criadoEm) partes.push(`criada em ${formatarData(vaga.criadoEm)}`);
   return partes.join(' · ');
 }

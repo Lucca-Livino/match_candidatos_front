@@ -34,12 +34,12 @@ import {
   pesoParaNovoCriterio,
   validarPesos,
 } from '../criterioPesos';
-import { AREAS, STATUSES } from '../constants';
+import { AREAS, STATUSES, STATUS_VAGA_LABEL, rotuloArea } from '../constants';
 import { createVaga, updateVaga } from '../api';
 import { NAV_ITEMS } from '@/lib/nav';
 
 const TIPOS_CRITERIO = [
-  { value: 'skill_tecnica', label: 'Skill Técnica' },
+  { value: 'skill_tecnica', label: 'Habilidade técnica' },
   { value: 'formacao',      label: 'Formação'      },
   { value: 'experiencia',   label: 'Experiência'   },
   { value: 'certificacao',  label: 'Certificação'  },
@@ -287,7 +287,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                   id="titulo"
                   value={titulo}
                   onChange={e => setTitulo(e.target.value)}
-                  placeholder="Ex: Desenvolvedor Full Stack Sênior"
+                  placeholder="Ex.: Desenvolvedor Full Stack Sênior"
                   required
                   minLength={3}
                   maxLength={180}
@@ -303,7 +303,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                     </SelectTrigger>
                     <SelectContent>
                       {AREAS.map(a => (
-                        <SelectItem key={a} value={a}>{a}</SelectItem>
+                        <SelectItem key={a} value={a}>{rotuloArea(a)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -318,7 +318,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                     <SelectContent>
                       {STATUSES.map(s => (
                         <SelectItem key={s} value={s}>
-                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                          {STATUS_VAGA_LABEL[s]}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -440,7 +440,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
                           id={`nome-${idx}`}
                           value={c.nome}
                           onChange={e => updateCriterio(idx, 'nome', e.target.value)}
-                          placeholder="Ex: React, Node.js, Inglês..."
+                          placeholder="Ex.: React, Node.js, Inglês..."
                           required
                           minLength={2}
                           maxLength={120}

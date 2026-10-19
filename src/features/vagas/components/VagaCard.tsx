@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Users, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Vaga } from '../types';
-import { AREA_BADGE, STATUS_CONFIG, FINISHED_STATUSES } from '../constants';
+import { AREA_BADGE, STATUS_CONFIG, FINISHED_STATUSES, rotuloArea } from '../constants';
 
 interface VagaCardProps {
   vaga: Vaga;
@@ -35,7 +35,7 @@ export function VagaCard({ vaga }: VagaCardProps) {
     >
       <div className="flex items-start px-5 pt-5 pb-3">
         <Badge className={cn('text-[10px] font-bold uppercase tracking-wider border-none', areaBadgeClass)}>
-          {areaKey || '—'}
+          {areaKey ? rotuloArea(areaKey) : '—'}
         </Badge>
       </div>
 

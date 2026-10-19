@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Vaga } from '@/features/vagas/types';
+import { rotuloArea } from '@/features/vagas/constants';
 
 const STATUS_LABEL: Record<string, { label: string; dot: string }> = {
   ativa:     { label: 'Ativa',     dot: 'bg-emerald-400' },
@@ -27,7 +28,7 @@ export function VagaCandidatoCard({ vaga }: { vaga: Vaga }) {
       <div className="px-5 pt-5 pb-4 flex-1">
         <div className="flex items-start justify-between mb-3">
           <Badge className="rounded-full text-xs font-medium px-3 py-0.5 border-none bg-gray-100 text-gray-600">
-            {vaga.area ?? '—'}
+            {vaga.area ? rotuloArea(vaga.area) : '—'}
           </Badge>
           <span className="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
             <span className={cn('h-2 w-2 rounded-full flex-shrink-0', status.dot)} />

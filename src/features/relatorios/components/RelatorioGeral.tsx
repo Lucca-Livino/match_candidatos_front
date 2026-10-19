@@ -11,6 +11,7 @@ import { ResumoNumeros } from './ResumoNumeros';
 import { Bloco } from './Bloco';
 import { GraficoBarras } from './GraficoBarras';
 import { BlocoSerie } from './BlocoSerie';
+import { rotuloArea } from '@/features/vagas/constants';
 
 export function RelatorioGeral() {
   const [periodo, setPeriodo] = useState<Periodo>('tudo');
@@ -85,7 +86,7 @@ export function RelatorioGeral() {
                 legenda="Vagas por área"
                 rotuloItem="Área"
                 rotuloValor="Vagas"
-                itens={dados.vagas.porArea.map(a => ({ rotulo: a.area, valor: a.total }))}
+                itens={dados.vagas.porArea.map(a => ({ rotulo: rotuloArea(a.area), valor: a.total }))}
               />
             )}
           </Bloco>

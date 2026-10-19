@@ -16,7 +16,7 @@ import { Footer } from '@/components/layout/footer';
 import { Pagination } from '@/components/layout/pagination';
 import { getVagasPaginadas } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
-import { AREAS } from '@/features/vagas/constants';
+import { AREAS, rotuloArea } from '@/features/vagas/constants';
 import { VagaCandidatoCard } from './VagaCandidatoCard';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 
@@ -60,7 +60,7 @@ export function CandidatoHome() {
         <div className="container mx-auto px-8 max-w-[1400px] py-10">
           <div className="mb-6">
             <h1 className="text-[28px] font-bold leading-tight text-white mb-1">
-              Candidate-se nas vagas disponíveis
+              Candidate-se às vagas disponíveis
             </h1>
             <p className="text-[15px] text-white/70">
               {totalDocs > 0
@@ -88,7 +88,7 @@ export function CandidatoHome() {
               <SelectContent>
                 <SelectItem value="_all">Todas as áreas</SelectItem>
                 {AREAS.map(a => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                  <SelectItem key={a} value={a}>{rotuloArea(a)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -140,7 +140,7 @@ export function CandidatoHome() {
             <div>
               <h3 className="text-[17px] font-semibold text-primary mb-1">Suas candidaturas</h3>
               <p className="text-[13px] text-on-surface-variant">
-                Acompanhe o andamento de todos os processos seletivos em que você participou.
+                Acompanhe o andamento de todos os processos seletivos de que você participou.
               </p>
             </div>
           </div>

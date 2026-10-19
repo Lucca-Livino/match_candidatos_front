@@ -93,7 +93,7 @@ export function Home() {
                     <span className="text-[48px] font-extrabold leading-none tracking-[-0.02em]">
                       {vagasAbertas.length}
                     </span>
-                    <span className="text-[14px] opacity-70">de {vagas.length} total</span>
+                    <span className="text-[14px] opacity-70">de {vagas.length} no total</span>
                   </div>
                 )}
               </div>
@@ -247,7 +247,8 @@ const VagaRow = ({ vaga }: { vaga: Vaga }) => {
   const statusMap: Record<string, { label: string; color: string }> = {
     aberta:  { label: 'Aberta',  color: 'bg-emerald-500/10 text-emerald-700 border-none' },
     ativa:   { label: 'Ativa',   color: 'bg-emerald-500/10 text-emerald-700 border-none' },
-    fechada: { label: 'Fechada', color: 'bg-error/10 text-error border-none' },
+    fechada:   { label: 'Encerrada', color: 'bg-error/10 text-error border-none' },
+    arquivada: { label: 'Encerrada', color: 'bg-error/10 text-error border-none' },
     pausada: { label: 'Pausada', color: 'bg-yellow-500/10 text-yellow-700 border-none' },
   };
 

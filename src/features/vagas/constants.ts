@@ -15,11 +15,11 @@ export const AREA_BADGE: Record<string, string> = {
 };
 
 export const STATUS_CONFIG: Record<string, { dot: string; label: string; border: string }> = {
-  ativa:     { dot: 'bg-emerald-500', label: 'STATUS: PUBLICADA & ATIVA',    border: 'border-l-emerald-500' },
-  aberta:    { dot: 'bg-emerald-500', label: 'STATUS: PUBLICADA & ATIVA',    border: 'border-l-emerald-500' },
+  ativa:     { dot: 'bg-emerald-500', label: 'STATUS: PUBLICADA E ATIVA',    border: 'border-l-emerald-500' },
+  aberta:    { dot: 'bg-emerald-500', label: 'STATUS: PUBLICADA E ATIVA',    border: 'border-l-emerald-500' },
   pausada:   { dot: 'bg-yellow-500',  label: 'STATUS: PAUSADA PARA REVISÃO', border: 'border-l-yellow-500'  },
-  arquivada: { dot: 'bg-gray-400',    label: 'STATUS: FINALIZADA',           border: 'border-l-gray-400'    },
-  fechada:   { dot: 'bg-gray-400',    label: 'STATUS: FINALIZADA',           border: 'border-l-gray-400'    },
+  arquivada: { dot: 'bg-gray-400',    label: 'STATUS: ENCERRADA',            border: 'border-l-gray-400'    },
+  fechada:   { dot: 'bg-gray-400',    label: 'STATUS: ENCERRADA',            border: 'border-l-gray-400'    },
   inativa:   { dot: 'bg-gray-400',    label: 'STATUS: INATIVA',              border: 'border-l-gray-400'    },
 };
 
@@ -28,6 +28,19 @@ export const AREAS = [
   'OPERACOES', 'JURIDICO', 'ADMINISTRATIVO', 'OUTROS',
 ];
 
+const AREA_LABEL: Record<string, string> = {
+  OPERACOES: 'OPERAÇÕES',
+  JURIDICO:  'JURÍDICO',
+};
+
+export const rotuloArea = (area?: string) => (area ? AREA_LABEL[area.toUpperCase()] ?? area : '');
+
 export const STATUSES = ['ativa', 'pausada', 'arquivada'];
+
+export const STATUS_VAGA_LABEL: Record<string, string> = {
+  ativa:     'Ativa',
+  pausada:   'Pausada',
+  arquivada: 'Encerrada',
+};
 
 export const FINISHED_STATUSES = ['arquivada', 'fechada', 'inativa'];

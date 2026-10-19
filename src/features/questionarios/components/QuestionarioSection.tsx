@@ -56,7 +56,7 @@ export function QuestionarioSection({ value, onChange }: QuestionarioSectionProp
           id="quest-titulo"
           value={value.titulo}
           onChange={(e) => patch('titulo', e.target.value)}
-          placeholder="Ex: Avaliação técnica inicial"
+          placeholder="Ex.: Avaliação técnica inicial"
           minLength={3}
           maxLength={180}
         />

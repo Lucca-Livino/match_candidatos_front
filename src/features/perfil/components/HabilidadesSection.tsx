@@ -89,7 +89,7 @@ export function HabilidadesSection({ userId }: { userId: string }) {
       >
         <Field label="Habilidade">
           <CatalogoCombobox tipo="habilidade" texto={form.habilidade} itemId={form.itemId ?? null} required
-            placeholder="Ex: React, SQL, Inglês" avisoForaDoCatalogo
+            placeholder="Ex.: React, SQL, Inglês" avisoForaDoCatalogo
             onChange={({ texto, itemId }) => setForm({ ...form, habilidade: texto, itemId })} />
         </Field>
         <Field label="Nível">
