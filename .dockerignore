@@ -1,0 +1,8 @@
+node_modules
+dist
+.git
+.agents
+# O build le .env*.local: um VITE_API_BASE_URL de dev aqui faria o front de
+# producao chamar localhost em vez de /api.
+.env
+*.local
