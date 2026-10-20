@@ -7,6 +7,7 @@ import DashboardPage from '@/pages/auth/DashboardPage';
 import VagasPage from '@/pages/auth/VagasPage';
 import VagaNovaPage from '@/pages/auth/VagaNovaPage';
 import VagaEditarPage from '@/pages/auth/VagaEditarPage';
+import VagaDuplicarPage from '@/pages/auth/VagaDuplicarPage';
 import CandidatoHomePage from '@/pages/auth/CandidatoHomePage';
 import VagaDetalhePage from '@/pages/auth/VagaDetalhePage';
 import PerfilPage from '@/pages/auth/PerfilPage';
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
       { path: '/vagas',                         element: <VagasPage /> },
       { path: '/vagas/nova',                    element: <VagaNovaPage /> },
       { path: '/vagas/:id/editar',              element: <VagaEditarPage /> },
+      { path: '/vagas/:id/duplicar',            element: <VagaDuplicarPage /> },
       { path: '/vagas/:id/candidatos',          element: <VagaCandidatosPage /> },
       { path: '/vagas/:id/relatorio',           element: <VagaRelatorioPage /> },
       { path: '/candidatos',                    element: <CandidatosPage /> },

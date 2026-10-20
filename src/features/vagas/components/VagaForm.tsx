@@ -76,10 +76,14 @@ function montarCriterioParaEnvio(c: Criterio): Criterio {
 interface VagaFormProps {
   vagaId?: string;
   initial?: Partial<VagaPayload>;
+  // Só no modo criar: questionário de partida (ex.: cópia de outra vaga), já sem ids.
+  initialQuestionario?: QuestionarioForm;
+  origem?: 'duplicar';
+  aviso?: string;
   mode: 'criar' | 'editar';
 }
 
-export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
+export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, mode }: VagaFormProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -94,7 +98,7 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
 
   // Questionário (obrigatório): `questionario` é o estado editável;
   // `originalQuestionario` é o snapshot do servidor, usado para reconciliar no save.
-  const [questionario, setQuestionario]                 = useState<QuestionarioForm>(() => emptyQuestionarioForm());
+  const [questionario, setQuestionario]                 = useState<QuestionarioForm>(() => initialQuestionario ?? emptyQuestionarioForm());
   const [originalQuestionario, setOriginalQuestionario] = useState<QuestionarioForm | null>(null);
 
   const [saving, setSaving]   = useState(false);
@@ -251,13 +255,21 @@ export function VagaForm({ vagaId, initial, mode }: VagaFormProps) {
       <main className="flex-grow">
         <section className="container mx-auto px-8 max-w-[900px] pt-10">
           <h1 className="text-[28px] font-black tracking-tight leading-tight text-balance text-primary mb-1">
-            {mode === 'criar' ? 'Nova Vaga' : 'Editar Vaga'}
+            {origem === 'duplicar' ? 'Duplicar Vaga' : mode === 'criar' ? 'Nova Vaga' : 'Editar Vaga'}
           </h1>
           <p className="text-[14px] text-on-surface-variant max-w-[480px] leading-relaxed">
-            {mode === 'criar'
-              ? 'Preencha os dados para criar uma nova vaga no sistema.'
-              : 'Atualize as informações da vaga abaixo.'}
+            {origem === 'duplicar'
+              ? 'Revise a cópia antes de salvar. Ela vira uma vaga nova, sem candidaturas.'
+              : mode === 'criar'
+                ? 'Preencha os dados para criar uma nova vaga no sistema.'
+                : 'Atualize as informações da vaga abaixo.'}
           </p>
+          {aviso && (
+            <div role="status" className="mt-4 flex items-center gap-2 bg-error-container text-on-error-container rounded-md px-4 py-3 text-[13px]">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              {aviso}
+            </div>
+          )}
         </section>
 
         <section className="container mx-auto px-8 max-w-[900px] py-8">
