@@ -100,6 +100,14 @@ export function VagaCard({ vaga }: VagaCardProps) {
               >
                 Editar Vaga
               </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-[11px] font-bold uppercase tracking-wider h-8 text-on-surface-variant hover:text-on-surface"
+                onClick={() => navigate(`/vagas/${vaga.id}/duplicar`)}
+              >
+                Duplicar
+              </Button>
             </>
           )}
         </div>
