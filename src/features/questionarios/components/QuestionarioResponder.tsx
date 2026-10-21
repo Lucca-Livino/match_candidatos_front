@@ -44,7 +44,7 @@ export function QuestionarioResponder({
                   rows={3}
                   maxLength={5000}
                   placeholder="Digite sua resposta..."
-                  className="flex w-full rounded-xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-60 resize-y"
+                  className="flex w-full rounded-xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 resize-y"
                 />
               ) : (
                 <div className="space-y-2">

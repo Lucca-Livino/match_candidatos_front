@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sparkles, Pencil, Trash2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { CatalogoCombobox } from '@/components/CatalogoCombobox';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { SectionShell } from './SectionShell';
@@ -11,7 +11,7 @@ import { listHabilidades, createHabilidade, updateHabilidade, deleteHabilidade }
 import { NIVEL_OPTIONS, NIVEL_LABEL, NIVEL_BADGE } from '../constants';
 import type { Habilidade, HabilidadePayload, NivelHabilidade } from '../types';
 
-const EMPTY: HabilidadePayload = { habilidade: '', nivel: 'intermediario' };
+const EMPTY: HabilidadePayload = { habilidade: '', nivel: 'intermediario', itemId: null };
 
 export function HabilidadesSection({ userId }: { userId: string }) {
   const { items, loading, error, reload } = useCrud<Habilidade>(userId, listHabilidades);
@@ -32,7 +32,7 @@ export function HabilidadesSection({ userId }: { userId: string }) {
 
   function openEdit(h: Habilidade) {
     setEditing(h);
-    setForm({ habilidade: h.habilidade, nivel: h.nivel });
+    setForm({ habilidade: h.habilidade, nivel: h.nivel, itemId: h.itemId ?? null });
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -88,8 +88,9 @@ export function HabilidadesSection({ userId }: { userId: string }) {
         onSubmit={handleSave}
       >
         <Field label="Habilidade">
-          <Input value={form.habilidade} maxLength={120} required placeholder="Ex: React, SQL, Inglês"
-            onChange={(e) => setForm({ ...form, habilidade: e.target.value })} />
+          <CatalogoCombobox tipo="habilidade" texto={form.habilidade} itemId={form.itemId ?? null} required
+            placeholder="Ex.: React, SQL, Inglês" avisoForaDoCatalogo
+            onChange={({ texto, itemId }) => setForm({ ...form, habilidade: texto, itemId })} />
         </Field>
         <Field label="Nível">
           <Select value={form.nivel} onValueChange={(v) => setForm({ ...form, nivel: v as NivelHabilidade })}>

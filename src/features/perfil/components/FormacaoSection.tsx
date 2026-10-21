@@ -1,17 +1,37 @@
 import { useState } from 'react';
 import { GraduationCap, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { CatalogoCombobox } from '@/components/CatalogoCombobox';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { SectionShell } from './SectionShell';
 import { FormDialog, Field } from './FormDialog';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useCrud } from '../hooks/useCrud';
 import { listFormacoes, createFormacao, updateFormacao, deleteFormacao } from '../api';
-import { GRAU_OPTIONS, GRAU_LABEL } from '../constants';
-import type { Formacao, FormacaoPayload, GrauAcademico } from '../types';
+import {
+  GRAU_OPTIONS,
+  GRAU_LABEL,
+  SITUACAO_OPTIONS,
+  SITUACAO_LABEL,
+  SITUACOES_COM_ANO_CONCLUSAO,
+  periodoFormacao,
+} from '../constants';
+import type { Formacao, FormacaoPayload, GrauAcademico, SituacaoFormacao } from '../types';
 
-const EMPTY: FormacaoPayload = {
-  instituicao: '', curso: '', grau: 'graduacao', situacao: '', anoInicio: new Date().getFullYear(), anoConclusao: null,
+// Situação começa vazia de propósito: um padrão pré-selecionado seria salvo
+// sem o candidato perceber, e a situação muda o que a IA conclui do ano final.
+type FormacaoForm = Omit<FormacaoPayload, 'situacao'> & { situacao: SituacaoFormacao | '' };
+
+const EMPTY: FormacaoForm = {
+  instituicao: '', curso: '', grau: 'graduacao', situacao: '', anoInicio: new Date().getFullYear(), anoConclusao: null, areaId: null,
+};
+
+const ROTULO_ANO_FINAL: Record<SituacaoFormacao | '', string> = {
+  '':         'Ano de conclusão',
+  cursando:   'Previsão de conclusão',
+  concluido:  'Ano de conclusão',
+  trancado:   'Ano de saída (opcional)',
+  incompleto: 'Ano de saída (opcional)',
 };
 
 export function FormacaoSection({ userId }: { userId: string }) {
@@ -19,7 +39,9 @@ export function FormacaoSection({ userId }: { userId: string }) {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Formacao | null>(null);
-  const [form, setForm] = useState<FormacaoPayload>(EMPTY);
+  const [form, setForm] = useState<FormacaoForm>(EMPTY);
+  // Texto do combobox de area: so de tela, o que vai ao servidor e o areaId.
+  const [areaTexto, setAreaTexto] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Formacao | null>(null);
@@ -27,6 +49,7 @@ export function FormacaoSection({ userId }: { userId: string }) {
   function openCreate() {
     setEditing(null);
     setForm(EMPTY);
+    setAreaTexto('');
     setSaveError(null);
     setDialogOpen(true);
   }
@@ -35,18 +58,27 @@ export function FormacaoSection({ userId }: { userId: string }) {
     setEditing(f);
     setForm({
       instituicao: f.instituicao, curso: f.curso, grau: f.grau,
-      situacao: f.situacao, anoInicio: f.anoInicio, anoConclusao: f.anoConclusao,
+      // Registro antigo com texto livre abre sem situação e obriga a escolher.
+      situacao: f.situacao in SITUACAO_LABEL ? f.situacao : '',
+      anoInicio: f.anoInicio, anoConclusao: f.anoConclusao, areaId: f.areaId ?? null,
     });
+    setAreaTexto('');
     setSaveError(null);
     setDialogOpen(true);
   }
 
   async function handleSave() {
+    // O Select não participa da validação nativa do <form>.
+    if (!form.situacao) {
+      setSaveError('Selecione a situação do curso.');
+      return;
+    }
+    const payload: FormacaoPayload = { ...form, situacao: form.situacao };
     setSaving(true);
     setSaveError(null);
     try {
-      if (editing) await updateFormacao(userId, editing.id, form);
-      else         await createFormacao(userId, form);
+      if (editing) await updateFormacao(userId, editing.id, payload);
+      else         await createFormacao(userId, payload);
       setDialogOpen(false);
       await reload();
     } catch (err) {
@@ -73,7 +105,7 @@ export function FormacaoSection({ userId }: { userId: string }) {
               <p className="text-[14px] font-medium text-primary">{f.curso}</p>
               <p className="text-[13px] text-on-surface-variant">{f.instituicao}</p>
               <p className="text-[12px] text-on-surface-variant mt-0.5">
-                {GRAU_LABEL[f.grau]} · {f.situacao} · {f.anoInicio}{f.anoConclusao ? `–${f.anoConclusao}` : ' – atual'}
+                {GRAU_LABEL[f.grau]} · {SITUACAO_LABEL[f.situacao] ?? f.situacao} · {periodoFormacao(f.anoInicio, f.anoConclusao, f.situacao)}
               </p>
             </div>
             <div className="flex gap-1 flex-shrink-0">
@@ -104,6 +136,14 @@ export function FormacaoSection({ userId }: { userId: string }) {
           <Input value={form.curso} maxLength={180} required
             onChange={(e) => setForm({ ...form, curso: e.target.value })} />
         </Field>
+        <Field label="Área do curso (opcional)">
+          <CatalogoCombobox tipo="area_curso" texto={areaTexto} itemId={form.areaId ?? null} avisoForaDoCatalogo
+            placeholder={form.areaId && !areaTexto ? 'Área já vinculada do catálogo' : undefined}
+            onChange={({ texto, itemId }) => { setAreaTexto(texto); setForm({ ...form, areaId: itemId }); }} />
+          <p className="mt-1 text-[11px] text-on-surface-variant">
+            Ligue à área do catálogo para comprovar requisitos obrigatórios.
+          </p>
+        </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Grau">
             <Select value={form.grau} onValueChange={(v) => setForm({ ...form, grau: v as GrauAcademico })}>
@@ -114,8 +154,12 @@ export function FormacaoSection({ userId }: { userId: string }) {
             </Select>
           </Field>
           <Field label="Situação">
-            <Input value={form.situacao} maxLength={80} required placeholder="Ex: Cursando, Concluído"
-              onChange={(e) => setForm({ ...form, situacao: e.target.value })} />
+            <Select value={form.situacao} onValueChange={(v) => setForm({ ...form, situacao: v as SituacaoFormacao })}>
+              <SelectTrigger aria-label="Situação"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent>
+                {SITUACAO_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </Field>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -123,8 +167,9 @@ export function FormacaoSection({ userId }: { userId: string }) {
             <Input type="number" value={form.anoInicio} min={1900} max={3000} required
               onChange={(e) => setForm({ ...form, anoInicio: Number(e.target.value) })} />
           </Field>
-          <Field label="Ano de conclusão">
-            <Input type="number" value={form.anoConclusao ?? ''} min={1900} max={3000} placeholder="Em andamento"
+          <Field label={ROTULO_ANO_FINAL[form.situacao]}>
+            <Input type="number" value={form.anoConclusao ?? ''} min={form.anoInicio || 1900} max={3000}
+              required={form.situacao !== '' && SITUACOES_COM_ANO_CONCLUSAO.includes(form.situacao)}
               onChange={(e) => setForm({ ...form, anoConclusao: e.target.value ? Number(e.target.value) : null })} />
           </Field>
         </div>

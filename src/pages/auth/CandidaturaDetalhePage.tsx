@@ -13,6 +13,7 @@ import { getCandidatura, type Candidatura } from '@/features/candidato/api';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { getVaga } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
+import { rotuloArea } from '@/features/vagas/constants';
 
 export default function CandidaturaDetalhePage() {
   const { vagaId } = useParams<{ vagaId: string }>();
@@ -84,7 +85,7 @@ export default function CandidaturaDetalhePage() {
               <div className="flex items-start justify-between gap-4 mb-4">
                 {vaga?.area && (
                   <Badge className="rounded-full text-xs font-medium px-3 py-0.5 border-none bg-gray-100 text-gray-600">
-                    {vaga.area}
+                    {rotuloArea(vaga.area)}
                   </Badge>
                 )}
                 {status && (

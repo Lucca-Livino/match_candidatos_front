@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getCandidatos } from '../api';
 import type { Candidato } from '../types';
 
@@ -8,15 +8,25 @@ export function useCandidatos() {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState<string | null>(null);
 
-  useEffect(() => {
+  const carregar = useCallback(() => {
+    setLoading(true);
+    setError(null);
     getCandidatos()
       .then(({ docs, totalDocs }) => {
         setCandidatos(docs);
         setTotal(totalDocs);
       })
-      .catch(() => setError('Falha ao carregar candidatos'))
+      .catch(() => setError('Não foi possível carregar os candidatos. Verifique a conexão e tente novamente.'))
       .finally(() => setLoading(false));
   }, []);
 
-  return { candidatos, total, loading, error };
+  useEffect(() => { carregar(); }, [carregar]);
+
+  // /usuarios devolve todos os papeis; so quem tem papel de candidato conta.
+  const somenteCandidatos = useMemo(
+    () => candidatos.filter(c => (c.tipos_permissao ?? ['candidato']).includes('candidato')),
+    [candidatos],
+  );
+
+  return { candidatos, somenteCandidatos, total, loading, error, recarregar: carregar };
 }

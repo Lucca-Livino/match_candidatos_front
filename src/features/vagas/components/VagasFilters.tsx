@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { AREAS, STATUSES } from '../constants';
+import { AREAS, STATUSES, STATUS_VAGA_LABEL, rotuloArea } from '../constants';
 
 export interface VagasFiltersProps {
   q: string;
@@ -25,49 +25,51 @@ export function VagasFilters({
   onQChange, onAreaChange, onStatusChange, onOrdemChange,
 }: VagasFiltersProps) {
   return (
-    <section className="border-b border-outline-variant bg-white shadow-sm">
-      <div className="container mx-auto px-8 max-w-[1400px] py-5 flex flex-col sm:flex-row gap-3 items-center">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
+    <section>
+      <div role="search" className="container mx-auto px-8 max-w-[1400px] pt-8 flex flex-col lg:flex-row gap-3 lg:items-center">
+        <div className="relative w-full lg:flex-[2]">
+          <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
           <Input
+            type="search"
+            aria-label="Buscar vagas"
             value={q}
             onChange={e => onQChange(e.target.value)}
             placeholder="Buscar por título da vaga, ID ou palavra-chave..."
-            className="pl-9 text-[13px] border-outline-variant"
+            className="pl-9 border-outline-variant bg-white"
           />
         </div>
 
         <Select value={area || '_all'} onValueChange={v => onAreaChange(v === '_all' ? '' : v)}>
-          <SelectTrigger className="min-w-[160px] text-[13px] border-outline-variant">
-            <SelectValue placeholder="Departamento" />
+          <SelectTrigger aria-label="Filtrar por área" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
+            <SelectValue placeholder="Área" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="_all">Departamento</SelectItem>
-            {AREAS.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+            <SelectItem value="_all">Área: Todas</SelectItem>
+            {AREAS.map(a => <SelectItem key={a} value={a}>{rotuloArea(a)}</SelectItem>)}
           </SelectContent>
         </Select>
 
         <Select value={status || '_all'} onValueChange={v => onStatusChange(v === '_all' ? '' : v)}>
-          <SelectTrigger className="min-w-[160px] text-[13px] border-outline-variant">
+          <SelectTrigger aria-label="Filtrar por status" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
             <SelectValue placeholder="Status: Todos" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="_all">Status: Todos</SelectItem>
             {STATUSES.map(s => (
               <SelectItem key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+                {STATUS_VAGA_LABEL[s]}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select value={ordem} onValueChange={onOrdemChange}>
-          <SelectTrigger className="min-w-[180px] text-[13px] border-outline-variant">
+          <SelectTrigger aria-label="Ordenar vagas" className="lg:w-auto lg:min-w-[180px] lg:flex-1 text-[13px] border-outline-variant bg-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="recentes">Ordenar: Recentes</SelectItem>
-            <SelectItem value="antigos">Ordenar: Antigos</SelectItem>
+            <SelectItem value="antigos">Ordenar: Antigas</SelectItem>
             <SelectItem value="titulo">Ordenar: Título</SelectItem>
           </SelectContent>
         </Select>

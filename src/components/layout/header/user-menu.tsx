@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bell, Settings, User, LogOut, ChevronDown } from 'lucide-react';
+import { User, LogOut, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AuthUser } from '@/features/auth';
 
@@ -42,24 +41,17 @@ export function UserMenu({ user, loading, perfilPath, showPerfil = true, onLogou
 
   return (
     <div className="flex items-center gap-4">
-      <Button variant="ghost" size="icon" className="relative text-on-surface-variant hover:text-on-surface">
-        <Bell className="h-5 w-5" />
-        <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-error" />
-      </Button>
-      <Button variant="ghost" size="icon" className="text-on-surface-variant hover:text-on-surface">
-        <Settings className="h-5 w-5" />
-      </Button>
-
       <div className="relative" ref={ref}>
         <button
           type="button"
           onClick={() => setOpen(o => !o)}
-          className="flex items-center gap-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          aria-label="Menu da conta"
           aria-haspopup="menu"
           aria-expanded={open}
         >
           <Avatar className="h-10 w-10 border border-outline-variant cursor-pointer">
-            {user?.image && <AvatarImage src={user.image} alt={user.name} />}
+            {user?.image && <AvatarImage src={user.image} alt="" />}
             <AvatarFallback className="bg-primary text-white text-sm font-bold">
               {loading ? '?' : initials}
             </AvatarFallback>

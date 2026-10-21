@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Award, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { CatalogoCombobox } from '@/components/CatalogoCombobox';
 import { SectionShell } from './SectionShell';
 import { FormDialog, Field } from './FormDialog';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -9,7 +10,7 @@ import { listCertificacoes, createCertificacao, updateCertificacao, deleteCertif
 import type { Certificacao, CertificacaoPayload } from '../types';
 
 const EMPTY: CertificacaoPayload = {
-  nome: '', emissor: '', dataEmissao: null, dataExpiracao: null, codigo: '',
+  nome: '', emissor: '', dataEmissao: null, dataExpiracao: null, codigo: '', itemId: null,
 };
 
 function toDateInput(iso: string | null): string {
@@ -40,7 +41,7 @@ export function CertificacoesSection({ userId }: { userId: string }) {
   function openEdit(c: Certificacao) {
     setEditing(c);
     setForm({
-      nome: c.nome, emissor: c.emissor, codigo: c.codigo ?? '',
+      nome: c.nome, emissor: c.emissor, codigo: c.codigo ?? '', itemId: c.itemId ?? null,
       dataEmissao: toDateInput(c.dataEmissao) || null,
       dataExpiracao: toDateInput(c.dataExpiracao) || null,
     });
@@ -115,8 +116,9 @@ export function CertificacoesSection({ userId }: { userId: string }) {
         onSubmit={handleSave}
       >
         <Field label="Nome">
-          <Input value={form.nome} maxLength={180} required
-            onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+          <CatalogoCombobox tipo="certificacao" maxLength={180} texto={form.nome} itemId={form.itemId ?? null} required
+            avisoForaDoCatalogo
+            onChange={({ texto, itemId }) => setForm({ ...form, nome: texto, itemId })} />
         </Field>
         <Field label="Emissor">
           <Input value={form.emissor} maxLength={180} required

@@ -30,6 +30,18 @@ export async function updateUsuario(id: string, payload: UsuarioUpdatePayload): 
   return unwrap(res);
 }
 
+/**
+ * Autoexclusão da conta autenticada. O alvo vem da sessão no back-end — o id
+ * não vai na URL de propósito. `emailConfirmacao` é o email da própria conta,
+ * digitado pela pessoa; o back recusa com 400 se não conferir.
+ */
+export async function excluirMinhaConta(emailConfirmacao: string): Promise<void> {
+  await request(`/api/usuarios/me`, {
+    method: 'DELETE',
+    body: JSON.stringify({ emailConfirmacao }),
+  });
+}
+
 // ---- Formação ----
 export async function listFormacoes(userId: string): Promise<Formacao[]> {
   const res = await request<ApiResponse<Formacao[]>>(`/api/usuarios/${userId}/formacao`);
