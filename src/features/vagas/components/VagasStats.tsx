@@ -8,7 +8,7 @@ interface VagasStatsProps {
 export function VagasStats({ total, ativas, pausadas, encerradas }: VagasStatsProps) {
   return (
     <section className="container mx-auto px-8 max-w-[1400px] py-5">
-      <div className="flex items-center gap-6 text-[13px]">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] tabular-nums">
         <span className="font-medium text-on-surface-variant">
           TOTAL: <strong className="text-on-surface">{total}</strong>
         </span>

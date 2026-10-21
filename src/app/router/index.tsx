@@ -7,17 +7,25 @@ import DashboardPage from '@/pages/auth/DashboardPage';
 import VagasPage from '@/pages/auth/VagasPage';
 import VagaNovaPage from '@/pages/auth/VagaNovaPage';
 import VagaEditarPage from '@/pages/auth/VagaEditarPage';
+import VagaDuplicarPage from '@/pages/auth/VagaDuplicarPage';
 import CandidatoHomePage from '@/pages/auth/CandidatoHomePage';
 import VagaDetalhePage from '@/pages/auth/VagaDetalhePage';
 import PerfilPage from '@/pages/auth/PerfilPage';
+import RecrutadorPerfilPage from '@/pages/auth/RecrutadorPerfilPage';
+import SuportePerfilPage from '@/pages/auth/SuportePerfilPage';
 import MinhasCandidaturasPage from '@/pages/auth/MinhasCandidaturasPage';
 import CandidaturaDetalhePage from '@/pages/auth/CandidaturaDetalhePage';
 import CandidatoVagasPage from '@/pages/auth/CandidatoVagasPage';
 import CandidatosPage from '@/pages/auth/CandidatosPage';
 import VagaCandidatosPage from '@/pages/auth/VagaCandidatosPage';
+import RelatoriosPage from '@/pages/auth/RelatoriosPage';
+import VagaRelatorioPage from '@/pages/auth/VagaRelatorioPage';
 import SuporteConfiguracaoPage from '@/pages/auth/SuporteConfiguracaoPage';
 import SuporteAvaliacoesPage from '@/pages/auth/SuporteAvaliacoesPage';
 import FichaCandidatoPage from '@/pages/auth/FichaCandidatoPage';
+import AtivarContaPage from '@/pages/public/AtivarContaPage';
+import AdminUsuariosPage from '@/pages/auth/AdminUsuariosPage';
+import AdminPerfilPage from '@/pages/auth/AdminPerfilPage';
 
 const router = createBrowserRouter([
   {
@@ -27,7 +35,11 @@ const router = createBrowserRouter([
       { path: '/candidato/login', element: <CandidatoLoginPage /> },
     ],
   },
-  // Área do recrutador (recrutador / administrador)
+  // Fora do PublicLayout de propósito: ele manda quem já tem sessão para a
+  // própria home, e o link do convite precisa abrir mesmo num navegador em que
+  // outra conta (o próprio admin, por exemplo) está logada.
+  { path: '/ativar-conta', element: <AtivarContaPage /> },
+  // Área do recrutador
   {
     element: <RoleLayout area="recrutador" />,
     children: [
@@ -36,8 +48,12 @@ const router = createBrowserRouter([
       { path: '/vagas',                         element: <VagasPage /> },
       { path: '/vagas/nova',                    element: <VagaNovaPage /> },
       { path: '/vagas/:id/editar',              element: <VagaEditarPage /> },
+      { path: '/vagas/:id/duplicar',            element: <VagaDuplicarPage /> },
       { path: '/vagas/:id/candidatos',          element: <VagaCandidatosPage /> },
+      { path: '/vagas/:id/relatorio',           element: <VagaRelatorioPage /> },
       { path: '/candidatos',                    element: <CandidatosPage /> },
+      { path: '/relatorios',                    element: <RelatoriosPage /> },
+      { path: '/recrutador/perfil',             element: <RecrutadorPerfilPage /> },
     ],
   },
   // Área do candidato
@@ -58,9 +74,18 @@ const router = createBrowserRouter([
     children: [
       { path: '/suporte/avaliacoes',            element: <SuporteAvaliacoesPage /> },
       { path: '/suporte/configuracao',          element: <SuporteConfiguracaoPage /> },
+      { path: '/suporte/perfil',                element: <SuportePerfilPage /> },
     ],
   },
-  // Impressão: ficha do candidato, sem header/footer (recrutador, admin, suporte)
+  // Área do administrador: contas internas (convite, situação, exclusão)
+  {
+    element: <RoleLayout area="admin" />,
+    children: [
+      { path: '/admin/usuarios',                element: <AdminUsuariosPage /> },
+      { path: '/admin/perfil',                  element: <AdminPerfilPage /> },
+    ],
+  },
+  // Impressão: ficha do candidato, sem header/footer (recrutador, suporte)
   {
     element: <RoleLayout area="impressao" />,
     children: [

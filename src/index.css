@@ -124,40 +124,49 @@
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
-body {
-  margin: 0;
-  min-height: 100vh;
-}
+/* Dentro de @layer base: regras sem layer vencem as utilities do Tailwind v4,
+   e classes como text-white/text-primary em títulos e links eram ignoradas. */
+@layer base {
+  /* Tailwind v4 usa currentColor como cor padrao de borda; os componentes
+     shadcn (Table, Card...) contam com a cor de borda do tema. */
+  *, ::before, ::after, ::backdrop, ::file-selector-button {
+    border-color: var(--color-border);
+  }
 
-#root {
-  min-height: 100vh;
-}
+  body {
+    margin: 0;
+    min-height: 100vh;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-weight: 800;
-  color: var(--on-surface);
-  letter-spacing: -0.03em;
-}
+  #root {
+    min-height: 100vh;
+  }
 
-button {
-  cursor: pointer;
-  font-family: inherit;
-}
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 800;
+    color: var(--on-surface);
+    letter-spacing: -0.03em;
+  }
 
-input {
-  font-family: inherit;
-  transition: all 150ms ease;
-}
+  button {
+    cursor: pointer;
+    font-family: inherit;
+  }
 
-a {
-  color: var(--secondary);
-  text-decoration: none;
-  transition: opacity 150ms ease;
-}
+  input {
+    font-family: inherit;
+  }
 
-a:hover {
-  opacity: 0.8;
+  a {
+    color: var(--secondary);
+    text-decoration: none;
+    transition: opacity 150ms ease;
+  }
+
+  a:hover {
+    opacity: 0.8;
+  }
 }
 
 /* ─── Impressão (ficha do candidato) ─────────────────────────────────────── */

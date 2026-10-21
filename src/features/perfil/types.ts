@@ -5,6 +5,12 @@ export type GrauAcademico =
   | 'mestrado'
   | 'doutorado';
 
+export type SituacaoFormacao =
+  | 'cursando'
+  | 'concluido'
+  | 'trancado'
+  | 'incompleto';
+
 export type NivelHabilidade =
   | 'basico'
   | 'intermediario'
@@ -17,9 +23,10 @@ export interface Formacao {
   instituicao: string;
   curso: string;
   grau: GrauAcademico;
-  situacao: string;
+  situacao: SituacaoFormacao;
   anoInicio: number;
   anoConclusao: number | null;
+  areaId?: string | null;
 }
 
 export type FormacaoPayload = Omit<Formacao, 'id' | 'usuarioId'>;
@@ -33,11 +40,12 @@ export interface Experiencia {
   dataInicio: string;
   dataFim: string | null;
   mesesDuracao?: number;
+  areaId?: string | null;
 }
 
 export type ExperienciaPayload = Pick<
   Experiencia,
-  'empresa' | 'cargo' | 'descricaoAtivida_' | 'dataInicio' | 'dataFim'
+  'empresa' | 'cargo' | 'descricaoAtivida_' | 'dataInicio' | 'dataFim' | 'areaId'
 >;
 
 export interface Habilidade {
@@ -45,9 +53,10 @@ export interface Habilidade {
   usuarioId: string;
   habilidade: string;
   nivel: NivelHabilidade;
+  itemId?: string | null;
 }
 
-export type HabilidadePayload = Pick<Habilidade, 'habilidade' | 'nivel'>;
+export type HabilidadePayload = Pick<Habilidade, 'habilidade' | 'nivel' | 'itemId'>;
 
 export interface Certificacao {
   id: string;
@@ -57,11 +66,12 @@ export interface Certificacao {
   dataEmissao: string | null;
   dataExpiracao: string | null;
   codigo: string;
+  itemId?: string | null;
 }
 
 export type CertificacaoPayload = Pick<
   Certificacao,
-  'nome' | 'emissor' | 'dataEmissao' | 'dataExpiracao' | 'codigo'
+  'nome' | 'emissor' | 'dataEmissao' | 'dataExpiracao' | 'codigo' | 'itemId'
 >;
 
 export interface UsuarioPerfil {

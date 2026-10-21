@@ -16,6 +16,8 @@
     "@radix-ui/react-select": "^2.3.1",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-toggle": "^1.1.18",
+    "@radix-ui/react-toggle-group": "^1.1.19",
     "@tailwindcss/postcss": "^4.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -23,7 +25,9 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.18.0",
-    "tailwind-merge": "^3.6.0"
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^3.6.0",
+    "react-is": "^19.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -41,5 +45,8 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12"
+  },
+  "overrides": {
+    "react-is": "$react-is"
   }
 }

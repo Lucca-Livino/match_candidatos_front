@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, AlertTriangle, ChevronDown, ChevronRight, Printer, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { urlFichaCandidatura } from '@/features/candidatos';
 import { getAvaliacoes, reavaliarCandidatura } from '../api';
 import type { AvaliacaoAuditoria } from '../types';
@@ -267,6 +268,10 @@ function DetalheJustificativa({
   onReavaliada: () => void;
 }) {
   const justificativa = a.justificativa?.trim();
+  // `versaoModelo` nulo com a triagem ja rodada significa que o gate de
+  // requisitos obrigatorios decidiu sozinho: chamar isso de "justificativa da
+  // IA" atribuiria ao modelo uma decisao que ele nao tomou.
+  const decidiuSemModelo = Boolean(a.avaliadoEm) && !a.versaoModelo;
   const [reavaliando, setReavaliando] = useState(false);
   const [erroReavaliar, setErroReavaliar] = useState<string | null>(null);
 
@@ -293,7 +298,7 @@ function DetalheJustificativa({
     <div className="space-y-4">
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
-          Justificativa da IA
+          {decidiuSemModelo ? 'Justificativa da triagem' : 'Justificativa da IA'}
         </p>
         {justificativa ? (
           <p className="whitespace-pre-wrap text-[13px] text-primary max-w-[900px]">
@@ -302,8 +307,9 @@ function DetalheJustificativa({
         ) : (
           <p className="text-[13px] text-on-surface-variant">
             {a.avaliadoEm
-              ? 'A triagem rodou mas não gravou justificativa.'
+              ? 'A triagem rodou, mas não gravou justificativa.'
               : 'Candidatura ainda não avaliada.'}
+
           </p>
         )}
       </div>
@@ -330,7 +336,7 @@ function DetalheJustificativa({
         </div>
         {!podeReavaliar && (
           <p className="text-[12px] text-on-surface-variant">
-            Reavaliação indisponível: candidatura já está em <strong>{a.status}</strong>.
+            Reavaliação indisponível: candidatura já está em <strong>{STATUS_CANDIDATURA_CONFIG[a.status]?.label ?? a.status}</strong>.
           </p>
         )}
         {erroReavaliar && (

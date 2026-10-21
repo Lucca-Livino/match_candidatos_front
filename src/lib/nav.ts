@@ -16,3 +16,7 @@ export const SUPORTE_NAV_ITEMS = [
   { label: 'Avaliações',   path: '/suporte/avaliacoes'   },
   { label: 'Configuração', path: '/suporte/configuracao' },
 ] as const;
+
+export const ADMIN_NAV_ITEMS = [
+  { label: 'Usuários', path: '/admin/usuarios' },
+] as const;

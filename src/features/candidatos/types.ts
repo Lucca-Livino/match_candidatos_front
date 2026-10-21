@@ -7,6 +7,9 @@ export interface Candidato {
   _id?: string;
   nome: string;
   email: string;
+  telefone?: string;
+  linkedin?: string;
+  cidade?: string;
   tipos_permissao?: string[];
   status_ativo?: boolean;
   createdAt?: string;
@@ -25,6 +28,9 @@ export interface CandidaturaVaga {
   avaliadoEm?: string | null;
   criadoEm?: string;
   atualizadoEm?: string;
+  /** Última reabertura (aprovado/reprovado -> em análise). */
+  reabertoPor?: string | null;
+  reabertoEm?: string | null;
   candidato: {
     id: string;
     nome: string;

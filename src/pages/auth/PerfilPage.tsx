@@ -2,12 +2,14 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { papelDe } from '@/features/auth';
 import {
   DadosSection,
   FormacaoSection,
   ExperienciaSection,
   HabilidadesSection,
   CertificacoesSection,
+  ExcluirContaSection,
 } from '@/features/perfil';
 
 export default function PerfilPage() {
@@ -32,6 +34,7 @@ export default function PerfilPage() {
             <ExperienciaSection userId={user.id} />
             <HabilidadesSection userId={user.id} />
             <CertificacoesSection userId={user.id} />
+            <ExcluirContaSection email={user.email} papel={papelDe(user)} />
           </div>
         )}
       </main>

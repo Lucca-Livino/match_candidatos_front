@@ -9,7 +9,7 @@ import { Pagination } from '@/components/layout/pagination';
 import { cn } from '@/lib/utils';
 import { getVagasPaginadas } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
-import { AREAS } from '@/features/vagas/constants';
+import { AREAS, rotuloArea } from '@/features/vagas/constants';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { VagaCandidatoCard } from './VagaCandidatoCard';
 
@@ -50,7 +50,7 @@ export function CandidatoVagas() {
       <div className="sticky top-0 z-20 bg-white border-b border-gray-100 shadow-sm">
         <div className="overflow-x-auto scrollbar-hide border-b border-gray-50">
           <div className="flex gap-1 px-8 pt-3 pb-0 min-w-max">
-            {[{ label: 'Todas', value: TODAS }, ...AREAS.map(a => ({ label: a, value: a }))].map(({ label, value }) => (
+            {[{ label: 'Todas', value: TODAS }, ...AREAS.map(a => ({ label: rotuloArea(a), value: a }))].map(({ label, value }) => (
               <button
                 key={value}
                 onClick={() => setArea(value)}
