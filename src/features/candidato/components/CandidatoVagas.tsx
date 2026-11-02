@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,21 +25,24 @@ export function CandidatoVagas() {
   const [q, setQ]                   = useState('');
   const [area, setArea]             = useState(TODAS);
 
-  const fetchVagas = useCallback(async () => {
+  useEffect(() => {
+    let atual = true;
     setLoading(true);
-    try {
-      const res = await getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q });
-      setVagas(res.docs ?? []);
-      setTotalPages(res.totalPages);
-      setTotalDocs(res.totalDocs);
-    } catch {
-      setVagas([]);
-    } finally {
-      setLoading(false);
-    }
+    getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q })
+      .then((res) => {
+        if (!atual) return;
+        setVagas(res.docs ?? []);
+        setTotalPages(res.totalPages);
+        setTotalDocs(res.totalDocs);
+      })
+      .catch(() => {
+        if (atual) setVagas([]);
+      })
+      .finally(() => {
+        if (atual) setLoading(false);
+      });
+    return () => { atual = false; };
   }, [page, area, q]);
-
-  useEffect(() => { fetchVagas(); }, [fetchVagas]);
   useEffect(() => { setPage(1); }, [area, q]);
 
   return (
