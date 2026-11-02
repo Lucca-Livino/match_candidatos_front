@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "data": [
+    { "id": "h1", "usuarioId": "u-candidato", "habilidade": "SQL", "nivel": "avancado", "itemId": "cat-sql" }
+  ]
+}

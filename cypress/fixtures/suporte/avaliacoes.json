@@ -1,0 +1,51 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "c-1",
+      "usuarioId": "u-c1",
+      "vagaId": "v-1",
+      "status": "em_analise",
+      "movidoPor": "ia",
+      "compativel": 1,
+      "avaliadoEm": "2026-10-20T14:30:00.000Z",
+      "scoreIA": 0.82,
+      "limiteAplicado": 0.7,
+      "versaoModelo": "gemini-3.1-flash-lite",
+      "justificativa": "Experiência sólida em React e Node.",
+      "criadoEm": "2026-10-20T14:00:00.000Z",
+      "candidato": { "nome": "Bruno Batista", "email": "bruno@email.com" },
+      "vaga": { "titulo": "Desenvolvedor Front-end" }
+    },
+    {
+      "id": "c-2",
+      "usuarioId": "u-c2",
+      "vagaId": "v-1",
+      "status": "inscrito",
+      "movidoPor": "ia",
+      "compativel": 0,
+      "avaliadoEm": "2026-10-21T09:15:00.000Z",
+      "scoreIA": 0.6,
+      "limiteAplicado": 0.7,
+      "versaoModelo": "gemini-3.1-flash-lite",
+      "justificativa": "Pouca experiência com TypeScript.",
+      "criadoEm": "2026-10-21T09:00:00.000Z",
+      "candidato": { "nome": "Carla Costa", "email": "carla@email.com" },
+      "vaga": { "titulo": "Desenvolvedor Front-end" }
+    },
+    {
+      "id": "c-3",
+      "usuarioId": "u-c3",
+      "vagaId": "v-2",
+      "status": "inscrito",
+      "movidoPor": "sistema",
+      "avaliadoEm": null,
+      "scoreIA": null,
+      "limiteAplicado": null,
+      "versaoModelo": null,
+      "criadoEm": "2026-10-22T10:00:00.000Z",
+      "candidato": { "nome": "Davi Duarte", "email": "davi@email.com" },
+      "vaga": { "titulo": "Analista de Dados" }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      {
+        "_id": "v1",
+        "titulo": "Desenvolvedor React Pleno",
+        "descricao": "Construir interfaces web modernas com React e TypeScript.",
+        "area": "TI",
+        "status": "ativa",
+        "localizacao": "Remoto",
+        "createdAt": "2026-09-10T12:00:00.000Z",
+        "criterio_vaga": [
+          { "_id": "c1", "nome": "React", "tipo_criterio": "skill_tecnica", "peso_percentual": 50, "obrigatorio": true },
+          { "_id": "c2", "nome": "TypeScript", "tipo_criterio": "skill_tecnica", "peso_percentual": 30, "obrigatorio": false },
+          { "_id": "c3", "nome": "Graduação em TI", "tipo_criterio": "formacao", "peso_percentual": 10, "obrigatorio": false },
+          { "_id": "c4", "nome": "AWS", "tipo_criterio": "certificacao", "peso_percentual": 10, "obrigatorio": false }
+        ]
+      },
+      {
+        "_id": "v2",
+        "titulo": "Analista de RH",
+        "descricao": "Conduzir processos seletivos e onboarding.",
+        "area": "RH",
+        "status": "ativa",
+        "localizacao": "São Paulo",
+        "createdAt": "2026-09-12T12:00:00.000Z",
+        "criterio_vaga": []
+      },
+      {
+        "_id": "v3",
+        "titulo": "Assistente Jurídico",
+        "descricao": "Apoio ao time jurídico.",
+        "area": "JURIDICO",
+        "status": "ativa",
+        "createdAt": "2026-09-15T12:00:00.000Z",
+        "criterio_vaga": []
+      }
+    ],
+    "totalDocs": 3,
+    "totalPages": 1,
+    "page": 1
+  }
+}

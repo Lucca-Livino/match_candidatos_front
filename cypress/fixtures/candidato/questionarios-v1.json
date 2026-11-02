@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "data": [
+    { "id": "q-inativo", "vagaId": "v1", "criadoPor": "u-recrutador", "titulo": "Rascunho antigo", "instrucoes": "", "ativo": 0, "perguntas": [] },
+    { "id": "q1", "vagaId": "v1", "criadoPor": "u-recrutador", "titulo": "Triagem técnica", "instrucoes": "", "ativo": 1, "perguntas": [] }
+  ]
+}

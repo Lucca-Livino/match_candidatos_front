@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Briefcase, ClipboardList, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -34,21 +34,25 @@ export function CandidatoHome() {
   const [q, setQ]       = useState('');
   const [area, setArea] = useState('');
 
-  const fetchVagas = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q });
-      setVagas(res.docs ?? []);
-      setTotalPages(res.totalPages);
-      setTotalDocs(res.totalDocs);
-    } catch {
-      setVagas([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, area, q]);
 
-  useEffect(() => { fetchVagas(); }, [fetchVagas]);
+  useEffect(() => {
+    let atual = true;
+    setLoading(true);
+    getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q })
+      .then((res) => {
+        if (!atual) return;
+        setVagas(res.docs ?? []);
+        setTotalPages(res.totalPages);
+        setTotalDocs(res.totalDocs);
+      })
+      .catch(() => {
+        if (atual) setVagas([]);
+      })
+      .finally(() => {
+        if (atual) setLoading(false);
+      });
+    return () => { atual = false; };
+  }, [page, area, q]);
   useEffect(() => { setPage(1); }, [area, q]);
 
   return (

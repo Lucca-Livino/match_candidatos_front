@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      { "_id": "u-10", "name": "Bruno Candidato", "email": "bruno@email.com", "tipos_permissao": ["candidato"] },
+      { "_id": "u-11", "name": "Carla Candidata", "email": "carla@email.com", "tipos_permissao": ["candidato"] },
+      { "_id": "u-12", "name": "Davi Sem Papel", "email": "davi@email.com" },
+      { "_id": "u-recrutador", "name": "Rita Recrutadora", "email": "rita@empresa.com", "tipos_permissao": ["recrutador"] }
+    ],
+    "totalDocs": 4,
+    "totalPages": 1,
+    "page": 1
+  }
+}

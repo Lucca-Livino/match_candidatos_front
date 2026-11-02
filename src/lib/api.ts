@@ -12,6 +12,7 @@ export class ApiError extends Error {
 }
 
 let _onUnauthorized: (() => void) | null = null;
+let _redirecionando = false;
 
 export function registerUnauthorizedHandler(fn: () => void) {
   _onUnauthorized = fn;
@@ -31,7 +32,9 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
   });
 
   if (res.status === 401) {
-    // Determina o login correto pelo papel antes de limpar o cache.
+    if (_redirecionando) throw new ApiError('Não autorizado', 401);
+    _redirecionando = true;
+
     let loginPath = '/login';
     try {
       const cached = localStorage.getItem('auth_user');

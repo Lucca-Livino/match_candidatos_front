@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "data": {
+    "_id": "v1",
+    "titulo": "Desenvolvedor React Pleno",
+    "descricao": "Construir interfaces web modernas com React e TypeScript.",
+    "requisitos_gerais": "Experiência com SPA.\nBoa comunicação.",
+    "area": "TI",
+    "status": "ativa",
+    "createdAt": "2026-09-10T12:00:00.000Z",
+    "criterio_vaga": [
+      { "_id": "c1", "nome": "React", "tipo_criterio": "skill_tecnica", "peso_percentual": 60, "obrigatorio": true, "descricao": "Hooks e componentes funcionais" },
+      { "_id": "c2", "nome": "Graduação em TI", "tipo_criterio": "formacao", "peso_percentual": 40, "obrigatorio": false }
+    ]
+  }
+}

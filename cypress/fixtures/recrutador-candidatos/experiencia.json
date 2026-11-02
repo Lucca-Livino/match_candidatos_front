@@ -1,0 +1,3 @@
+{ "success": true, "data": [
+  { "id": "e-1", "usuarioId": "u-1", "empresa": "Acme Tecnologia", "cargo": "Desenvolvedora Front-end", "descricaoAtivida_": "Manutenção de SPA em React.", "dataInicio": "2023-03-01T00:00:00Z", "dataFim": null }
+] }

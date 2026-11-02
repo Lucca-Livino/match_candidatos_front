@@ -9,6 +9,7 @@ export function useVagas() {
 
   const fetchVagas = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await getVagas();
       setVagas(data);

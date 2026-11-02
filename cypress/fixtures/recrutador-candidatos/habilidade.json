@@ -1,0 +1,4 @@
+{ "success": true, "data": [
+  { "id": "h-1", "usuarioId": "u-1", "habilidade": "React", "nivel": "avancado" },
+  { "id": "h-2", "usuarioId": "u-1", "habilidade": "TypeScript", "nivel": "intermediario" }
+] }

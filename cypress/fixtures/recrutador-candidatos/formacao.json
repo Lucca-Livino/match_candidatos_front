@@ -1,0 +1,3 @@
+{ "success": true, "data": [
+  { "id": "f-1", "usuarioId": "u-1", "instituicao": "UFPR", "curso": "Engenharia de Software", "grau": "graduacao", "situacao": "cursando", "anoInicio": 2022, "anoConclusao": 2027 }
+] }

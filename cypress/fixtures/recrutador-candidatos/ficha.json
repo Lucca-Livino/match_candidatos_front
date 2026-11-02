@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "data": {
+    "candidato": { "id": "u-1", "nome": "Ana Souza", "email": "ana.souza@email.com", "telefone": "(41) 99999-0001", "linkedin": "https://www.linkedin.com/in/anasouza", "cidade": "Curitiba" },
+    "vaga": { "id": "v1", "titulo": "Desenvolvedor Front-end", "area": "OPERACOES" },
+    "candidatura": { "status": "em_analise", "criadoEm": "2026-10-01T12:00:00Z" },
+    "curriculo": {
+      "habilidades": [
+        { "id": "h-1", "habilidade": "React", "nivel": "avancado" },
+        { "id": "h-2", "habilidade": "TypeScript", "nivel": "intermediario" }
+      ],
+      "formacoes": [
+        { "id": "f-1", "instituicao": "UFPR", "curso": "Engenharia de Software", "grau": "graduacao", "situacao": "cursando", "anoInicio": 2022, "anoConclusao": 2027 }
+      ],
+      "experiencias": [
+        { "id": "e-1", "empresa": "Acme Tecnologia", "cargo": "Desenvolvedora Front-end", "descricaoAtivida_": "Manutenção de SPA em React.", "dataInicio": "2023-03-01T00:00:00Z", "dataFim": null }
+      ],
+      "certificacoes": [
+        { "id": "ce-1", "nome": "AWS Cloud Practitioner", "emissor": "Amazon", "dataEmissao": "2024-05-15T00:00:00Z", "dataExpiracao": null, "codigo": "AWS-123" }
+      ]
+    },
+    "questionario": {
+      "titulo": "Triagem Front",
+      "respostas": [
+        { "perguntaId": "p-1", "enunciado": "Por que você quer esta vaga?", "tipoResposta": "dissertativa", "textoResposta": "Gosto de interfaces acessíveis.", "opcoesSelecionadas": [] },
+        { "perguntaId": "p-2", "enunciado": "Quais frameworks você domina?", "tipoResposta": "multipla_escolha", "textoResposta": "", "opcoesSelecionadas": ["React", "Vue"] },
+        { "perguntaId": "p-3", "enunciado": "Tem disponibilidade presencial?", "tipoResposta": "verdadeiro_falso", "textoResposta": "", "opcoesSelecionadas": [] }
+      ]
+    }
+  }
+}

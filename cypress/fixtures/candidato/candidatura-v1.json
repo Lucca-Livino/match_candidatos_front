@@ -1,0 +1,4 @@
+{
+  "success": true,
+  "data": { "id": "cand-1", "usuarioId": "u-candidato", "vagaId": "v1", "compativel": 1, "status": "em_analise", "criadoEm": "2026-09-20T12:00:00.000Z" }
+}

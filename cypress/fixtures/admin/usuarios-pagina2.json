@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      {
+        "_id": "u-11",
+        "nome": "Sílvia Segunda",
+        "email": "silvia@empresa.com",
+        "tipos_permissao": ["suporte"],
+        "situacao": "ativo",
+        "convidadoEm": "2026-07-01T12:00:00.000Z",
+        "ativadoEm": "2026-07-02T12:00:00.000Z"
+      }
+    ],
+    "totalDocs": 13,
+    "totalPages": 2,
+    "page": 2
+  }
+}

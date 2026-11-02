@@ -1,0 +1,37 @@
+{
+  "success": true,
+  "data": {
+    "id": "q1",
+    "vagaId": "v1",
+    "criadoPor": "u-recrutador",
+    "titulo": "Triagem técnica",
+    "instrucoes": "Responda com sinceridade.",
+    "ativo": 1,
+    "perguntas": [
+      {
+        "id": "p1",
+        "questionarioId": "q1",
+        "enunciado": "Quantos anos de experiência você tem com React?",
+        "tipoResposta": "multipla_escolha",
+        "peso": 1,
+        "obrigatoria": 1,
+        "ordem": 1,
+        "opcaoResposta": [
+          { "id": "o1", "texto": "Menos de 1 ano", "correta": 0, "ordem": 1 },
+          { "id": "o2", "texto": "De 1 a 3 anos", "correta": 0, "ordem": 2 },
+          { "id": "o3", "texto": "Mais de 3 anos", "correta": 1, "ordem": 3 }
+        ]
+      },
+      {
+        "id": "p2",
+        "questionarioId": "q1",
+        "enunciado": "Conte sobre um projeto do qual se orgulha.",
+        "tipoResposta": "dissertativa",
+        "peso": 1,
+        "obrigatoria": 0,
+        "ordem": 2,
+        "opcaoResposta": []
+      }
+    ]
+  }
+}
