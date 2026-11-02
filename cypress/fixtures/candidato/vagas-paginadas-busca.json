@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      {
+        "_id": "v1",
+        "titulo": "Desenvolvedor React Pleno",
+        "descricao": "Construir interfaces web modernas com React e TypeScript.",
+        "area": "TI",
+        "status": "ativa",
+        "createdAt": "2026-09-10T12:00:00.000Z",
+        "criterio_vaga": []
+      }
+    ],
+    "totalDocs": 1,
+    "totalPages": 1,
+    "page": 1
+  }
+}

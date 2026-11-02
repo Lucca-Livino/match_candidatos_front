@@ -1,0 +1,26 @@
+{
+  "recrutador": {
+    "id": "u-recrutador",
+    "name": "Rita Recrutadora",
+    "email": "rita@empresa.com",
+    "tipos_permissao": ["recrutador"]
+  },
+  "candidato": {
+    "id": "u-candidato",
+    "name": "Caio Candidato",
+    "email": "caio@email.com",
+    "tipos_permissao": ["candidato"]
+  },
+  "suporte": {
+    "id": "u-suporte",
+    "name": "Sara Suporte",
+    "email": "sara@empresa.com",
+    "tipos_permissao": ["suporte"]
+  },
+  "administrador": {
+    "id": "u-admin",
+    "name": "Ana Admin",
+    "email": "ana@empresa.com",
+    "tipos_permissao": ["administrador"]
+  }
+}

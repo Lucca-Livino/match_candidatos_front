@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "data": {
+    "_id": "v-100",
+    "titulo": "Desenvolvedor Front-end",
+    "area": "TI",
+    "descricao": "Construir interfaces em React para o produto principal.",
+    "requisitos_gerais": "Experiência com TypeScript e testes.",
+    "status": "ativa",
+    "createdAt": "2026-03-15T12:00:00.000Z",
+    "criterio_vaga": [
+      {
+        "_id": "c-1",
+        "nome": "React",
+        "tipo_criterio": "skill_tecnica",
+        "peso_percentual": 40,
+        "obrigatorio": false,
+        "descricao": "Hooks e componentização"
+      }
+    ]
+  }
+}

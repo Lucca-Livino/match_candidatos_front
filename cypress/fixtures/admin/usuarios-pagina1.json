@@ -1,0 +1,37 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      {
+        "_id": "u-1",
+        "nome": "Paula Pendente",
+        "email": "paula@empresa.com",
+        "tipos_permissao": ["recrutador"],
+        "situacao": "pendente",
+        "convidadoEm": "2026-10-10T12:00:00.000Z",
+        "ativadoEm": null
+      },
+      {
+        "_id": "u-2",
+        "nome": "Otávio Ativo",
+        "email": "otavio@empresa.com",
+        "tipos_permissao": ["suporte"],
+        "situacao": "ativo",
+        "convidadoEm": "2026-09-05T12:00:00.000Z",
+        "ativadoEm": "2026-09-06T12:00:00.000Z"
+      },
+      {
+        "_id": "u-3",
+        "nome": "Diego Desativado",
+        "email": "diego@empresa.com",
+        "tipos_permissao": ["recrutador"],
+        "situacao": "desativado",
+        "convidadoEm": null,
+        "ativadoEm": "2026-08-01T12:00:00.000Z"
+      }
+    ],
+    "totalDocs": 13,
+    "totalPages": 2,
+    "page": 1
+  }
+}

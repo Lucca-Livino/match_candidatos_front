@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "id": "u-candidato",
+    "nome": "Caio Candidato",
+    "email": "caio@email.com",
+    "tipos_permissao": ["candidato"],
+    "status_ativo": true,
+    "telefone": "(81) 98888-7777",
+    "cidade": "Olinda",
+    "linkedin": "https://www.linkedin.com/in/caio-candidato"
+  }
+}

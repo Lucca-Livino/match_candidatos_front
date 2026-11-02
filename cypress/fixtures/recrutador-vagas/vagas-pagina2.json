@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      { "_id": "v-7", "titulo": "Advogado Trabalhista", "area": "JURIDICO", "status": "ativa", "totalCandidatos": 2, "createdAt": "2026-02-01T12:00:00.000Z" },
+      { "_id": "v-8", "titulo": "Coordenador de Operações", "area": "OPERACOES", "status": "ativa", "totalCandidatos": 0, "createdAt": "2026-02-05T12:00:00.000Z" }
+    ],
+    "totalDocs": 8,
+    "totalPages": 2,
+    "page": 2
+  }
+}

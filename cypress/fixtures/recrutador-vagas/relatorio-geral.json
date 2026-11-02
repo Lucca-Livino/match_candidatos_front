@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": {
+    "periodo": "tudo",
+    "geradoEm": "2026-10-29T12:00:00.000Z",
+    "vagas": {
+      "total": 4,
+      "porStatus": { "ativa": 2, "pausada": 1, "arquivada": 1 },
+      "porArea": [
+        { "area": "TI", "total": 1 },
+        { "area": "RH", "total": 1 },
+        { "area": "FINANCEIRO", "total": 1 },
+        { "area": "COMERCIAL", "total": 1 }
+      ]
+    },
+    "candidaturas": {
+      "total": 7,
+      "porStatus": { "candidatado": 3, "em_analise": 2, "aprovado": 1, "reprovado": 1 },
+      "taxaAprovacao": 0.5
+    },
+    "serie": { "granularidade": "mes", "pontos": [] }
+  }
+}

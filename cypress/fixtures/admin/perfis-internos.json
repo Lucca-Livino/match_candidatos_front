@@ -1,0 +1,41 @@
+{
+  "suporte": {
+    "success": true,
+    "data": {
+      "id": "u-suporte",
+      "nome": "Sara Suporte",
+      "email": "sara@empresa.com",
+      "tipos_permissao": ["suporte"],
+      "status_ativo": true,
+      "telefone": "",
+      "linkedin": "",
+      "cidade": "Recife"
+    }
+  },
+  "administrador": {
+    "success": true,
+    "data": {
+      "id": "u-admin",
+      "nome": "Ana Admin",
+      "email": "ana@empresa.com",
+      "tipos_permissao": ["administrador"],
+      "status_ativo": true,
+      "telefone": "(81) 98888-7777",
+      "linkedin": "",
+      "cidade": ""
+    }
+  },
+  "recrutador": {
+    "success": true,
+    "data": {
+      "id": "u-recrutador",
+      "nome": "Rita Recrutadora",
+      "email": "rita@empresa.com",
+      "tipos_permissao": ["recrutador"],
+      "status_ativo": true,
+      "telefone": "",
+      "linkedin": "",
+      "cidade": ""
+    }
+  }
+}

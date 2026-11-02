@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "message": "Configuração carregada",
+  "data": {
+    "id": "cfg-1",
+    "limiteCompatibilidade": 0.7,
+    "provedor": "gemini",
+    "cascata": ["gemini-3.1-flash-lite", "gemini-2.5-flash"],
+    "temperatura": 0.2,
+    "ativo": true,
+    "atualizadoPor": "u-suporte",
+    "criadoEm": "2026-09-01T12:00:00.000Z",
+    "atualizadoEm": "2026-10-20T12:00:00.000Z",
+    "chavesConfiguradas": { "gemini": true }
+  }
+}

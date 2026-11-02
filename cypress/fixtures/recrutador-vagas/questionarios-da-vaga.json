@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "data": [
+    { "id": "q-100", "vagaId": "v-100", "criadoPor": "Rita Recrutadora", "titulo": "Avaliação técnica inicial", "instrucoes": "Responda com calma.", "ativo": 1, "perguntas": [] }
+  ]
+}
