@@ -1,4 +1,4 @@
-import { request } from '@/lib/api';
+import { request, ApiError } from '@/lib/api';
 import type {
   Formacao, FormacaoPayload,
   Experiencia, ExperienciaPayload,
@@ -28,6 +28,31 @@ export async function updateUsuario(id: string, payload: UsuarioUpdatePayload): 
     body: JSON.stringify(payload),
   });
   return unwrap(res);
+}
+
+// O better-auth responde em inglês; o 400 de senha errada não pode cair no
+// tratamento de 401 do `request`, que deslogaria a pessoa.
+const ERROS_SENHA: Record<string, string> = {
+  'invalid password': 'Senha atual incorreta.',
+  'password too short': 'A nova senha deve ter ao menos 8 caracteres.',
+  'password too long': 'A nova senha é longa demais.',
+};
+
+/**
+ * A senha vive na credencial do better-auth (coleção `account`), não no
+ * documento do usuário: por isso não vai no PATCH /api/usuarios/:id.
+ */
+export async function alterarSenha(senhaAtual: string, novaSenha: string): Promise<void> {
+  try {
+    await request('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword: senhaAtual, newPassword: novaSenha }),
+    });
+  } catch (err) {
+    const traduzida = err instanceof ApiError ? ERROS_SENHA[err.message.toLowerCase()] : undefined;
+    if (traduzida) throw new ApiError(traduzida, (err as ApiError).status);
+    throw err;
+  }
 }
 
 /**
