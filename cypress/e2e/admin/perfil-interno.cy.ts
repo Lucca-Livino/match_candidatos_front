@@ -121,6 +121,70 @@ describe('Perfil interno (suporte, administrador, recrutador)', () => {
     secaoDados().findByText('ana@empresa.com').should('exist');
   });
 
+  it('suporte: troca a senha pelo better-auth, fora do PATCH do perfil', () => {
+    let patches = 0;
+    cy.stubJson('GET', '**/api/usuarios/u-suporte', perfis.suporte, 'perfil');
+    cy.stubJson('POST', '**/api/auth/change-password', { token: null }, 'senha');
+    cy.intercept('PATCH', '**/api/usuarios/u-suporte', (req) => {
+      patches += 1;
+      req.reply({ body: perfis.suporte });
+    });
+    cy.visitComo('suporte', '/suporte/perfil');
+    cy.wait('@perfil');
+
+    secaoDados().findByRole('button', { name: /Editar/ }).click();
+    campo('Nova senha').type('NovaSenha@123');
+    campo('Senha atual').type('Antiga@123');
+    cy.findByRole('dialog').findByRole('button', { name: 'Salvar' }).click();
+
+    cy.wait('@senha').its('request.body').should('deep.equal', {
+      currentPassword: 'Antiga@123',
+      newPassword: 'NovaSenha@123',
+    });
+    cy.findByRole('dialog').should('not.exist');
+    cy.wrap(null).then(() => expect(patches).to.equal(0));
+  });
+
+  it('suporte: exige a senha atual para trocar a senha', () => {
+    let chamadas = 0;
+    cy.stubJson('GET', '**/api/usuarios/u-suporte', perfis.suporte, 'perfil');
+    cy.intercept('POST', '**/api/auth/change-password', (req) => {
+      chamadas += 1;
+      req.reply({ body: {} });
+    });
+    cy.visitComo('suporte', '/suporte/perfil');
+    cy.wait('@perfil');
+
+    secaoDados().findByRole('button', { name: /Editar/ }).click();
+    campo('Nova senha').type('NovaSenha@123');
+    cy.findByRole('dialog').findByRole('button', { name: 'Salvar' }).click();
+
+    cy.findByRole('dialog').findByText('Informe a senha atual para trocar a senha.').should('be.visible');
+    cy.wrap(null).then(() => expect(chamadas).to.equal(0));
+  });
+
+  it('suporte: senha atual errada mostra o erro em português e mantém a sessão', () => {
+    cy.stubJson('GET', '**/api/usuarios/u-suporte', perfis.suporte, 'perfil');
+    cy.stubJson(
+      'POST',
+      '**/api/auth/change-password',
+      { code: 'INVALID_PASSWORD', message: 'Invalid password' },
+      'senha',
+      400,
+    );
+    cy.visitComo('suporte', '/suporte/perfil');
+    cy.wait('@perfil');
+
+    secaoDados().findByRole('button', { name: /Editar/ }).click();
+    campo('Nova senha').type('NovaSenha@123');
+    campo('Senha atual').type('Errada@123');
+    cy.findByRole('dialog').findByRole('button', { name: 'Salvar' }).click();
+    cy.wait('@senha');
+
+    cy.findByRole('dialog').findByText('Senha atual incorreta.').should('be.visible');
+    cy.location('pathname').should('eq', '/suporte/perfil');
+  });
+
   it('recrutador: mostra erro quando o perfil não carrega', () => {
     cy.stubJson(
       'GET',
