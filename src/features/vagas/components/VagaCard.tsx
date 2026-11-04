@@ -5,12 +5,14 @@ import { Users, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Vaga } from '../types';
 import { AREA_BADGE, STATUS_CONFIG, FINISHED_STATUSES, rotuloArea } from '../constants';
+import { AcoesStatusVaga } from './AcoesStatusVaga';
 
 interface VagaCardProps {
   vaga: Vaga;
+  onStatusAlterado?: () => void;
 }
 
-export function VagaCard({ vaga }: VagaCardProps) {
+export function VagaCard({ vaga, onStatusAlterado }: VagaCardProps) {
   const navigate = useNavigate();
 
   const statusKey = vaga.status?.toLowerCase() ?? 'ativa';
@@ -56,11 +58,14 @@ export function VagaCard({ vaga }: VagaCardProps) {
         )}
       </div>
 
-      <div className="px-5 pb-4">
+      <div className="px-5 pb-4 space-y-2">
         <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider">
           <span className={cn('h-2 w-2 rounded-full flex-shrink-0', cfg.dot)} />
           <span className="text-on-surface-variant">{cfg.label}</span>
         </span>
+        {onStatusAlterado && (
+          <AcoesStatusVaga vaga={vaga} onAlterado={onStatusAlterado} className="-ml-2" />
+        )}
       </div>
 
       <div className="border-t border-outline-variant mt-auto">

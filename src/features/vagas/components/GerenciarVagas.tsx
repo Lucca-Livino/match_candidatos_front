@@ -118,7 +118,9 @@ export function GerenciarVagas() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vagas.map(vaga => (
-                <VagaCard key={vaga.id} vaga={vaga} />
+                // Recarrega a lista: o status muda as contagens e pode tirar a
+                // vaga do filtro atual.
+                <VagaCard key={vaga.id} vaga={vaga} onStatusAlterado={fetchVagas} />
               ))}
             </div>
           )}

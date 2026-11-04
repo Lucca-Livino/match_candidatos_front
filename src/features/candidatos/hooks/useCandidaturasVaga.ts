@@ -52,5 +52,5 @@ export function useCandidaturasVaga(vagaId: string | undefined) {
     [vagaId],
   );
 
-  return { vaga, candidaturas, loading, error, movendoId, moverStatus, recarregar: carregar };
+  return { vaga, setVaga, candidaturas, loading, error, movendoId, moverStatus, recarregar: carregar };
 }
