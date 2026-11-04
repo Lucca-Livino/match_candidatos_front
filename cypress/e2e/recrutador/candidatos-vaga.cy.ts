@@ -216,6 +216,22 @@ describe('Recrutador: kanban de candidatos da vaga', () => {
       .findByText('Falha ao carregar dados do candidato.')
       .should('be.visible');
   });
+
+  it('mostra o status da vaga e permite pausar sem sair do kanban', () => {
+    cy.intercept('PATCH', '**/api/vagas/v1', (req) => {
+      req.reply({ statusCode: 200, body: { success: true, data: { _id: 'v1', titulo: 'Desenvolvedor Front-end', status: req.body.status } } });
+    }).as('statusVaga');
+    abrirKanban();
+
+    cy.findByText('STATUS: PUBLICADA E ATIVA').should('be.visible');
+    cy.findByRole('button', { name: 'Pausar' }).click();
+
+    cy.wait('@statusVaga').its('request.body').should('deep.equal', { status: 'pausada' });
+    cy.findByText('STATUS: PAUSADA PARA REVISÃO').should('be.visible');
+    cy.findByRole('button', { name: 'Ativar' }).should('be.visible');
+    // Os candidatos continuam na tela.
+    coluna('Inscrito').findByText('Ana Souza').should('be.visible');
+  });
 });
 
 export {};

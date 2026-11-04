@@ -439,9 +439,71 @@ describe('Recrutador — formulário de vaga', () => {
       secaoQuestionario().findByLabelText('Título *').should('have.value', 'Avaliação técnica inicial');
 
       cy.findByRole('button', { name: 'Salvar Alterações' }).click();
-      cy.wait('@salvarVaga').its('request.body').should('include', { status: 'ativa' });
+      // Status inalterado não é reenviado.
+      cy.wait('@salvarVaga').its('request.body').should('not.have.property', 'status');
       cy.location('pathname').should('eq', '/vagas');
       cy.get('@ativoQuest.all').should('have.length', 0);
+    });
+
+    it('pausar na edição vai no PATCH da vaga, antes do questionário', () => {
+      stubVagaExistente();
+      stubEdicao();
+      cy.visitComo('recrutador', '/vagas/v-100/editar');
+      cy.wait('@questCompleto');
+
+      escolherNoSelect('Status *', 'Pausada');
+      cy.findByRole('button', { name: 'Salvar Alterações' }).click();
+
+      cy.wait('@salvarVaga').its('request.body').should('include', { status: 'pausada' });
+      cy.location('pathname').should('eq', '/vagas');
+      cy.get('@salvarVaga.all').should('have.length', 1);
+    });
+
+    it('ativar na edição só envia o status depois de salvar o questionário', () => {
+      cy.fixture(`${FIX}/vaga-existente.json`).then((fx) => {
+        cy.intercept(
+          { method: 'GET', pathname: '/api/vagas/v-100' },
+          { ...fx, data: { ...fx.data, status: 'pausada' } },
+        ).as('vaga');
+      });
+      cy.intercept(
+        { method: 'GET', pathname: '/api/questionario', query: { vagaId: 'v-100' } },
+        { fixture: `${FIX}/questionarios-da-vaga.json` },
+      ).as('questLista');
+      cy.intercept({ method: 'GET', pathname: '/api/questionario/q-100' }, { fixture: `${FIX}/questionario-completo.json` }).as('questCompleto');
+      stubEdicao();
+
+      const ordem: string[] = [];
+      cy.intercept({ method: 'PATCH', pathname: '/api/vagas/v-100' }, (req) => {
+        ordem.push(req.body.status ? `vaga:${req.body.status}` : 'vaga');
+        req.reply(ok({ _id: 'v-100' }));
+      }).as('salvarVaga');
+      cy.intercept({ method: 'PUT', pathname: '/api/questionario/q-100' }, (req) => {
+        ordem.push('questionario');
+        req.reply(ok({ id: 'q-100' }));
+      }).as('salvarQuest');
+
+      cy.visitComo('recrutador', '/vagas/v-100/editar');
+      cy.wait('@questCompleto');
+      escolherNoSelect('Status *', 'Ativa');
+      cy.findByRole('button', { name: 'Salvar Alterações' }).click();
+
+      cy.location('pathname').should('eq', '/vagas');
+      cy.wrap(ordem).should('deep.equal', ['vaga', 'questionario', 'vaga:ativa']);
+    });
+
+    it('vaga encerrada só oferece o status Encerrada', () => {
+      cy.fixture(`${FIX}/vaga-existente.json`).then((fx) => {
+        cy.intercept(
+          { method: 'GET', pathname: '/api/vagas/v-100' },
+          { ...fx, data: { ...fx.data, status: 'arquivada' } },
+        ).as('vaga');
+      });
+      cy.visitComo('recrutador', '/vagas/v-100/editar');
+      cy.wait('@vaga');
+
+      cy.findByRole('combobox', { name: 'Status *' }).click();
+      cy.findAllByRole('option').should('have.length', 1).first().should('have.text', 'Encerrada');
     });
 
     it('questionário carregado sem opção correta bloqueia o envio', () => {
