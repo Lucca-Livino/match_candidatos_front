@@ -15,6 +15,8 @@ export interface Candidatura {
   motivoIncompat_?: string;
   status: StatusCandidatura;
   movidoPor?: string;
+  // Candidatura registrada sem o questionário concluído (envio interrompido).
+  questionarioPendente?: boolean;
   criadoEm?: string;
   atualizadoEm?: string;
 }
