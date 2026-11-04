@@ -195,13 +195,19 @@ export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, 
       criterio_vaga: criterios.map(montarCriterioParaEnvio),
     };
 
+    // Na edição, a ordem do status importa: a API só ativa a vaga com um
+    // questionário ativo já salvo, e só deixa desativar o questionário com a
+    // vaga fora do ar. Pausar/encerrar vai antes do questionário; ativar, depois.
+    const statusMudou = mode === 'editar' && status !== initial?.status;
+    const ativarDepois = statusMudou && status === 'ativa';
+
     setSaving(true);
     setError(null);
     try {
       // 1. Vaga — cria ou atualiza; resolve o id para vincular o questionário.
       let idVaga: string;
       if (mode === 'editar') {
-        await updateVaga(vagaId!, { ...payload, status });
+        await updateVaga(vagaId!, statusMudou && !ativarDepois ? { ...payload, status } : payload);
         idVaga = vagaId!;
       } else if (vagaCriadaId) {
         // Reenvio após falha do questionário: reaproveita a vaga já criada,
@@ -236,7 +242,7 @@ export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, 
 
       // 3. Status escolhido — só agora, porque a API exige um questionário
       // ativo para ativar a vaga.
-      if (mode === 'criar' && status !== 'pausada') {
+      if ((mode === 'criar' && status !== 'pausada') || ativarDepois) {
         await updateVaga(idVaga, { status });
       }
 
@@ -328,7 +334,8 @@ export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {STATUSES.map(s => (
+                      {/* Encerrada é definitivo na API: não oferece voltar. */}
+                      {STATUSES.filter(s => initial?.status !== 'arquivada' || s === 'arquivada').map(s => (
                         <SelectItem key={s} value={s}>
                           {STATUS_VAGA_LABEL[s]}
                         </SelectItem>
@@ -338,6 +345,11 @@ export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, 
                   {mode === 'criar' && status === 'ativa' && (
                     <p className="text-[12px] text-on-surface-variant">
                       A vaga será ativada após o questionário ser salvo.
+                    </p>
+                  )}
+                  {status === 'arquivada' && initial?.status !== 'arquivada' && (
+                    <p className="text-[12px] text-on-surface-variant">
+                      Encerrar é definitivo: a vaga sai do ar e não pode ser reaberta.
                     </p>
                   )}
                 </div>
