@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LogoTriIA } from '@/components/marca/LogoTriIA';
 import { useAuth, papelDe, homeDoPapel, loginDoPapel, perfilDoPapel } from '@/features/auth';
 import { Navigation, MobileNavigation } from './navigation';
 import { UserMenu } from './user-menu';
@@ -34,9 +35,8 @@ export function Header({ navItems }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-outline-variant bg-white/70 backdrop-blur-xl print:hidden">
       <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-8 max-w-[1400px]">
-        <Link to={homePath} className="flex flex-col leading-none text-primary hover:opacity-100">
-          <span className="text-[20px] font-black tracking-[-0.02em]">RECURSOS</span>
-          <span className="text-[20px] font-normal">HUMANOS</span>
+        <Link to={homePath} aria-label="TriIA — página inicial" className="flex items-center hover:opacity-100">
+          <LogoTriIA tamanho={34} />
         </Link>
 
         <Navigation items={navItems} activePath={pathname} />

@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Loader2, Briefcase } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { LogoTriIA } from "@/components/marca/LogoTriIA";
 import { useLoginForm } from '../hooks/useLoginForm';
 
 export function CandidatoLogin() {
@@ -15,9 +16,7 @@ export function CandidatoLogin() {
 
         {/* Logo / ícone */}
         <div className="flex flex-col items-center mb-8">
-          <div className="p-3 bg-white rounded-2xl shadow-sm border border-gray-100 mb-4">
-            <Briefcase className="h-7 w-7 text-primary" />
-          </div>
+          <LogoTriIA tamanho={40} className="mb-6" />
           <h1 className="text-[28px] font-bold text-primary text-center leading-tight">
             Encontre sua próxima<br />oportunidade
           </h1>
