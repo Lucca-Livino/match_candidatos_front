@@ -83,6 +83,14 @@ export function VagaCard({ vaga, onStatusAlterado }: VagaCardProps) {
                 size="sm"
                 variant="ghost"
                 className="text-[11px] font-bold uppercase tracking-wider h-8 text-on-surface-variant hover:text-on-surface"
+                onClick={() => navigate(`/vagas/${vaga.id}/candidatos`)}
+              >
+                Ver Candidatos
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-[11px] font-bold uppercase tracking-wider h-8 text-on-surface-variant hover:text-on-surface"
                 onClick={() => navigate(`/vagas/${vaga.id}/duplicar`)}
               >
                 Duplicar
