@@ -10,7 +10,6 @@ import type { AvaliacaoAuditoria, OrigemSuspeita } from '../types';
 const ORIGEM_SUSPEITA: Record<OrigemSuspeita, string> = {
   padrao: 'padrões de comando no texto',
   modelo: 'o próprio modelo',
-  evidencia: 'evidência que não está no material',
 };
 
 function formatarData(iso?: string | null): string {

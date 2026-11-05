@@ -1,4 +1,4 @@
-export type OrigemSuspeita = 'padrao' | 'modelo' | 'evidencia';
+export type OrigemSuspeita = 'padrao' | 'modelo';
 
 export interface SuspeitaInjecao {
   detectada: boolean;
