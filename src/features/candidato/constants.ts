@@ -10,3 +10,8 @@ export const STATUS_CANDIDATURA_CONFIG: Record<
   aprovado:   { label: 'Aprovado',   badge: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-400', coluna: 'bg-emerald-50/70', topo: 'border-t-emerald-400' },
   reprovado:  { label: 'Reprovado',  badge: 'bg-red-50 text-red-700',       dot: 'bg-red-400',     coluna: 'bg-red-50/60',     topo: 'border-t-red-400'     },
 };
+
+export const VAGA_FORA_DO_AR: Record<string, string> = {
+  pausada:   'Vaga pausada',
+  arquivada: 'Vaga encerrada',
+};
