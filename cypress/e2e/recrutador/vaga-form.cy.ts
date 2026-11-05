@@ -208,7 +208,7 @@ describe('Recrutador — formulário de vaga', () => {
       // Único select da seção do questionário: o "Tipo" da pergunta (sem rótulo associado).
       secaoQuestionario().findByRole('combobox').should('contain.text', 'Múltipla escolha').click();
       cy.findByRole('option', { name: 'Dissertativa' }).click();
-      cy.findByText('Resposta aberta — o candidato responderá em texto livre.').should('be.visible');
+      cy.findByText('Resposta aberta: o candidato responderá em texto livre.').should('be.visible');
 
       criarVaga();
 

@@ -11,7 +11,7 @@ export default function SuporteAvaliacoesPage() {
       <main className="flex-grow container mx-auto px-8 max-w-[1400px] py-10">
         <h1 className="text-2xl font-bold text-primary mb-1">Avaliações da IA</h1>
         <p className="text-[14px] text-on-surface-variant mb-8 max-w-[720px]">
-          Acompanhamento da triagem automática. O score e o limiar aparecem só aqui — o
+          Acompanhamento da triagem automática. O score e o limiar aparecem só aqui. O
           recrutador vê apenas a fila: candidaturas compatíveis entram direto em análise.
         </p>
 

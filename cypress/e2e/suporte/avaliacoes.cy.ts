@@ -155,7 +155,7 @@ describe('Suporte — avaliações da IA', () => {
 
     cy.findByText('Nenhuma avaliação encontrada.').should('be.visible');
     cartao('Total').should('contain.text', '0');
-    cartao('Score médio').should('contain.text', '—');
+    cartao('Score médio').should('contain.text', '-');
   });
 
   it('mostra erro quando a lista não carrega', () => {

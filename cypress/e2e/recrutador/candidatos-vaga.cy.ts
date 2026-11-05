@@ -188,7 +188,7 @@ describe('Recrutador: kanban de candidatos da vaga', () => {
       cy.findByText('Manutenção de SPA em React.').should('be.visible');
       cy.findByText('Engenharia de Software').should('be.visible');
       cy.findByText('UFPR · Graduação').should('be.visible');
-      cy.findByText('2022 – previsão 2027 · Cursando').should('be.visible');
+      cy.findByText('2022 - previsão 2027 · Cursando').should('be.visible');
       cy.findByText('AWS Cloud Practitioner').should('be.visible');
       cy.findByText('Amazon').should('be.visible');
       cy.findByText(/AWS-123/).should('be.visible');

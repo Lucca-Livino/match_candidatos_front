@@ -35,7 +35,7 @@ export function Header({ navItems }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-outline-variant bg-white/70 backdrop-blur-xl print:hidden">
       <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-8 max-w-[1400px]">
-        <Link to={homePath} aria-label="TriIA — página inicial" className="flex items-center hover:opacity-100">
+        <Link to={homePath} aria-label="TriIA, página inicial" className="flex items-center hover:opacity-100">
           <LogoTriIA tamanho={34} />
         </Link>
 

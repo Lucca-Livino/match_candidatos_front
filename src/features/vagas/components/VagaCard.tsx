@@ -37,7 +37,7 @@ export function VagaCard({ vaga, onStatusAlterado }: VagaCardProps) {
     >
       <div className="flex items-start px-5 pt-5 pb-3">
         <Badge className={cn('text-[10px] font-bold uppercase tracking-wider border-none', areaBadgeClass)}>
-          {areaKey ? rotuloArea(areaKey) : '—'}
+          {areaKey ? rotuloArea(areaKey) : '-'}
         </Badge>
       </div>
 

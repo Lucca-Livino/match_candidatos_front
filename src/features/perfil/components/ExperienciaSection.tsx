@@ -93,7 +93,7 @@ export function ExperienciaSection({ userId }: { userId: string }) {
               <p className="text-[14px] font-medium text-primary">{x.cargo}</p>
               <p className="text-[13px] text-on-surface-variant">{x.empresa}</p>
               <p className="text-[12px] text-on-surface-variant mt-0.5">
-                {fmt(x.dataInicio)} – {fmt(x.dataFim)}
+                {fmt(x.dataInicio)} - {fmt(x.dataFim)}
               </p>
               {x.descricaoAtivida_ && (
                 <p className="text-[12px] text-on-surface-variant mt-1.5 line-clamp-2">{x.descricaoAtivida_}</p>
@@ -169,7 +169,7 @@ export function ExperienciaSection({ userId }: { userId: string }) {
         open={!!toDelete}
         onOpenChange={(o) => { if (!o) setToDelete(null); }}
         title="Excluir experiência?"
-        description={toDelete ? `${toDelete.cargo} — ${toDelete.empresa}` : ''}
+        description={toDelete ? `${toDelete.cargo} · ${toDelete.empresa}` : ''}
         onConfirm={async () => {
           if (toDelete) { await deleteExperiencia(userId, toDelete.id); setToDelete(null); await reload(); }
         }}

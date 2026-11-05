@@ -42,7 +42,7 @@ export function FichaCandidato({ ficha }: { ficha: FichaCandidatura }) {
       <Secao titulo="Experiência" vazio={curriculo.experiencias.length === 0}>
         {curriculo.experiencias.map((e) => (
           <div key={e.id} className="mb-3 break-inside-avoid">
-            <p className="font-semibold">{e.cargo} — {e.empresa}</p>
+            <p className="font-semibold">{e.cargo} · {e.empresa}</p>
             <p className="text-neutral-600">{formatarPeriodo(e.dataInicio, e.dataFim)}</p>
             {e.descricaoAtivida_ && <p className="mt-1 whitespace-pre-line">{e.descricaoAtivida_}</p>}
           </div>
@@ -52,7 +52,7 @@ export function FichaCandidato({ ficha }: { ficha: FichaCandidatura }) {
       <Secao titulo="Formação" vazio={curriculo.formacoes.length === 0}>
         {curriculo.formacoes.map((f) => (
           <div key={f.id} className="mb-3 break-inside-avoid">
-            <p className="font-semibold">{f.curso} — {f.instituicao}</p>
+            <p className="font-semibold">{f.curso} · {f.instituicao}</p>
             <p className="text-neutral-600">
               {GRAU_LABEL[f.grau] ?? f.grau} · {periodoFormacao(f.anoInicio, f.anoConclusao, f.situacao)}{f.situacao ? ` · ${SITUACAO_LABEL[f.situacao] ?? f.situacao}` : ''}
             </p>
@@ -63,7 +63,7 @@ export function FichaCandidato({ ficha }: { ficha: FichaCandidatura }) {
       <Secao titulo="Certificações" vazio={curriculo.certificacoes.length === 0}>
         {curriculo.certificacoes.map((c) => (
           <div key={c.id} className="mb-3 break-inside-avoid">
-            <p className="font-semibold">{c.nome} — {c.emissor}</p>
+            <p className="font-semibold">{c.nome} · {c.emissor}</p>
             {(c.dataEmissao || c.codigo) && (
               <p className="text-neutral-600">
                 {formatarData(c.dataEmissao)}
@@ -75,7 +75,7 @@ export function FichaCandidato({ ficha }: { ficha: FichaCandidatura }) {
       </Secao>
 
       <Secao
-        titulo={questionario.titulo ? `Questionário — ${questionario.titulo}` : 'Questionário'}
+        titulo={questionario.titulo ? `Questionário: ${questionario.titulo}` : 'Questionário'}
         vazio={questionario.respostas.length === 0}
         textoVazio="Sem respostas de questionário para esta vaga."
       >
@@ -85,8 +85,8 @@ export function FichaCandidato({ ficha }: { ficha: FichaCandidatura }) {
               <p className="font-semibold">{r.enunciado}</p>
               <p className="mt-0.5 whitespace-pre-line">
                 {r.tipoResposta === 'dissertativa'
-                  ? r.textoResposta || '—'
-                  : r.opcoesSelecionadas.join(', ') || '—'}
+                  ? r.textoResposta || '-'
+                  : r.opcoesSelecionadas.join(', ') || '-'}
               </p>
             </li>
           ))}

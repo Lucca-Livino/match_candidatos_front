@@ -14,7 +14,7 @@ export const rotuloPeriodo = (p: Periodo) => periodoDe(p).rotulo;
 export const ehPeriodo = (v: string): v is Periodo => PERIODOS.some(p => p.valor === v);
 
 export function formatarPercentual(valor: number | null): string {
-  return valor === null ? '—' : `${Math.round(valor * 100)}%`;
+  return valor === null ? '-' : `${Math.round(valor * 100)}%`;
 }
 
 export function detalheTaxa({ porStatus }: ResumoCandidaturas): string {
@@ -32,7 +32,7 @@ export function rotuloPonto(inicio: string, granularidade: Serie['granularidade'
     : `${data.toLocaleDateString('pt-BR', { month: 'short', timeZone: 'UTC' }).replace('.', '')}/${inicio.slice(2, 4)}`;
 }
 
-export const formatarData = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('pt-BR') : '—');
+export const formatarData = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('pt-BR') : '-');
 
 export const formatarDataHora = (iso: string) =>
   new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });

@@ -49,7 +49,7 @@ export function Home() {
   const vagasAtivas = resumo?.vagas.porStatus.ativa ?? 0;
   const cobertura = resumo && vagasAtivas > 0
     ? (resumo.candidaturas.total / vagasAtivas).toLocaleString('pt-BR', { maximumFractionDigits: 1 })
-    : '—';
+    : '-';
 
   const vagasAbertas = vagas.filter(
     (v) => !v.status || v.status.toLowerCase() === 'aberta' || v.status.toLowerCase() === 'ativa'
@@ -276,7 +276,7 @@ const VagaRow = ({ vaga }: { vaga: Vaga }) => {
             {vaga.localizacao}
           </div>
         ) : (
-          <span className="text-[12px] text-on-surface-variant opacity-40">—</span>
+          <span className="text-[12px] text-on-surface-variant opacity-40">-</span>
         )}
       </TableCell>
       <TableCell className="hidden lg:table-cell">
@@ -286,7 +286,7 @@ const VagaRow = ({ vaga }: { vaga: Vaga }) => {
             {date}
           </div>
         ) : (
-          <span className="text-[12px] text-on-surface-variant opacity-40">—</span>
+          <span className="text-[12px] text-on-surface-variant opacity-40">-</span>
         )}
       </TableCell>
       <TableCell>
