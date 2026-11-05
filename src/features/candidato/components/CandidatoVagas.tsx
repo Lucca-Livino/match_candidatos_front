@@ -18,16 +18,25 @@ const TODAS = '';
 
 export function CandidatoVagas() {
   const [vagas, setVagas]           = useState<Vaga[]>([]);
-  const [loading, setLoading]       = useState(true);
   const [page, setPage]             = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalDocs, setTotalDocs]   = useState(0);
   const [q, setQ]                   = useState('');
   const [area, setArea]             = useState(TODAS);
 
+  // Busca atual e a última que terminou: `loading` é derivado das duas, então
+  // o efeito só grava estado quando a resposta chega.
+  const chave = [page, area, q].join('|');
+  const [carregadoPara, setCarregadoPara] = useState<string | null>(null);
+  const loading = carregadoPara !== chave;
+
+  // Filtro novo volta para a primeira página (no handler, não num efeito:
+  // assim não sai uma busca extra com a página antiga).
+  const buscarPor = (texto: string) => { setQ(texto); setPage(1); };
+  const filtrarArea = (valor: string) => { setArea(valor); setPage(1); };
+
   useEffect(() => {
     let atual = true;
-    setLoading(true);
     getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q })
       .then((res) => {
         if (!atual) return;
@@ -39,11 +48,10 @@ export function CandidatoVagas() {
         if (atual) setVagas([]);
       })
       .finally(() => {
-        if (atual) setLoading(false);
+        if (atual) setCarregadoPara(chave);
       });
     return () => { atual = false; };
-  }, [page, area, q]);
-  useEffect(() => { setPage(1); }, [area, q]);
+  }, [chave, page, area, q]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8f9fc] font-sans">
@@ -56,7 +64,7 @@ export function CandidatoVagas() {
             {[{ label: 'Todas', value: TODAS }, ...AREAS.map(a => ({ label: rotuloArea(a), value: a }))].map(({ label, value }) => (
               <button
                 key={value}
-                onClick={() => setArea(value)}
+                onClick={() => filtrarArea(value)}
                 className={cn(
                   'px-4 py-2 text-[13px] font-medium rounded-t-lg border-b-2 transition-colors whitespace-nowrap',
                   area === value
@@ -75,7 +83,7 @@ export function CandidatoVagas() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-variant" />
             <Input
               value={q}
-              onChange={e => setQ(e.target.value)}
+              onChange={e => buscarPor(e.target.value)}
               placeholder="Buscar por título ou palavra-chave..."
               className="pl-10 rounded-xl h-10 border-outline-variant bg-[#f8f9fc] text-[13px]"
             />
@@ -92,7 +100,7 @@ export function CandidatoVagas() {
         {loading ? (
           <SkeletonGrid />
         ) : vagas.length === 0 ? (
-          <EmptyState onClear={() => { setQ(''); setArea(TODAS); }} />
+          <EmptyState onClear={() => { buscarPor(''); filtrarArea(TODAS); }} />
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

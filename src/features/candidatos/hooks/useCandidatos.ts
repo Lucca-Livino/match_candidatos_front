@@ -8,19 +8,28 @@ export function useCandidatos() {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState<string | null>(null);
 
+  // Só grava estado quando a resposta chega: o efeito da carga inicial não
+  // pode chamar setState síncrono (o `loading` já nasce true).
+  const buscar = useCallback(
+    () =>
+      getCandidatos()
+        .then(({ docs, totalDocs }) => {
+          setCandidatos(docs);
+          setTotal(totalDocs);
+          setError(null);
+        })
+        .catch(() => setError('Não foi possível carregar os candidatos. Verifique a conexão e tente novamente.'))
+        .finally(() => setLoading(false)),
+    [],
+  );
+
+  useEffect(() => { buscar(); }, [buscar]);
+
   const carregar = useCallback(() => {
     setLoading(true);
     setError(null);
-    getCandidatos()
-      .then(({ docs, totalDocs }) => {
-        setCandidatos(docs);
-        setTotal(totalDocs);
-      })
-      .catch(() => setError('Não foi possível carregar os candidatos. Verifique a conexão e tente novamente.'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => { carregar(); }, [carregar]);
+    return buscar();
+  }, [buscar]);
 
   // /usuarios devolve todos os papeis; so quem tem papel de candidato conta.
   const somenteCandidatos = useMemo(

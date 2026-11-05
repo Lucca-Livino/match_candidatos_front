@@ -7,29 +7,48 @@ export interface ErroRelatorio {
   status: number | null;
 }
 
+const montarErro = (e: unknown): ErroRelatorio => ({
+  mensagem: e instanceof ApiError && e.status === 404
+    ? e.message
+    : 'Não foi possível gerar o relatório. Verifique a conexão e tente novamente.',
+  status: e instanceof ApiError ? e.status : null,
+});
+
+interface Resposta<T> {
+  buscar: () => Promise<T>;
+  versao: number;
+  erro: ErroRelatorio | null;
+}
+
 /** `buscar` precisa ser estável (useCallback): ele define quando recarregar. */
 export function useRelatorio<T>(buscar: () => Promise<T>) {
-  const [dados, setDados]     = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro]       = useState<ErroRelatorio | null>(null);
+  const [dados, setDados]       = useState<T | null>(null);
+  const [versao, setVersao]     = useState(0);
+  // Busca e versão da última resposta. `loading` e `erro` são derivados dela,
+  // então o efeito só grava estado quando a resposta chega.
+  const [resposta, setResposta] = useState<Resposta<T> | null>(null);
 
-  const carregar = useCallback(() => {
-    setLoading(true);
-    setErro(null);
+  useEffect(() => {
+    let ativo = true;
     buscar()
-      .then(d => setDados(d))
-      .catch((e: unknown) =>
-        setErro({
-          mensagem: e instanceof ApiError && e.status === 404
-            ? e.message
-            : 'Não foi possível gerar o relatório. Verifique a conexão e tente novamente.',
-          status: e instanceof ApiError ? e.status : null,
-        }),
-      )
-      .finally(() => setLoading(false));
-  }, [buscar]);
+      .then(d => {
+        if (!ativo) return;
+        setDados(d);
+        setResposta({ buscar, versao, erro: null });
+      })
+      .catch((e: unknown) => {
+        if (ativo) setResposta({ buscar, versao, erro: montarErro(e) });
+      });
+    return () => { ativo = false; };
+  }, [buscar, versao]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  const atual = resposta?.buscar === buscar && resposta.versao === versao;
+  const recarregar = useCallback(() => setVersao(v => v + 1), []);
 
-  return { dados, loading, erro, recarregar: carregar };
+  return {
+    dados,
+    loading: !atual,
+    erro: atual ? resposta.erro : null,
+    recarregar,
+  };
 }
