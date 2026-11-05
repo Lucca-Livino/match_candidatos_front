@@ -1,23 +1,10 @@
+# lightcloud — gerado pelo Light Cloud (menu Deploy)
+# O build roda no GitLab (job lightcloud-build) e a VM só baixa as imagens. Portas e variáveis
+# de ambiente ficam no painel: a cada deploy ele grava um compose.lightcloud.yml ao lado deste.
 services:
   front:
-    container_name: match-de-curriculos-front
     build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - '${FRONT_PORT:-5173}:5173'
-    volumes:
-      # Codigo montado do host: o Vite recompila sem rebuild da imagem.
-      - .:/usr/src/app
-      # Volume anonimo preserva o node_modules instalado na imagem (linux) em
-      # vez de deixar o bind mount cobri-lo com o do host (windows).
-      - /usr/src/app/node_modules
-    environment:
-      # Dentro do container "localhost" e o proprio container. O proxy do Vite
-      # precisa do host para alcancar a API que roda no compose do back-end.
-      - VITE_API_PROXY_TARGET=http://host.docker.internal:5000
-      # Polling: em bind mount no Windows o Vite nao recebe eventos de arquivo.
-      - CHOKIDAR_USEPOLLING=true
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      context: "."
+      dockerfile: Dockerfile
+    image: "${LC_REGISTRY:-lightcloud}/match-de-curriculos-front-front:${LC_TAG:-latest}"
     restart: unless-stopped
