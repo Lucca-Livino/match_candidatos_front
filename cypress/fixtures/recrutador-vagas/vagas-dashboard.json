@@ -1,0 +1,44 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      {
+        "_id": "v-1",
+        "titulo": "Desenvolvedor Front-end",
+        "descricao": "Construir interfaces em React para o produto principal.",
+        "area": "TI",
+        "localizacao": "São Paulo - SP",
+        "status": "ativa",
+        "createdAt": "2026-03-15T12:00:00.000Z"
+      },
+      {
+        "_id": "v-2",
+        "titulo": "Analista de RH",
+        "descricao": "Conduzir processos seletivos e onboarding.",
+        "area": "RH",
+        "localizacao": "Remoto",
+        "status": "pausada",
+        "createdAt": "2026-04-02T12:00:00.000Z"
+      },
+      {
+        "_id": "v-3",
+        "titulo": "Analista Financeiro",
+        "area": "FINANCEIRO",
+        "status": "arquivada",
+        "createdAt": "2026-01-10T12:00:00.000Z"
+      },
+      {
+        "_id": "v-4",
+        "titulo": "Executivo de Vendas",
+        "descricao": "Prospecção e fechamento de contas B2B.",
+        "area": "COMERCIAL",
+        "localizacao": "Curitiba - PR",
+        "status": "ativa",
+        "createdAt": "2026-05-20T12:00:00.000Z"
+      }
+    ],
+    "totalDocs": 4,
+    "totalPages": 1,
+    "page": 1
+  }
+}

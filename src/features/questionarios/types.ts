@@ -36,6 +36,7 @@ export interface Questionario {
   titulo: string;
   instrucoes: string;
   ativo: 0 | 1;
+  respondido?: boolean;
   perguntas: Pergunta[];
 }
 
@@ -67,6 +68,7 @@ export interface QuestionarioForm {
   titulo: string;
   instrucoes: string;
   ativo: boolean;
+  respondido?: boolean;
   perguntas: PerguntaForm[];
 }
 

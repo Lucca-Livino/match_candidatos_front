@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Briefcase, ClipboardList, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,6 @@ export function CandidatoHome() {
   const navigate = useNavigate();
 
   const [vagas, setVagas]           = useState<Vaga[]>([]);
-  const [loading, setLoading]       = useState(true);
   const [page, setPage]             = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalDocs, setTotalDocs]   = useState(0);
@@ -34,22 +33,30 @@ export function CandidatoHome() {
   const [q, setQ]       = useState('');
   const [area, setArea] = useState('');
 
-  const fetchVagas = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q });
-      setVagas(res.docs ?? []);
-      setTotalPages(res.totalPages);
-      setTotalDocs(res.totalDocs);
-    } catch {
-      setVagas([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, area, q]);
+  const chave = [page, area, q].join('|');
+  const [carregadoPara, setCarregadoPara] = useState<string | null>(null);
+  const loading = carregadoPara !== chave;
 
-  useEffect(() => { fetchVagas(); }, [fetchVagas]);
-  useEffect(() => { setPage(1); }, [area, q]);
+  useEffect(() => {
+    let atual = true;
+    getVagasPaginadas(page, LIMIT, { area, status: 'ativa', q })
+      .then((res) => {
+        if (!atual) return;
+        setVagas(res.docs ?? []);
+        setTotalPages(res.totalPages);
+        setTotalDocs(res.totalDocs);
+      })
+      .catch(() => {
+        if (atual) setVagas([]);
+      })
+      .finally(() => {
+        if (atual) setCarregadoPara(chave);
+      });
+    return () => { atual = false; };
+  }, [chave, page, area, q]);
+
+  const buscarPor = (texto: string) => { setQ(texto); setPage(1); };
+  const filtrarArea = (valor: string) => { setArea(valor); setPage(1); };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8f9fc] font-sans">
@@ -75,13 +82,13 @@ export function CandidatoHome() {
               <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/70 group-focus-within:text-on-surface-variant" />
               <Input
                 value={q}
-                onChange={e => setQ(e.target.value)}
+                onChange={e => buscarPor(e.target.value)}
                 placeholder="Buscar por título ou palavra-chave..."
                 aria-label="Buscar vagas por título ou palavra-chave"
                 className="pl-10 rounded-xl h-11 border-white/20 bg-white/15 text-white placeholder:text-white/70 focus:bg-white focus:text-primary focus:placeholder:text-on-surface-variant"
               />
             </div>
-            <Select value={area || '_all'} onValueChange={v => setArea(v === '_all' ? '' : v)}>
+            <Select value={area || '_all'} onValueChange={v => filtrarArea(v === '_all' ? '' : v)}>
               <SelectTrigger className="min-w-[160px] rounded-xl h-11 border-white/20 bg-white/15 text-white text-[13px]">
                 <SelectValue placeholder="Área" />
               </SelectTrigger>
@@ -114,7 +121,7 @@ export function CandidatoHome() {
           {loading ? (
             <VagasSkeletonGrid />
           ) : vagas.length === 0 ? (
-            <EmptyVagas onClear={() => { setQ(''); setArea(''); }} />
+            <EmptyVagas onClear={() => { buscarPor(''); filtrarArea(''); }} />
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Briefcase, CheckCircle2, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Briefcase, CheckCircle2, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,7 +12,7 @@ import type { Vaga } from '@/features/vagas/types';
 import { AREA_BADGE, rotuloArea } from '@/features/vagas/constants';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { candidatarNaVaga, getCandidaturasIds } from '@/features/candidato/api';
+import { candidatarNaVaga, listarCandidaturas } from '@/features/candidato/api';
 import { ApiError } from '@/lib/api';
 import {
   QuestionarioResponder,
@@ -40,11 +40,13 @@ export default function VagaDetalhePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState<string | null>(null);
 
-  const [candidatado, setCandidatado] = useState(false);
+  const [situacao, setSituacao] = useState<'nenhuma' | 'pendente' | 'concluida'>('nenhuma');
+  const candidatado = situacao === 'concluida';
   const [enviando, setEnviando]       = useState(false);
   const [candidaturaErro, setCandidaturaErro] = useState<string | null>(null);
 
   const [questionario, setQuestionario] = useState<Questionario | null>(null);
+  const [questionarioErro, setQuestionarioErro] = useState(false);
   const [respostas, setRespostas]       = useState<Record<string, RespostaLocal>>({});
 
   useEffect(() => {
@@ -59,7 +61,7 @@ export default function VagaDetalhePage() {
     if (!id) return;
     getQuestionarioAtivoDaVaga(id)
       .then(setQuestionario)
-      .catch(() => { /* silencioso — vaga pode não ter questionário */ });
+      .catch(() => setQuestionarioErro(true));
   }, [id]);
 
   function setResposta(perguntaId: string, next: RespostaLocal) {
@@ -68,13 +70,19 @@ export default function VagaDetalhePage() {
 
   useEffect(() => {
     if (!id || !user) return;
-    getCandidaturasIds(user.id)
-      .then(ids => setCandidatado(ids.includes(id)))
+    listarCandidaturas(user.id)
+      .then(lista => {
+        const minha = lista.find(c => c.vagaId === id);
+        if (minha) setSituacao(minha.questionarioPendente ? 'pendente' : 'concluida');
+      })
       .catch(() => { /* silencioso — não bloqueia leitura da vaga */ });
   }, [id, user]);
 
+  const foraDoAr = Boolean(vaga && vaga.status && vaga.status !== 'ativa');
+  const podeCandidatar = !candidatado && !(foraDoAr && situacao === 'nenhuma');
+
   async function handleCandidatar() {
-    if (!id || !user || candidatado || enviando) return;
+    if (!id || !user || candidatado || enviando || questionarioErro) return;
     setCandidaturaErro(null);
 
     // Questionário obrigatório: valida respostas antes de candidatar.
@@ -88,20 +96,27 @@ export default function VagaDetalhePage() {
       // A candidatura vem primeiro: a API exige que ela exista para iniciar o
       // questionario, e e ela que recebe o resultado da triagem ao finalizar.
       // 409 aqui significa reenvio apos falha no questionario — segue adiante.
-      try {
-        await candidatarNaVaga(user.id, id);
-      } catch (err) {
-        if (!(err instanceof ApiError) || err.status !== 409) throw err;
+      if (situacao !== 'pendente') {
+        try {
+          await candidatarNaVaga(user.id, id);
+        } catch (err) {
+          if (!(err instanceof ApiError) || err.status !== 409) throw err;
+        }
+        setSituacao('pendente');
       }
 
       if (questionario) {
-        await enviarRespostasQuestionario({
-          questionarioId: questionario.id,
-          usuarioId: user.id,
-          respostas: montarRespostas(questionario.perguntas, respostas),
-        });
+        try {
+          await enviarRespostasQuestionario({
+            questionarioId: questionario.id,
+            usuarioId: user.id,
+            respostas: montarRespostas(questionario.perguntas, respostas),
+          });
+        } catch (err) {
+          if (!(err instanceof ApiError) || err.status !== 409) throw err;
+        }
       }
-      setCandidatado(true);
+      setSituacao('concluida');
     } catch (err) {
       // A candidatura pode ter sido criada antes da falha no questionario.
       // Reenviar retoma a resposta em andamento, sem duplicar nada.
@@ -205,8 +220,21 @@ export default function VagaDetalhePage() {
               </div>
             )}
 
+            {situacao === 'pendente' && (
+              <div role="status" className="flex items-start gap-2 rounded-2xl border border-yellow-200 bg-yellow-50 p-5 text-[14px] text-yellow-900">
+                <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                Sua candidatura foi registrada, mas o questionário não foi concluído. Responda abaixo para que ela seja avaliada.
+              </div>
+            )}
+
+            {!podeCandidatar && !candidatado && (
+              <div role="status" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7 text-[14px] text-on-surface-variant">
+                Esta vaga não está recebendo candidaturas no momento.
+              </div>
+            )}
+
             {/* Questionário — obrigatório para candidatar */}
-            {!candidatado && questionario && (
+            {podeCandidatar && questionario && (
               <QuestionarioResponder
                 questionario={questionario}
                 respostas={respostas}
@@ -216,20 +244,24 @@ export default function VagaDetalhePage() {
             )}
 
             {/* Ação de candidatura */}
-            {!candidatado && (
+            {podeCandidatar && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
-                {questionario && (
+                {questionarioErro ? (
+                  <p role="alert" className="text-[13px] text-red-600 mb-4">
+                    Não foi possível carregar o questionário da vaga. Recarregue a página para se candidatar.
+                  </p>
+                ) : questionario && (
                   <p className="text-[13px] text-on-surface-variant mb-4">
                     Responda ao questionário acima para concluir sua candidatura.
                   </p>
                 )}
                 <Button
-                  disabled={enviando || !user}
+                  disabled={enviando || !user || questionarioErro}
                   onClick={handleCandidatar}
                   className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl px-8 h-11 text-[14px] font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
                   {enviando && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  {enviando ? 'Enviando…' : 'Candidatar-se'}
+                  {enviando ? 'Enviando…' : situacao === 'pendente' ? 'Concluir candidatura' : 'Candidatar-se'}
                 </Button>
                 {candidaturaErro && (
                   <p className="mt-3 text-[13px] text-red-600">{candidaturaErro}</p>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ClipboardList, Calendar } from 'lucide-react';
+import { ClipboardList, Calendar, PauseCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Header } from '@/components/layout/header';
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { listarCandidaturas, type Candidatura } from '@/features/candidato/api';
-import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
+import { STATUS_CANDIDATURA_CONFIG, VAGA_FORA_DO_AR } from '@/features/candidato/constants';
 import { getVaga } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
 import { rotuloArea } from '@/features/vagas/constants';
@@ -109,12 +109,25 @@ export default function MinhasCandidaturasPage() {
                     {c.vaga?.titulo ?? 'Vaga indisponível'}
                   </h2>
 
-                  {date && (
-                    <span className="flex items-center gap-1 text-[12px] text-on-surface-variant mt-3">
-                      <Calendar className="h-3 w-3 flex-shrink-0" />
-                      Candidatura em {date}
-                    </span>
-                  )}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3">
+                    {date && (
+                      <span className="flex items-center gap-1 text-[12px] text-on-surface-variant">
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                        Candidatura em {date}
+                      </span>
+                    )}
+                    {c.vaga?.status && VAGA_FORA_DO_AR[c.vaga.status] && (
+                      <span className="flex items-center gap-1 text-[12px] text-on-surface-variant">
+                        <PauseCircle className="h-3 w-3 flex-shrink-0" />
+                        {VAGA_FORA_DO_AR[c.vaga.status]}
+                      </span>
+                    )}
+                    {c.questionarioPendente && (
+                      <span className="text-[12px] font-medium text-yellow-800">
+                        Questionário pendente
+                      </span>
+                    )}
+                  </div>
                 </button>
               );
             })}

@@ -19,5 +19,5 @@ export function formatarDataCompleta(iso: string | null | undefined): string {
 export function formatarPeriodo(inicio: string, fim: string | null): string {
   const ini = formatarData(inicio);
   const f = fim ? formatarData(fim) : 'Atual';
-  return `${ini} – ${f}`;
+  return `${ini} - ${f}`;
 }

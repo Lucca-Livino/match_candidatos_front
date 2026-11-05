@@ -30,8 +30,8 @@ export const SITUACOES_COM_ANO_CONCLUSAO: SituacaoFormacao[] = ['cursando', 'con
 export function periodoFormacao(anoInicio: number, anoConclusao: number | null, situacao: string): string {
   if (!anoConclusao) return String(anoInicio);
   return situacao === 'cursando'
-    ? `${anoInicio} – previsão ${anoConclusao}`
-    : `${anoInicio} – ${anoConclusao}`;
+    ? `${anoInicio} - previsão ${anoConclusao}`
+    : `${anoInicio} - ${anoConclusao}`;
 }
 
 export const NIVEL_OPTIONS: { value: NivelHabilidade; label: string }[] = [

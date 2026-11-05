@@ -8,26 +8,32 @@ import type { StatusCandidatura } from '@/features/candidato/api';
 export function useCandidaturasVaga(vagaId: string | undefined) {
   const [vaga, setVaga]                 = useState<Vaga | null>(null);
   const [candidaturas, setCandidaturas] = useState<CandidaturaVaga[]>([]);
-  const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState<string | null>(null);
   const [movendoId, setMovendoId]       = useState<string | null>(null);
+  const [versao, setVersao]             = useState(0);
+  const [carregado, setCarregado]       = useState<{ vagaId: string; versao: number } | null>(null);
 
-  const carregar = useCallback(async () => {
+  useEffect(() => {
     if (!vagaId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const [v, cands] = await Promise.all([getVaga(vagaId), getCandidaturasDaVaga(vagaId)]);
-      setVaga(v);
-      setCandidaturas(cands);
-    } catch {
-      setError('Falha ao carregar candidatos da vaga.');
-    } finally {
-      setLoading(false);
-    }
-  }, [vagaId]);
+    let ativo = true;
+    Promise.all([getVaga(vagaId), getCandidaturasDaVaga(vagaId)])
+      .then(([v, cands]) => {
+        if (!ativo) return;
+        setVaga(v);
+        setCandidaturas(cands);
+        setError(null);
+      })
+      .catch(() => { if (ativo) setError('Falha ao carregar candidatos da vaga.'); })
+      .finally(() => { if (ativo) setCarregado({ vagaId, versao }); });
+    return () => { ativo = false; };
+  }, [vagaId, versao]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  const loading = Boolean(vagaId) && (carregado?.vagaId !== vagaId || carregado?.versao !== versao);
+
+  const carregar = useCallback(() => {
+    setError(null);
+    setVersao(v => v + 1);
+  }, []);
 
   const moverStatus = useCallback(
     async (candidatura: CandidaturaVaga, novoStatus: StatusCandidatura) => {
@@ -52,5 +58,5 @@ export function useCandidaturasVaga(vagaId: string | undefined) {
     [vagaId],
   );
 
-  return { vaga, candidaturas, loading, error, movendoId, moverStatus, recarregar: carregar };
+  return { vaga, setVaga, candidaturas, loading, error, movendoId, moverStatus, recarregar: carregar };
 }

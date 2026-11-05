@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "data": {
+    "periodo": "30d",
+    "geradoEm": "2026-10-29T12:00:00Z",
+    "vagas": { "total": 0, "porStatus": { "ativa": 0, "pausada": 0, "arquivada": 0 }, "porArea": [] },
+    "candidaturas": { "total": 0, "porStatus": { "inscrito": 0, "em_analise": 0, "aprovado": 0, "reprovado": 0 }, "taxaAprovacao": null },
+    "serie": { "granularidade": "semana", "pontos": [] }
+  }
+}

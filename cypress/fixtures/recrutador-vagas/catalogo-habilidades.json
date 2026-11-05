@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "data": [
+    { "id": "cat-react", "tipo": "habilidade", "nome": "React", "sinonimos": ["React.js"], "implica": ["JavaScript"], "ativo": true },
+    { "id": "cat-redux", "tipo": "habilidade", "nome": "Redux", "sinonimos": [], "implica": [], "ativo": true }
+  ]
+}

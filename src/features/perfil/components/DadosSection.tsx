@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FormDialog, Field } from './FormDialog';
 import { ContatoLinhas } from './ContatoLinhas';
-import { getUsuario, updateUsuario } from '../api';
+import { alterarSenha, getUsuario, updateUsuario } from '../api';
 import type { UsuarioPerfil, UsuarioUpdatePayload } from '../types';
 
 export function DadosSection({ userId }: { userId: string }) {
@@ -18,6 +18,7 @@ export function DadosSection({ userId }: { userId: string }) {
   const [nome, setNome]     = useState('');
   const [email, setEmail]   = useState('');
   const [senha, setSenha]   = useState('');
+  const [senhaAtual, setSenhaAtual] = useState('');
   const [telefone, setTelefone] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [cidade, setCidade]     = useState('');
@@ -37,6 +38,7 @@ export function DadosSection({ userId }: { userId: string }) {
     setNome(usuario.nome);
     setEmail(usuario.email);
     setSenha('');
+    setSenhaAtual('');
     setTelefone(usuario.telefone ?? '');
     setLinkedin(usuario.linkedin ?? '');
     setCidade(usuario.cidade ?? '');
@@ -51,11 +53,22 @@ export function DadosSection({ userId }: { userId: string }) {
       const payload: UsuarioUpdatePayload = {};
       if (nome !== usuario?.nome)   payload.nome = nome;
       if (email !== usuario?.email) payload.email = email;
-      if (senha.trim())             payload.senha = senha.trim();
       // "" é enviado de propósito: é como a API limpa um contato já salvo.
       if (telefone.trim() !== (usuario?.telefone ?? '')) payload.telefone = telefone.trim();
       if (linkedin.trim() !== (usuario?.linkedin ?? '')) payload.linkedin = linkedin.trim();
       if (cidade.trim()   !== (usuario?.cidade ?? ''))   payload.cidade   = cidade.trim();
+
+      const trocaSenha = senha.trim() !== '';
+      if (trocaSenha && !senhaAtual) {
+        setSaveError('Informe a senha atual para trocar a senha.');
+        return;
+      }
+
+      if (trocaSenha) {
+        await alterarSenha(senhaAtual, senha);
+        setSenha('');
+        setSenhaAtual('');
+      }
 
       if (Object.keys(payload).length === 0) {
         setDialogOpen(false);
@@ -138,6 +151,10 @@ export function DadosSection({ userId }: { userId: string }) {
         <Field label="Nova senha (deixe em branco para manter)">
           <Input type="password" value={senha} minLength={8} placeholder="Mínimo 8 caracteres"
             onChange={(e) => setSenha(e.target.value)} />
+        </Field>
+        <Field label="Senha atual (só para trocar a senha)">
+          <Input type="password" value={senhaAtual} autoComplete="current-password"
+            onChange={(e) => setSenhaAtual(e.target.value)} />
         </Field>
         <Field label="Telefone">
           <Input type="tel" value={telefone} maxLength={20} placeholder="(11) 99999-9999"

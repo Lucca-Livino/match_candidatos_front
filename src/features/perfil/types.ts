@@ -90,7 +90,6 @@ export interface UsuarioPerfil {
 export interface UsuarioUpdatePayload {
   nome?: string;
   email?: string;
-  senha?: string;
   telefone?: string;
   linkedin?: string;
   cidade?: string;

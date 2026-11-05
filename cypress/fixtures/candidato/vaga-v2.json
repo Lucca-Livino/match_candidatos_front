@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "data": {
+    "_id": "v2",
+    "titulo": "Analista de RH",
+    "descricao": "Conduzir processos seletivos e onboarding.",
+    "area": "RH",
+    "status": "ativa",
+    "createdAt": "2026-09-12T12:00:00.000Z",
+    "criterio_vaga": []
+  }
+}

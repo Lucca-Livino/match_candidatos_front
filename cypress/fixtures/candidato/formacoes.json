@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "data": [
+    { "id": "f1", "usuarioId": "u-candidato", "instituicao": "UFPE", "curso": "Ciência da Computação", "grau": "graduacao", "situacao": "concluido", "anoInicio": 2016, "anoConclusao": 2020, "areaId": null }
+  ]
+}

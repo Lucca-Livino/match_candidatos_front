@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "data": [
+    { "id": "ce1", "usuarioId": "u-candidato", "nome": "Scrum Foundation", "emissor": "CertiProf", "dataEmissao": "2021-05-10T00:00:00.000Z", "dataExpiracao": null, "codigo": "SF-123", "itemId": null }
+  ]
+}

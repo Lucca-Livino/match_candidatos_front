@@ -15,6 +15,7 @@ export interface Candidatura {
   motivoIncompat_?: string;
   status: StatusCandidatura;
   movidoPor?: string;
+  questionarioPendente?: boolean;
   criadoEm?: string;
   atualizadoEm?: string;
 }
@@ -44,4 +45,8 @@ export async function getCandidatura(userId: string, vagaId: string): Promise<Ca
 export async function getCandidaturasIds(userId: string): Promise<string[]> {
   const list = await listarCandidaturas(userId);
   return list.map(c => c.vagaId);
+}
+
+export async function cancelarCandidatura(userId: string, vagaId: string): Promise<void> {
+  await request(`/api/usuarios/${userId}/candidatura/${vagaId}`, { method: 'DELETE' });
 }

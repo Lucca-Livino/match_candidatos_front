@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "data": {
+    "id": "v1",
+    "titulo": "Desenvolvedor Front-end",
+    "area": "TI",
+    "status": "ativa",
+    "localizacao": "Curitiba"
+  }
+}

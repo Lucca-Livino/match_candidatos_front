@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "c-3",
+      "usuarioId": "u-c3",
+      "vagaId": "v-2",
+      "status": "inscrito",
+      "movidoPor": "sistema",
+      "avaliadoEm": null,
+      "scoreIA": null,
+      "limiteAplicado": null,
+      "versaoModelo": null,
+      "criadoEm": "2026-10-22T10:00:00.000Z",
+      "candidato": { "nome": "Davi Duarte", "email": "davi@email.com" },
+      "vaga": { "titulo": "Analista de Dados" }
+    }
+  ]
+}

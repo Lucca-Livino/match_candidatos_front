@@ -179,7 +179,7 @@ export function FormacaoSection({ userId }: { userId: string }) {
         open={!!toDelete}
         onOpenChange={(o) => { if (!o) setToDelete(null); }}
         title="Excluir formação?"
-        description={toDelete ? `${toDelete.curso} — ${toDelete.instituicao}` : ''}
+        description={toDelete ? `${toDelete.curso} · ${toDelete.instituicao}` : ''}
         onConfirm={async () => {
           if (toDelete) { await deleteFormacao(userId, toDelete.id); setToDelete(null); await reload(); }
         }}

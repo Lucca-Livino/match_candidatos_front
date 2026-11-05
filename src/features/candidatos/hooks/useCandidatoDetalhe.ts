@@ -27,18 +27,15 @@ const VAZIO: CandidatoDetalhe = {
 };
 
 export function useCandidatoDetalhe(usuarioId: string | null) {
-  const [detalhe, setDetalhe] = useState<CandidatoDetalhe>(VAZIO);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [carga, setCarga] = useState<{
+    usuarioId: string;
+    detalhe: CandidatoDetalhe;
+    error: string | null;
+  } | null>(null);
 
   useEffect(() => {
-    if (!usuarioId) {
-      setDetalhe(VAZIO);
-      return;
-    }
+    if (!usuarioId) return;
     let ativo = true;
-    setLoading(true);
-    setError(null);
     Promise.all([
       listFormacoes(usuarioId),
       listExperiencias(usuarioId),
@@ -46,14 +43,17 @@ export function useCandidatoDetalhe(usuarioId: string | null) {
       listCertificacoes(usuarioId),
     ])
       .then(([formacoes, experiencias, habilidades, certificacoes]) => {
-        if (!ativo) return;
-        setDetalhe({ formacoes, experiencias, habilidades, certificacoes });
+        if (ativo) setCarga({ usuarioId, detalhe: { formacoes, experiencias, habilidades, certificacoes }, error: null });
       })
-      .catch(() => ativo && setError('Falha ao carregar dados do candidato.'))
-      .finally(() => ativo && setLoading(false));
+      .catch(() => {
+        if (ativo) setCarga({ usuarioId, detalhe: VAZIO, error: 'Falha ao carregar dados do candidato.' });
+      });
 
     return () => { ativo = false; };
   }, [usuarioId]);
 
-  return { ...detalhe, loading, error };
+  const atual = usuarioId && carga?.usuarioId === usuarioId ? carga : null;
+  const loading = Boolean(usuarioId) && atual === null;
+
+  return { ...(atual?.detalhe ?? VAZIO), loading, error: atual?.error ?? null };
 }

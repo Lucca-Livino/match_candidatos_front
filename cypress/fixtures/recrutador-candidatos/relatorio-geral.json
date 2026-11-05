@@ -1,0 +1,21 @@
+{
+  "success": true,
+  "data": {
+    "periodo": "tudo",
+    "geradoEm": "2026-10-29T12:00:00Z",
+    "vagas": {
+      "total": 6,
+      "porStatus": { "ativa": 4, "pausada": 1, "arquivada": 1 },
+      "porArea": [ { "area": "TI", "total": 4 }, { "area": "OPERACOES", "total": 2 } ]
+    },
+    "candidaturas": {
+      "total": 20,
+      "porStatus": { "inscrito": 10, "em_analise": 5, "aprovado": 3, "reprovado": 2 },
+      "taxaAprovacao": 0.6
+    },
+    "serie": {
+      "granularidade": "mes",
+      "pontos": [ { "inicio": "2026-09-01", "total": 12 }, { "inicio": "2026-10-01", "total": 8 } ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      { "_id": "v1", "titulo": "Desenvolvedor React Pleno", "area": "TI", "status": "ativa", "criterio_vaga": [] }
+    ],
+    "totalDocs": 10,
+    "totalPages": 2,
+    "page": 1
+  }
+}

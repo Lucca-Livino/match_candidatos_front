@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "data": {
+    "docs": [
+      { "id": "u-1", "nome": "Ana Souza", "email": "ana.souza@email.com", "tipos_permissao": ["candidato"], "status_ativo": true, "telefone": "(41) 99999-0001", "cidade": "Curitiba" },
+      { "id": "u-2", "nome": "Bruno Lima", "email": "bruno.lima@email.com", "tipos_permissao": ["candidato"], "status_ativo": false },
+      { "id": "u-3", "nome": "Carla Dias", "email": "carla@outrodominio.com" },
+      { "id": "u-recrutador", "nome": "Rita Recrutadora", "email": "rita@empresa.com", "tipos_permissao": ["recrutador"] },
+      { "id": "u-suporte", "nome": "Sara Suporte", "email": "sara@empresa.com", "tipos_permissao": ["suporte"] }
+    ],
+    "totalDocs": 5,
+    "totalPages": 1,
+    "page": 1
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "data": [
+    { "id": "x1", "usuarioId": "u-candidato", "empresa": "Acme Tech", "cargo": "Desenvolvedor Júnior", "descricaoAtivida_": "Manutenção de sistemas legados.", "dataInicio": "2020-02-01T00:00:00.000Z", "dataFim": "2022-06-30T00:00:00.000Z", "mesesDuracao": 29, "areaId": null }
+  ]
+}
