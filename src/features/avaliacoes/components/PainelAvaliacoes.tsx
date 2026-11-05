@@ -5,7 +5,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { urlFichaCandidatura } from '@/features/candidatos';
 import { getAvaliacoes, reavaliarCandidatura } from '../api';
-import type { AvaliacaoAuditoria } from '../types';
+import type { AvaliacaoAuditoria, OrigemSuspeita } from '../types';
+
+const ORIGEM_SUSPEITA: Record<OrigemSuspeita, string> = {
+  padrao: 'padrões de comando no texto',
+  modelo: 'o próprio modelo',
+  evidencia: 'evidência que não está no material',
+};
 
 function formatarData(iso?: string | null): string {
   if (!iso) return '—';
@@ -235,6 +241,11 @@ function LinhaAvaliacao({
           {a.movidoPor === 'ia' && (
             <p className="text-[11px] text-on-surface-variant">movido pela IA</p>
           )}
+          {a.suspeitaInjecao?.detectada && (
+            <span className="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-800">
+              Suspeita de manipulação
+            </span>
+          )}
         </td>
         <td className="px-4 py-3 font-mono text-[12px] text-on-surface-variant">
           {a.versaoModelo ?? '—'}
@@ -296,6 +307,21 @@ function DetalheJustificativa({
 
   return (
     <div className="space-y-4">
+      {a.suspeitaInjecao?.detectada && (
+        <div role="note" className="max-w-[900px] rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-900">
+          <p className="mb-1 font-semibold">
+            Suspeita de manipulação da IA: candidatura não promovida automaticamente.
+          </p>
+          <p className="mb-2">
+            Detectado por: {a.suspeitaInjecao.origens.map((o) => ORIGEM_SUSPEITA[o]).join(', ')}.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            {a.suspeitaInjecao.trechos.map((trecho, i) => (
+              <li key={i} className="break-words">{trecho}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
           {decidiuSemModelo ? 'Justificativa da triagem' : 'Justificativa da IA'}

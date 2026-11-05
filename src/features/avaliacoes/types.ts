@@ -1,3 +1,11 @@
+export type OrigemSuspeita = 'padrao' | 'modelo' | 'evidencia';
+
+export interface SuspeitaInjecao {
+  detectada: boolean;
+  origens: OrigemSuspeita[];
+  trechos: string[];
+}
+
 /**
  * Avaliação na visão do SUPORTE. É a única saída da API que traz `scoreIA` e
  * `limiteAplicado` — existe para calibrar o modelo. O recrutador não tem
@@ -17,6 +25,7 @@ export interface AvaliacaoAuditoria {
   versaoModelo?: string | null;
   justificativa?: string;
   motivoIncompat_?: string;
+  suspeitaInjecao?: SuspeitaInjecao | null;
   criadoEm?: string;
   candidato: { nome: string; email: string } | null;
   vaga: { titulo: string } | null;
