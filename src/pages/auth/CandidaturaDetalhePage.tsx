@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Briefcase, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Briefcase, Calendar, ExternalLink, PauseCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,8 +9,9 @@ import { Footer } from '@/components/layout/footer';
 import { cn } from '@/lib/utils';
 import { CANDIDATO_NAV_ITEMS } from '@/lib/nav';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { getCandidatura, type Candidatura } from '@/features/candidato/api';
-import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
+import { cancelarCandidatura, getCandidatura, type Candidatura } from '@/features/candidato/api';
+import { CANCELAVEIS, STATUS_CANDIDATURA_CONFIG, VAGA_FORA_DO_AR } from '@/features/candidato/constants';
+import { ConfirmDialog } from '@/features/perfil/components/ConfirmDialog';
 import { getVaga } from '@/features/vagas/api';
 import type { Vaga } from '@/features/vagas/types';
 import { rotuloArea } from '@/features/vagas/constants';
@@ -49,7 +50,11 @@ export default function CandidaturaDetalhePage() {
     return () => { cancelado = true; };
   }, [vagaId, user]);
 
+  const [confirmarCancelar, setConfirmarCancelar] = useState(false);
+
   const status = candidatura ? STATUS_CANDIDATURA_CONFIG[candidatura.status] : null;
+  const podeCancelar = Boolean(candidatura && CANCELAVEIS.includes(candidatura.status));
+  const foraDoAr = vaga?.status ? VAGA_FORA_DO_AR[vaga.status] : undefined;
   const date = candidatura?.criadoEm
     ? new Date(candidatura.criadoEm).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
     : null;
@@ -107,19 +112,50 @@ export default function CandidaturaDetalhePage() {
                 </span>
               )}
 
-              {vaga && (
-                <div className="mt-6 pt-5 border-t border-gray-100">
-                  <Button
-                    variant="outline"
-                    className="rounded-xl gap-1.5 text-[13px]"
-                    onClick={() => navigate(`/vagas/${vaga.id}`)}
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Ver detalhes da vaga
-                  </Button>
+              {foraDoAr && (
+                <p role="status" className="mt-4 flex items-center gap-1.5 text-[13px] text-on-surface-variant">
+                  <PauseCircle className="h-4 w-4 flex-shrink-0" />
+                  {foraDoAr}: não recebe novas candidaturas. A sua continua registrada.
+                </p>
+              )}
+
+              {(vaga || podeCancelar) && (
+                <div className="mt-6 pt-5 border-t border-gray-100 flex flex-wrap gap-2">
+                  {vaga && (
+                    <Button
+                      variant="outline"
+                      className="rounded-xl gap-1.5 text-[13px]"
+                      onClick={() => navigate(`/vagas/${vaga.id}`)}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Ver detalhes da vaga
+                    </Button>
+                  )}
+                  {podeCancelar && (
+                    <Button
+                      variant="ghost"
+                      className="rounded-xl gap-1.5 text-[13px] text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => setConfirmarCancelar(true)}
+                    >
+                      <XCircle className="h-4 w-4" />
+                      Cancelar candidatura
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
+
+            <ConfirmDialog
+              open={confirmarCancelar}
+              onOpenChange={setConfirmarCancelar}
+              title="Cancelar candidatura?"
+              description={`Você deixará o processo seletivo de "${vaga?.titulo ?? 'esta vaga'}". Para voltar, será preciso se candidatar de novo, se a vaga ainda estiver aberta.`}
+              confirmLabel="Cancelar candidatura"
+              onConfirm={async () => {
+                await cancelarCandidatura(user!.id, vagaId!);
+                navigate('/minhas-candidaturas');
+              }}
+            />
 
             {vaga?.descricao && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">

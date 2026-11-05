@@ -5,13 +5,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
 import { urlFichaCandidatura } from '@/features/candidatos';
 import { getAvaliacoes, reavaliarCandidatura } from '../api';
-import type { AvaliacaoAuditoria } from '../types';
+import type { AvaliacaoAuditoria, OrigemSuspeita } from '../types';
+
+const ORIGEM_SUSPEITA: Record<OrigemSuspeita, string> = {
+  padrao: 'padrões de comando no texto',
+  modelo: 'o próprio modelo',
+};
 
 function formatarData(iso?: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
   return Number.isNaN(d.getTime())
-    ? '—'
+    ? '-'
     : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
@@ -89,15 +94,14 @@ export function PainelAvaliacoes() {
         />
         <Cartao
           rotulo="Score médio"
-          valor={resumo.scoreMedio == null ? '—' : resumo.scoreMedio.toFixed(2)}
+          valor={resumo.scoreMedio == null ? '-' : resumo.scoreMedio.toFixed(2)}
         />
       </div>
 
       {resumo.pendentes > 0 && !somentePendentes && (
         <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] text-amber-900">
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-          {resumo.pendentes} candidatura{resumo.pendentes === 1 ? '' : 's'} sem avaliação. Pode ser
-          a IA fora do ar ou a triagem desligada — o recrutador não vê essa diferença.
+          {resumo.pendentes} candidatura{resumo.pendentes === 1 ? '' : 's'} sem avaliação.
         </div>
       )}
 
@@ -192,17 +196,17 @@ function LinhaAvaliacao({
           {aberto ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </td>
         <td className="px-4 py-3">
-          <p className="font-semibold text-primary">{a.candidato?.nome ?? '—'}</p>
+          <p className="font-semibold text-primary">{a.candidato?.nome ?? '-'}</p>
           <p className="text-[12px] text-on-surface-variant">{a.candidato?.email ?? ''}</p>
         </td>
-        <td className="px-4 py-3 text-on-surface-variant">{a.vaga?.titulo ?? '—'}</td>
-        <td className="px-4 py-3 font-mono">{a.scoreIA?.toFixed(2) ?? '—'}</td>
+        <td className="px-4 py-3 text-on-surface-variant">{a.vaga?.titulo ?? '-'}</td>
+        <td className="px-4 py-3 font-mono">{a.scoreIA?.toFixed(2) ?? '-'}</td>
         <td className="px-4 py-3 font-mono text-on-surface-variant">
-          {a.limiteAplicado?.toFixed(2) ?? '—'}
+          {a.limiteAplicado?.toFixed(2) ?? '-'}
         </td>
         <td className="px-4 py-3 font-mono">
           {m == null ? (
-            '—'
+            '-'
           ) : (
             <span className={m >= 0 ? 'text-emerald-700' : 'text-amber-700'}>
               {m >= 0 ? '+' : ''}
@@ -235,9 +239,14 @@ function LinhaAvaliacao({
           {a.movidoPor === 'ia' && (
             <p className="text-[11px] text-on-surface-variant">movido pela IA</p>
           )}
+          {a.suspeitaInjecao?.detectada && (
+            <span className="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-800">
+              Suspeita de manipulação
+            </span>
+          )}
         </td>
         <td className="px-4 py-3 font-mono text-[12px] text-on-surface-variant">
-          {a.versaoModelo ?? '—'}
+          {a.versaoModelo ?? '-'}
         </td>
         <td className="px-4 py-3 text-[12px] text-on-surface-variant">
           {formatarData(a.avaliadoEm)}
@@ -296,6 +305,21 @@ function DetalheJustificativa({
 
   return (
     <div className="space-y-4">
+      {a.suspeitaInjecao?.detectada && (
+        <div role="note" className="max-w-[900px] rounded-md border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-900">
+          <p className="mb-1 font-semibold">
+            Suspeita de manipulação da IA: candidatura não promovida automaticamente.
+          </p>
+          <p className="mb-2">
+            Detectado por: {a.suspeitaInjecao.origens.map((o) => ORIGEM_SUSPEITA[o]).join(', ')}.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            {a.suspeitaInjecao.trechos.map((trecho, i) => (
+              <li key={i} className="break-words">{trecho}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
           {decidiuSemModelo ? 'Justificativa da triagem' : 'Justificativa da IA'}

@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useLoginForm } from '../hooks/useLoginForm';
 import { LoginArte } from './LoginArte';
+import { LogoTriIA } from '@/components/marca/LogoTriIA';
 
 export function Login() {
   const { email, setEmail, password, setPassword, isLoading, error, handleSubmit } = useLoginForm('/dashboard');
@@ -16,6 +17,7 @@ export function Login() {
       <div className="flex flex-1 flex-col items-center justify-center px-8 lg:px-24">
         <div className="w-full max-w-md">
           <Card className="border-none bg-transparent shadow-none">
+            <LogoTriIA tamanho={32} className="mb-8 lg:hidden" />
             <CardHeader className="p-0 mb-8 space-y-3">
               <CardTitle className="text-[36px] font-black tracking-[-0.04em] leading-[1.2] text-primary">
                 Bem-vindo de volta
@@ -97,7 +99,7 @@ export function Login() {
       <div className="relative hidden flex-1 overflow-hidden lg:block">
         <LoginArte />
         <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-end p-16 text-white">
-          <span className="text-[12px] font-bold uppercase tracking-[0.3em] mb-4">Nova Editorial HR</span>
+          <LogoTriIA tamanho={40} escuro className="mb-6" />
           <h1 className="text-[72px] font-extrabold leading-[1.1] tracking-[-0.05em] text-white">Precisão em Pessoas.</h1>
         </div>
       </div>

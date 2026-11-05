@@ -188,7 +188,7 @@ describe('Recrutador: kanban de candidatos da vaga', () => {
       cy.findByText('Manutenção de SPA em React.').should('be.visible');
       cy.findByText('Engenharia de Software').should('be.visible');
       cy.findByText('UFPR · Graduação').should('be.visible');
-      cy.findByText('2022 – previsão 2027 · Cursando').should('be.visible');
+      cy.findByText('2022 - previsão 2027 · Cursando').should('be.visible');
       cy.findByText('AWS Cloud Practitioner').should('be.visible');
       cy.findByText('Amazon').should('be.visible');
       cy.findByText(/AWS-123/).should('be.visible');
@@ -215,6 +215,21 @@ describe('Recrutador: kanban de candidatos da vaga', () => {
     cy.findByRole('dialog', { name: 'Carla Dias' })
       .findByText('Falha ao carregar dados do candidato.')
       .should('be.visible');
+  });
+
+  it('mostra o status da vaga e permite pausar sem sair do kanban', () => {
+    cy.intercept('PATCH', '**/api/vagas/v1', (req) => {
+      req.reply({ statusCode: 200, body: { success: true, data: { _id: 'v1', titulo: 'Desenvolvedor Front-end', status: req.body.status } } });
+    }).as('statusVaga');
+    abrirKanban();
+
+    cy.findByText('STATUS: PUBLICADA E ATIVA').should('be.visible');
+    cy.findByRole('button', { name: 'Pausar' }).click();
+
+    cy.wait('@statusVaga').its('request.body').should('deep.equal', { status: 'pausada' });
+    cy.findByText('STATUS: PAUSADA PARA REVISÃO').should('be.visible');
+    cy.findByRole('button', { name: 'Ativar' }).should('be.visible');
+    coluna('Inscrito').findByText('Ana Souza').should('be.visible');
   });
 });
 

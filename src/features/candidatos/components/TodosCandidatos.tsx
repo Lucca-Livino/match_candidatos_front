@@ -50,7 +50,7 @@ export function TodosCandidatos() {
             </div>
             <span className="text-[13px] text-on-surface-variant flex items-center gap-1.5">
               <Users className="h-4 w-4" />
-              {loading ? '—' : filtrados.length} candidato{filtrados.length === 1 ? '' : 's'}
+              {loading ? '-' : filtrados.length} candidato{filtrados.length === 1 ? '' : 's'}
             </span>
           </div>
 

@@ -7,20 +7,22 @@ export function useVagas() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
 
-  const fetchVagas = useCallback(async () => {
+  const carregar = useCallback(
+    () =>
+      getVagas()
+        .then(data => { setVagas(data); setError(null); })
+        .catch(() => setError('Falha ao carregar vagas'))
+        .finally(() => setLoading(false)),
+    [],
+  );
+
+  useEffect(() => { carregar(); }, [carregar]);
+
+  const refetch = useCallback(() => {
     setLoading(true);
     setError(null);
-    try {
-      const data = await getVagas();
-      setVagas(data);
-    } catch {
-      setError('Falha ao carregar vagas');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    return carregar();
+  }, [carregar]);
 
-  useEffect(() => { fetchVagas(); }, [fetchVagas]);
-
-  return { vagas, loading, error, refetch: fetchVagas };
+  return { vagas, loading, error, refetch };
 }

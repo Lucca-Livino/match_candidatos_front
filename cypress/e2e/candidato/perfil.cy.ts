@@ -50,7 +50,7 @@ describe('Candidato — perfil: dados pessoais', () => {
     });
     secaoDaPagina('Formação acadêmica').within(() => {
       cy.findByText('Ciência da Computação').should('be.visible');
-      cy.findByText('Graduação · Concluído · 2016 – 2020').should('be.visible');
+      cy.findByText('Graduação · Concluído · 2016 - 2020').should('be.visible');
     });
     secaoDaPagina('Experiência profissional').findByText('Desenvolvedor Júnior').should('be.visible');
     secaoDaPagina('Habilidades').findByText('SQL').should('be.visible');
@@ -198,7 +198,7 @@ describe('Candidato — perfil: formação', () => {
     cy.stubJson('DELETE', secao('formacao/f1'), { success: true, data: null }, 'excluir');
     secaoDaPagina('Formação acadêmica').findByRole('button', { name: 'Excluir' }).click();
     dialogo('Excluir formação?').within(() => {
-      cy.findByText('Engenharia da Computação — UFPE').should('be.visible');
+      cy.findByText('Engenharia da Computação · UFPE').should('be.visible');
       cy.findByRole('button', { name: 'Cancelar' }).click();
     });
     cy.findByRole('dialog').should('not.exist');
@@ -411,7 +411,7 @@ describe('Candidato — perfil: experiência e certificação', () => {
     cy.findByRole('dialog').should('not.exist');
     secaoDaPagina('Experiência profissional').within(() => {
       cy.findByText('Desenvolvedor Pleno').should('be.visible');
-      cy.contains('– Atual').should('be.visible');
+      cy.contains('- Atual').should('be.visible');
     });
   });
 

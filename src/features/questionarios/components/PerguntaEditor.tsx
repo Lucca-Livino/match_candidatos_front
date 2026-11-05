@@ -229,7 +229,7 @@ export function PerguntaEditor({
 
       {pergunta.tipoResposta === 'dissertativa' && (
         <p className="text-[12px] text-on-surface-variant italic">
-          Resposta aberta — o candidato responderá em texto livre.
+          Resposta aberta: o candidato responderá em texto livre.
         </p>
       )}
     </div>

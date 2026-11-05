@@ -23,7 +23,7 @@ const ROTULO_SITUACAO: Record<SituacaoUsuario, { texto: string; classe: string }
 const ROTULO_PAPEL: Record<string, string> = { recrutador: 'Recrutador', suporte: 'Suporte' };
 
 const formatarData = (iso?: string | null) =>
-  iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
+  iso ? new Date(iso).toLocaleDateString('pt-BR') : '-';
 
 export function PainelUsuarios() {
   const [filtros, setFiltros] = useState<FiltrosUsuarios>({ page: 1 });

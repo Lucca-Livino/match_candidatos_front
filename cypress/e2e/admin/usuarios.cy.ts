@@ -41,7 +41,7 @@ describe('Administrador — usuários internos', () => {
     });
     linha('Diego Desativado').within(() => {
       cy.findByText('Desativado').should('exist');
-      cy.findByText('—').should('exist');
+      cy.findByText('-').should('exist');
       cy.findByRole('button', { name: /Reativar/ }).should('exist');
     });
     // totalPages = 2 → paginação visível.

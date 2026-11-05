@@ -303,7 +303,68 @@ describe('Candidato — detalhe da vaga e candidatura', () => {
     // Sem "message" no corpo, o request() cai no texto genérico com o status.
     cy.findByText('Erro 500').should('be.visible');
     cy.findByText('Você já se candidatou a esta vaga').should('not.exist');
-    cy.findByRole('button', { name: 'Candidatar-se' }).should('be.enabled');
+    cy.findByText(/Sua candidatura foi registrada, mas o questionário não foi concluído/).should('be.visible');
+    cy.findByRole('button', { name: 'Concluir candidatura' }).should('be.enabled');
+  });
+
+  it('candidatura com questionário pendente: retoma sem novo POST de candidatura', () => {
+    stubVagaComQuestionario();
+    cy.stubJson('GET', CANDIDATURAS, {
+      success: true,
+      data: [{ id: 'cand-1', vagaId: 'v1', status: 'inscrito', questionarioPendente: true }],
+    }, 'candidaturas');
+    cy.stubJson('POST', CANDIDATURAS, { success: true, data: {} }, 'candidatar', 201);
+    cy.stubJson('POST', '**/api/resposta-questionario/iniciar', { success: true, data: { id: 'r1' } }, 'iniciar', 201);
+    cy.stubJson('POST', '**/api/resposta-questionario/r1/responder', { success: true, data: null }, 'responder');
+    cy.stubJson('PATCH', '**/api/resposta-questionario/r1/finalizar', { success: true, data: {} }, 'finalizar');
+
+    cy.visitComo('candidato', '/vagas/v1');
+    cy.wait(['@candidaturas', '@questionario']);
+    cy.findByText(/Sua candidatura foi registrada, mas o questionário não foi concluído/).should('be.visible');
+    cy.findByRole('button', { name: 'Candidatar-se' }).should('not.exist');
+
+    cy.findByRole('radio', { name: 'Menos de 1 ano' }).check();
+    cy.findByRole('button', { name: 'Concluir candidatura' }).click();
+
+    cy.wait('@finalizar');
+    cy.findByText('Você já se candidatou a esta vaga').should('be.visible');
+    cy.get('@candidatar.all').should('have.length', 0);
+  });
+
+  it('candidatura concluída mostra "já se candidatou" sem questionário', () => {
+    stubVagaComQuestionario();
+    cy.stubJson('GET', CANDIDATURAS, {
+      success: true,
+      data: [{ id: 'cand-1', vagaId: 'v1', status: 'inscrito', questionarioPendente: false }],
+    }, 'candidaturas');
+
+    cy.visitComo('candidato', '/vagas/v1');
+    cy.wait('@candidaturas');
+    cy.findByText('Você já se candidatou a esta vaga').should('be.visible');
+    cy.findByRole('button', { name: /Candidatar-se|Concluir candidatura/ }).should('not.exist');
+  });
+
+  it('falha ao carregar o questionário bloqueia a candidatura', () => {
+    cy.stubJson('GET', '**/api/vagas/v1', 'candidato/vaga-v1.json', 'vaga');
+    cy.stubJson('GET', '**/api/questionario?vagaId=v1', { success: false }, 'questionarios', 500);
+    cy.stubJson('POST', CANDIDATURAS, { success: true, data: {} }, 'candidatar', 201);
+
+    cy.visitComo('candidato', '/vagas/v1');
+    cy.wait('@questionarios');
+    cy.findByRole('alert').should('contain.text', 'Não foi possível carregar o questionário da vaga.');
+    cy.findByRole('button', { name: 'Candidatar-se' }).should('be.disabled');
+    cy.get('@candidatar.all').should('have.length', 0);
+  });
+
+  it('vaga pausada não oferece candidatura a quem não se inscreveu', () => {
+    cy.fixture('candidato/vaga-v1.json').then((fixture) => {
+      cy.stubJson('GET', '**/api/vagas/v1', { ...fixture, data: { ...fixture.data, status: 'pausada' } }, 'vaga');
+    });
+
+    cy.visitComo('candidato', '/vagas/v1');
+    cy.wait('@vaga');
+    cy.findByText('Esta vaga não está recebendo candidaturas no momento.').should('be.visible');
+    cy.findByRole('button', { name: 'Candidatar-se' }).should('not.exist');
   });
 });
 

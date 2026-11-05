@@ -144,7 +144,7 @@ export function ConfiguracaoForm() {
                   disabled={!config.chavesConfiguradas[p.valor]}
                 >
                   {p.rotulo}
-                  {config.chavesConfiguradas[p.valor] ? '' : ' — chave ausente'}
+                  {config.chavesConfiguradas[p.valor] ? '' : ' (chave ausente)'}
                 </SelectItem>
               ))}
             </SelectContent>

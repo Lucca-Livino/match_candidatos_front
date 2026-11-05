@@ -144,7 +144,7 @@ export function CertificacoesSection({ userId }: { userId: string }) {
         open={!!toDelete}
         onOpenChange={(o) => { if (!o) setToDelete(null); }}
         title="Excluir certificação?"
-        description={toDelete ? `${toDelete.nome} — ${toDelete.emissor}` : ''}
+        description={toDelete ? `${toDelete.nome} · ${toDelete.emissor}` : ''}
         onConfirm={async () => {
           if (toDelete) { await deleteCertificacao(userId, toDelete.id); setToDelete(null); await reload(); }
         }}

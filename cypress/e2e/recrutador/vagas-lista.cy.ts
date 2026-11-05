@@ -226,23 +226,83 @@ describe('Recrutador — lista de vagas', () => {
       cy.location('pathname').should('eq', '/vagas/v-1/duplicar');
     });
 
-    it('vaga encerrada mostra "Relatório" e "Duplicar", sem editar', () => {
+    it('vaga encerrada mostra "Relatório", "Ver Candidatos" e "Duplicar", sem editar', () => {
       cy.intercept(
         { method: 'GET', pathname: '/api/vagas/v-3/relatorio' },
         { fixture: 'recrutador-candidatos/relatorio-vaga.json' },
       );
       card('Analista Financeiro').within(() => {
         cy.findByRole('button', { name: 'Editar Vaga' }).should('not.exist');
-        cy.findByRole('button', { name: 'Ver Candidatos' }).should('not.exist');
         cy.findByRole('button', { name: 'Duplicar' }).should('be.visible');
         cy.findByRole('button', { name: 'Relatório' }).click();
       });
       cy.location('pathname').should('eq', '/vagas/v-3/relatorio');
     });
 
+    it('vaga encerrada ainda abre os candidatos para decidir quem ficou pendente', () => {
+      card('Analista Financeiro').within(() => {
+        cy.findByRole('button', { name: 'Ver Candidatos' }).click();
+      });
+      cy.location('pathname').should('eq', '/vagas/v-3/candidatos');
+    });
+
     it('"Nova Vaga" do cabeçalho abre o formulário', () => {
       cy.findByRole('button', { name: /nova vaga/i }).click();
       cy.location('pathname').should('eq', '/vagas/nova');
+    });
+  });
+
+  describe('troca rápida de status', () => {
+    beforeEach(() => {
+      cy.visitComo('recrutador', '/vagas');
+      cy.wait('@lista');
+    });
+
+    it('"Pausar" envia só o status e recarrega a lista', () => {
+      cy.intercept({ method: 'PATCH', pathname: '/api/vagas/v-1' }, { success: true, data: { _id: 'v-1', status: 'pausada' } }).as('status');
+      card('Desenvolvedor Front-end').within(() => {
+        cy.findByRole('button', { name: 'Ativar' }).should('not.exist');
+        cy.findByRole('button', { name: 'Pausar' }).click();
+      });
+      cy.wait('@status').its('request.body').should('deep.equal', { status: 'pausada' });
+      cy.wait('@lista');
+    });
+
+    it('"Ativar" em vaga pausada mostra o erro da API no card', () => {
+      cy.intercept(
+        { method: 'PATCH', pathname: '/api/vagas/v-2' },
+        { statusCode: 400, body: { success: false, message: 'Vaga só pode ser ativada com um questionário ativo.' } },
+      ).as('status');
+      card('Analista de RH').within(() => {
+        cy.findByRole('button', { name: 'Ativar' }).click();
+        cy.findByRole('alert').should('have.text', 'Vaga só pode ser ativada com um questionário ativo.');
+      });
+      cy.wait('@status').its('request.body').should('deep.equal', { status: 'ativa' });
+    });
+
+    it('"Encerrar" pede confirmação antes de enviar', () => {
+      cy.intercept({ method: 'PATCH', pathname: '/api/vagas/v-1' }, { success: true, data: { _id: 'v-1', status: 'arquivada' } }).as('status');
+      card('Desenvolvedor Front-end').within(() => {
+        cy.findByRole('button', { name: 'Encerrar' }).click();
+      });
+      cy.findByRole('dialog').within(() => {
+        cy.findByText(/não poderá ser reaberta/).should('be.visible');
+        cy.findByRole('button', { name: 'Cancelar' }).click();
+      });
+      cy.get('@status.all').should('have.length', 0);
+
+      card('Desenvolvedor Front-end').within(() => {
+        cy.findByRole('button', { name: 'Encerrar' }).click();
+      });
+      cy.findByRole('button', { name: 'Encerrar vaga' }).click();
+      cy.wait('@status').its('request.body').should('deep.equal', { status: 'arquivada' });
+      cy.findByRole('dialog').should('not.exist');
+    });
+
+    it('vaga encerrada não mostra ações de status', () => {
+      card('Analista Financeiro').within(() => {
+        cy.findByRole('button', { name: /Pausar|Ativar|Encerrar/ }).should('not.exist');
+      });
     });
   });
 });

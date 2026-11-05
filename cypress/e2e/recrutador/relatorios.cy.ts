@@ -106,7 +106,7 @@ describe('Recrutador: relatório geral', () => {
       .should('contain.text', 'Nenhuma candidatura nos últimos 30 dias.')
       .and('contain.text', 'Os números abaixo aparecem zerados para este período.');
     metrica('Candidaturas', '0');
-    metrica('Taxa de aprovação', '—', 'Nenhuma candidatura decidida ainda');
+    metrica('Taxa de aprovação', '-', 'Nenhuma candidatura decidida ainda');
     metrica('Vagas ativas', '0', 'De 0 criadas nos últimos 30 dias');
     cy.findByText('Nenhuma vaga criada nos últimos 30 dias.').should('be.visible');
     cy.findByText('Nenhuma candidatura registrada.').should('be.visible');
@@ -197,7 +197,7 @@ describe('Recrutador: relatório da vaga', () => {
 
     cy.findByRole('status').should('contain.text', 'Nenhuma candidatura nos últimos 12 meses.');
     metrica('Candidaturas', '0', 'Recebidas nos últimos 12 meses');
-    metrica('Taxa de aprovação', '—', 'Nenhuma candidatura decidida ainda');
+    metrica('Taxa de aprovação', '-', 'Nenhuma candidatura decidida ainda');
     cy.findByText('Nenhuma candidatura registrada.').should('be.visible');
     cy.findByRole('region', { name: 'Candidatos' })
       .findByText('Nenhuma candidatura nos últimos 12 meses.')

@@ -17,48 +17,56 @@ export function GerenciarVagas() {
   const navigate = useNavigate();
 
   const [vagas, setVagas]           = useState<Vaga[]>([]);
-  const [loading, setLoading]       = useState(true);
   const [totalDocs, setTotalDocs]   = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage]             = useState(1);
   const [erro, setErro]             = useState(false);
   const [counts, setCounts]         = useState({ ativas: 0, pausadas: 0, encerradas: 0 });
+  const [versao, setVersao]         = useState(0);
 
   const [q, setQ]           = useState('');
   const [area, setArea]     = useState('');
   const [status, setStatus] = useState('');
   const [ordem, setOrdem]   = useState('recentes');
 
-  const fetchVagas = useCallback(async () => {
-    setLoading(true);
-    setErro(false);
-    try {
-      // Contagens por status com os mesmos filtros de área e busca: contar só
-      // os itens da página atual fazia a soma não bater com o total.
-      const contar = (s: string) =>
-        status && status !== s
-          ? Promise.resolve(0)
-          : getVagasPaginadas(1, 1, { area, status: s, q }).then(r => r.totalDocs);
-      const [res, ativas, pausadas, encerradas] = await Promise.all([
-        getVagasPaginadas(page, 6, { area, status, q }),
-        contar('ativa'),
-        contar('pausada'),
-        contar('arquivada'),
-      ]);
-      setVagas(res.docs ?? []);
-      setTotalDocs(res.totalDocs);
-      setTotalPages(res.totalPages);
-      setCounts({ ativas, pausadas, encerradas });
-    } catch {
-      setVagas([]);
-      setErro(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, area, status, q]);
+  const chave = [page, area, status, q, versao].join('|');
+  const [carregadoPara, setCarregadoPara] = useState<string | null>(null);
+  const loading = carregadoPara !== chave;
 
-  useEffect(() => { fetchVagas(); }, [fetchVagas]);
-  useEffect(() => { setPage(1); }, [area, status, q]);
+  useEffect(() => {
+    let ativo = true;
+    // Contagens por status com os mesmos filtros de área e busca: contar só
+    // os itens da página atual fazia a soma não bater com o total.
+    const contar = (s: string) =>
+      status && status !== s
+        ? Promise.resolve(0)
+        : getVagasPaginadas(1, 1, { area, status: s, q }).then(r => r.totalDocs);
+    Promise.all([
+      getVagasPaginadas(page, 6, { area, status, q }),
+      contar('ativa'),
+      contar('pausada'),
+      contar('arquivada'),
+    ])
+      .then(([res, ativas, pausadas, encerradas]) => {
+        if (!ativo) return;
+        setVagas(res.docs ?? []);
+        setTotalDocs(res.totalDocs);
+        setTotalPages(res.totalPages);
+        setCounts({ ativas, pausadas, encerradas });
+        setErro(false);
+      })
+      .catch(() => {
+        if (!ativo) return;
+        setVagas([]);
+        setErro(true);
+      })
+      .finally(() => { if (ativo) setCarregadoPara(chave); });
+    return () => { ativo = false; };
+  }, [chave, page, area, status, q]);
+
+  const recarregar = useCallback(() => setVersao(v => v + 1), []);
+
+  const filtrar = <T,>(set: (v: T) => void) => (v: T) => { set(v); setPage(1); };
 
   const temFiltro = Boolean(q || area || status);
 
@@ -66,6 +74,7 @@ export function GerenciarVagas() {
     setQ('');
     setArea('');
     setStatus('');
+    setPage(1);
   }
 
   return (
@@ -93,8 +102,8 @@ export function GerenciarVagas() {
 
         <VagasFilters
           q={q} area={area} status={status} ordem={ordem}
-          onQChange={setQ} onAreaChange={setArea}
-          onStatusChange={setStatus} onOrdemChange={setOrdem}
+          onQChange={filtrar(setQ)} onAreaChange={filtrar(setArea)}
+          onStatusChange={filtrar(setStatus)} onOrdemChange={setOrdem}
         />
 
         <VagasStats
@@ -108,7 +117,7 @@ export function GerenciarVagas() {
           {loading ? (
             <CardsSkeleton />
           ) : erro ? (
-            <ErrorState onRetry={fetchVagas} />
+            <ErrorState onRetry={recarregar} />
           ) : vagas.length === 0 ? (
             <EmptyState
               temFiltro={temFiltro}
@@ -118,7 +127,7 @@ export function GerenciarVagas() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vagas.map(vaga => (
-                <VagaCard key={vaga.id} vaga={vaga} />
+                <VagaCard key={vaga.id} vaga={vaga} onStatusAlterado={recarregar} />
               ))}
             </div>
           )}

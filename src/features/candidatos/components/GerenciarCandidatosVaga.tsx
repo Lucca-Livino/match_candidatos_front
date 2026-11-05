@@ -16,6 +16,8 @@ import { Footer } from '@/components/layout/footer';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS } from '@/lib/nav';
 import { STATUS_CANDIDATURA_CONFIG } from '@/features/candidato/constants';
+import { STATUS_CONFIG } from '@/features/vagas/constants';
+import { AcoesStatusVaga } from '@/features/vagas/components/AcoesStatusVaga';
 import type { StatusCandidatura } from '@/features/candidato/api';
 import { useCandidaturasVaga } from '../hooks/useCandidaturasVaga';
 import { CandidatoDetalheDialog } from './CandidatoDetalheDialog';
@@ -54,7 +56,8 @@ const ACAO_CONFIG: Record<
 export function GerenciarCandidatosVaga() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { vaga, candidaturas, loading, error, movendoId, moverStatus, recarregar } = useCandidaturasVaga(id);
+  const { vaga, setVaga, candidaturas, loading, error, movendoId, moverStatus, recarregar } = useCandidaturasVaga(id);
+  const statusVaga = vaga ? STATUS_CONFIG[vaga.status?.toLowerCase() ?? 'ativa'] : null;
   const [selecionado, setSelecionado] = useState<CandidaturaVaga | null>(null);
   // Aprovar e reprovar pedem confirmação: o candidato passa a ver a decisão.
   const [confirmando, setConfirmando] = useState<{ candidatura: CandidaturaVaga; status: StatusCandidatura } | null>(null);
@@ -90,6 +93,15 @@ export function GerenciarCandidatosVaga() {
               <Users className="h-4 w-4" />
               {candidaturas.length} candidato{candidaturas.length === 1 ? '' : 's'}
             </p>
+            {vaga && statusVaga && (
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider">
+                  <span className={cn('h-2 w-2 rounded-full flex-shrink-0', statusVaga.dot)} />
+                  <span className="text-on-surface-variant">{statusVaga.label}</span>
+                </span>
+                <AcoesStatusVaga vaga={vaga} onAlterado={setVaga} />
+              </div>
+            )}
           </div>
         </section>
 

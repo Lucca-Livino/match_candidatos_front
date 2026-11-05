@@ -69,7 +69,7 @@ describe('Recrutador — dashboard', () => {
       });
       cy.contains('tr', 'Analista Financeiro').within(() => {
         cy.findByText('Encerrada').should('be.visible');
-        cy.findAllByText('—').should('have.length', 1); // sem localização
+        cy.findAllByText('-').should('have.length', 1); // sem localização
       });
     });
   });

@@ -16,18 +16,18 @@ function deveMostrarFicha() {
     .and('contain.text', 'Inscrição: 01/10/2026');
 
   cy.findByText('React (Avançado) · TypeScript (Intermediário)').should('be.visible');
-  cy.findByText('Desenvolvedora Front-end — Acme Tecnologia').should('be.visible');
+  cy.findByText('Desenvolvedora Front-end · Acme Tecnologia').should('be.visible');
   cy.findByText('Manutenção de SPA em React.').should('be.visible');
-  cy.findByText('Engenharia de Software — UFPR').should('be.visible');
-  cy.findByText('Graduação · 2022 – previsão 2027 · Cursando').should('be.visible');
-  cy.findByText('AWS Cloud Practitioner — Amazon').should('be.visible');
+  cy.findByText('Engenharia de Software · UFPR').should('be.visible');
+  cy.findByText('Graduação · 2022 - previsão 2027 · Cursando').should('be.visible');
+  cy.findByText('AWS Cloud Practitioner · Amazon').should('be.visible');
 
-  cy.findByRole('heading', { name: 'Questionário — Triagem Front' }).should('be.visible');
+  cy.findByRole('heading', { name: 'Questionário: Triagem Front' }).should('be.visible');
   cy.findByText('Por que você quer esta vaga?').should('be.visible');
   cy.findByText('Gosto de interfaces acessíveis.').should('be.visible');
   cy.findByText('React, Vue').should('be.visible');
   // resposta sem texto nem opção vira travessão
-  cy.contains('li', 'Tem disponibilidade presencial?').should('contain.text', '—');
+  cy.contains('li', 'Tem disponibilidade presencial?').should('contain.text', '-');
 
   cy.findByRole('button', { name: /Imprimir \/ Salvar PDF/ }).should('be.enabled');
   cy.title().should('eq', 'Ficha - Ana Souza - Desenvolvedor Front-end');
