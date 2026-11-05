@@ -151,6 +151,7 @@ export function toQuestionarioForm(q: Questionario): QuestionarioForm {
     titulo: q.titulo,
     instrucoes: q.instrucoes ?? '',
     ativo: q.ativo === 1,
+    respondido: q.respondido === true,
     perguntas: (q.perguntas ?? [])
       .slice()
       .sort((a, b) => a.ordem - b.ordem)
@@ -327,6 +328,8 @@ export async function salvarQuestionarioCompleto({
       await patchQuestionarioAtivo(questionarioId, form.ativo ? 1 : 0);
     }
   }
+
+  if (original?.respondido) return;
 
   const originalPerguntas = original?.perguntas ?? [];
 

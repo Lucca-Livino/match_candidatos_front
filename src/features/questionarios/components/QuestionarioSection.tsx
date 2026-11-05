@@ -1,4 +1,4 @@
-import { Plus, ClipboardList } from 'lucide-react';
+import { Plus, ClipboardList, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -88,8 +88,15 @@ export function QuestionarioSection({ value, onChange }: QuestionarioSectionProp
         </label>
       </div>
 
-      {/* Perguntas */}
-      <div className="pt-2 space-y-4">
+      {value.respondido && (
+        <div role="note" className="flex items-start gap-2 rounded-md bg-yellow-50 px-4 py-3 text-[13px] text-yellow-900">
+          <Lock className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          Candidatos já responderam a este questionário, então perguntas e opções não podem mais ser alteradas.
+          Título, instruções e ativação continuam editáveis. Para mudar as perguntas, duplique a vaga.
+        </div>
+      )}
+
+      <fieldset disabled={value.respondido} className="pt-2 space-y-4 disabled:opacity-60">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-[13px] font-bold uppercase tracking-wider text-on-surface-variant">
             Perguntas
@@ -126,7 +133,7 @@ export function QuestionarioSection({ value, onChange }: QuestionarioSectionProp
             />
           ))}
         </div>
-      </div>
+      </fieldset>
     </div>
   );
 }
