@@ -9,8 +9,6 @@ export function useCrud<T>(
   const [items, setItems]               = useState<T[]>([]);
   const [error, setError]               = useState<string | null>(null);
   const [recarregando, setRecarregando] = useState(false);
-  // Usuário cuja lista já chegou. `loading` é derivado dele: o efeito não
-  // precisa de setState síncrono para ligar o carregamento.
   const [carregadoPara, setCarregadoPara] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,7 +23,6 @@ export function useCrud<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  // Chamado depois de salvar/excluir; quem chama aguarda a lista nova.
   const reload = useCallback(async () => {
     if (!userId) return;
     setRecarregando(true);

@@ -11,8 +11,6 @@ export function useCandidaturasVaga(vagaId: string | undefined) {
   const [error, setError]               = useState<string | null>(null);
   const [movendoId, setMovendoId]       = useState<string | null>(null);
   const [versao, setVersao]             = useState(0);
-  // Vaga e versão da última carga concluída. `loading` é derivado dela, então
-  // o efeito só grava estado quando a resposta chega.
   const [carregado, setCarregado]       = useState<{ vagaId: string; versao: number } | null>(null);
 
   useEffect(() => {

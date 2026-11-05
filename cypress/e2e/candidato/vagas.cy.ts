@@ -303,7 +303,6 @@ describe('Candidato — detalhe da vaga e candidatura', () => {
     // Sem "message" no corpo, o request() cai no texto genérico com o status.
     cy.findByText('Erro 500').should('be.visible');
     cy.findByText('Você já se candidatou a esta vaga').should('not.exist');
-    // A candidatura já existe: o botão passa a concluir o questionário.
     cy.findByText(/Sua candidatura foi registrada, mas o questionário não foi concluído/).should('be.visible');
     cy.findByRole('button', { name: 'Concluir candidatura' }).should('be.enabled');
   });

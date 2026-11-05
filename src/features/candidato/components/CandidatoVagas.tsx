@@ -24,14 +24,10 @@ export function CandidatoVagas() {
   const [q, setQ]                   = useState('');
   const [area, setArea]             = useState(TODAS);
 
-  // Busca atual e a última que terminou: `loading` é derivado das duas, então
-  // o efeito só grava estado quando a resposta chega.
   const chave = [page, area, q].join('|');
   const [carregadoPara, setCarregadoPara] = useState<string | null>(null);
   const loading = carregadoPara !== chave;
 
-  // Filtro novo volta para a primeira página (no handler, não num efeito:
-  // assim não sai uma busca extra com a página antiga).
   const buscarPor = (texto: string) => { setQ(texto); setPage(1); };
   const filtrarArea = (valor: string) => { setArea(valor); setPage(1); };
 

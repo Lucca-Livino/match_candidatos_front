@@ -29,9 +29,6 @@ export function GerenciarVagas() {
   const [status, setStatus] = useState('');
   const [ordem, setOrdem]   = useState('recentes');
 
-  // Busca atual e a última que terminou. `loading` é derivado das duas: o
-  // efeito só grava estado quando a resposta chega, e resposta de uma busca
-  // anterior é descartada.
   const chave = [page, area, status, q, versao].join('|');
   const [carregadoPara, setCarregadoPara] = useState<string | null>(null);
   const loading = carregadoPara !== chave;
@@ -69,8 +66,6 @@ export function GerenciarVagas() {
 
   const recarregar = useCallback(() => setVersao(v => v + 1), []);
 
-  // Filtro novo volta para a primeira página (no handler, não num efeito:
-  // assim não sai uma busca extra com a página antiga).
   const filtrar = <T,>(set: (v: T) => void) => (v: T) => { set(v); setPage(1); };
 
   const temFiltro = Boolean(q || area || status);
@@ -132,8 +127,6 @@ export function GerenciarVagas() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vagas.map(vaga => (
-                // Recarrega a lista: o status muda as contagens e pode tirar a
-                // vaga do filtro atual.
                 <VagaCard key={vaga.id} vaga={vaga} onStatusAlterado={recarregar} />
               ))}
             </div>

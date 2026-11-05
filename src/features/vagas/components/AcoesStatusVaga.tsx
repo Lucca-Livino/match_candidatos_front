@@ -12,9 +12,6 @@ interface AcoesStatusVagaProps {
   className?: string;
 }
 
-// Troca rápida de status sem passar pelo formulário inteiro. Segue a regra da
-// API (VagaService.ensureStatusTransition): ativa <-> pausada, e as duas podem
-// ser encerradas; encerrada é definitivo, por isso pede confirmação.
 export function AcoesStatusVaga({ vaga, onAlterado, className }: AcoesStatusVagaProps) {
   const [salvando, setSalvando]           = useState<string | null>(null);
   const [erro, setErro]                   = useState<string | null>(null);

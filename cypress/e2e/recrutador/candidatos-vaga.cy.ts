@@ -229,7 +229,6 @@ describe('Recrutador: kanban de candidatos da vaga', () => {
     cy.wait('@statusVaga').its('request.body').should('deep.equal', { status: 'pausada' });
     cy.findByText('STATUS: PAUSADA PARA REVISÃO').should('be.visible');
     cy.findByRole('button', { name: 'Ativar' }).should('be.visible');
-    // Os candidatos continuam na tela.
     coluna('Inscrito').findByText('Ana Souza').should('be.visible');
   });
 });

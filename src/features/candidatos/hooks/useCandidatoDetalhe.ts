@@ -27,9 +27,6 @@ const VAZIO: CandidatoDetalhe = {
 };
 
 export function useCandidatoDetalhe(usuarioId: string | null) {
-  // Resultado da última carga, com o usuário a que pertence. Detalhe, erro e
-  // `loading` são derivados dele: o efeito só grava estado quando a resposta
-  // chega, e trocar de candidato não mostra os dados do anterior.
   const [carga, setCarga] = useState<{
     usuarioId: string;
     detalhe: CandidatoDetalhe;

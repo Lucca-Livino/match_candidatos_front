@@ -24,8 +24,6 @@ interface Resposta<T> {
 export function useRelatorio<T>(buscar: () => Promise<T>) {
   const [dados, setDados]       = useState<T | null>(null);
   const [versao, setVersao]     = useState(0);
-  // Busca e versão da última resposta. `loading` e `erro` são derivados dela,
-  // então o efeito só grava estado quando a resposta chega.
   const [resposta, setResposta] = useState<Resposta<T> | null>(null);
 
   useEffect(() => {

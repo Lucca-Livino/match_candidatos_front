@@ -195,9 +195,6 @@ export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, 
       criterio_vaga: criterios.map(montarCriterioParaEnvio),
     };
 
-    // Na edição, a ordem do status importa: a API só ativa a vaga com um
-    // questionário ativo já salvo, e só deixa desativar o questionário com a
-    // vaga fora do ar. Pausar/encerrar vai antes do questionário; ativar, depois.
     const statusMudou = mode === 'editar' && status !== initial?.status;
     const ativarDepois = statusMudou && status === 'ativa';
 
@@ -334,7 +331,6 @@ export function VagaForm({ vagaId, initial, initialQuestionario, origem, aviso, 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {/* Encerrada é definitivo na API: não oferece voltar. */}
                       {STATUSES.filter(s => initial?.status !== 'arquivada' || s === 'arquivada').map(s => (
                         <SelectItem key={s} value={s}>
                           {STATUS_VAGA_LABEL[s]}

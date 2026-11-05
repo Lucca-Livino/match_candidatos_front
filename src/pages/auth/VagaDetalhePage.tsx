@@ -40,9 +40,6 @@ export default function VagaDetalhePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState<string | null>(null);
 
-  // 'pendente': a candidatura existe, mas o questionário não foi concluído
-  // (envio interrompido). O candidato precisa poder terminar, senão a
-  // candidatura nunca é avaliada.
   const [situacao, setSituacao] = useState<'nenhuma' | 'pendente' | 'concluida'>('nenhuma');
   const candidatado = situacao === 'concluida';
   const [enviando, setEnviando]       = useState(false);
@@ -62,8 +59,6 @@ export default function VagaDetalhePage() {
 
   useEffect(() => {
     if (!id) return;
-    // Falha ao carregar não pode virar "vaga sem questionário": o candidato
-    // se inscreveria sem responder e a candidatura nunca seria avaliada.
     getQuestionarioAtivoDaVaga(id)
       .then(setQuestionario)
       .catch(() => setQuestionarioErro(true));
@@ -83,8 +78,6 @@ export default function VagaDetalhePage() {
       .catch(() => { /* silencioso — não bloqueia leitura da vaga */ });
   }, [id, user]);
 
-  // Vaga fora do ar não recebe candidatura nova. Quem já se inscreveu e ficou
-  // com o questionário pendente ainda pode concluir.
   const foraDoAr = Boolean(vaga && vaga.status && vaga.status !== 'ativa');
   const podeCandidatar = !candidatado && !(foraDoAr && situacao === 'nenhuma');
 
@@ -120,8 +113,6 @@ export default function VagaDetalhePage() {
             respostas: montarRespostas(questionario.perguntas, respostas),
           });
         } catch (err) {
-          // 409 no iniciar: o questionário desta candidatura já foi
-          // respondido (outra aba, reenvio). Nada a refazer.
           if (!(err instanceof ApiError) || err.status !== 409) throw err;
         }
       }

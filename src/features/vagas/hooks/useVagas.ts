@@ -7,8 +7,6 @@ export function useVagas() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
 
-  // Só grava estado quando a resposta chega: o efeito da carga inicial não
-  // pode chamar setState síncrono (o `loading` já nasce true).
   const carregar = useCallback(
     () =>
       getVagas()

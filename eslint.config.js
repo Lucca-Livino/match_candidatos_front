@@ -20,15 +20,12 @@ export default defineConfig([
     },
   },
   {
-    // Componentes gerados pelo shadcn exportam as variantes (cva) junto do
-    // componente; só afeta o fast refresh em desenvolvimento.
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
     },
   },
   {
-    // Asserções do Chai (`expect(x).to.be.null`) são expressões por design.
     files: ['cypress/**/*.ts'],
     rules: {
       '@typescript-eslint/no-unused-expressions': 'off',

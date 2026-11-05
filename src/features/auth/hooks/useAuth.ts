@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { getMe } from '../api';
 import type { AuthUser } from '../types';
 
-// Usuário salvo pelo login. Cache do login (better-auth) pode não ter o
-// papel; nesse caso devolve null e o hook busca /me.
 function lerCache(): AuthUser | null {
   const cached = localStorage.getItem('auth_user');
   if (!cached) return null;
@@ -17,7 +15,6 @@ function lerCache(): AuthUser | null {
 }
 
 export function useAuth() {
-  // Lido uma vez, no estado inicial: com cache válido não há efeito a rodar.
   const [cache]               = useState(lerCache);
   const [user, setUser]       = useState<AuthUser | null>(cache);
   const [loading, setLoading] = useState(!cache);
