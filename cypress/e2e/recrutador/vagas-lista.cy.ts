@@ -226,18 +226,24 @@ describe('Recrutador — lista de vagas', () => {
       cy.location('pathname').should('eq', '/vagas/v-1/duplicar');
     });
 
-    it('vaga encerrada mostra "Relatório" e "Duplicar", sem editar', () => {
+    it('vaga encerrada mostra "Relatório", "Ver Candidatos" e "Duplicar", sem editar', () => {
       cy.intercept(
         { method: 'GET', pathname: '/api/vagas/v-3/relatorio' },
         { fixture: 'recrutador-candidatos/relatorio-vaga.json' },
       );
       card('Analista Financeiro').within(() => {
         cy.findByRole('button', { name: 'Editar Vaga' }).should('not.exist');
-        cy.findByRole('button', { name: 'Ver Candidatos' }).should('not.exist');
         cy.findByRole('button', { name: 'Duplicar' }).should('be.visible');
         cy.findByRole('button', { name: 'Relatório' }).click();
       });
       cy.location('pathname').should('eq', '/vagas/v-3/relatorio');
+    });
+
+    it('vaga encerrada ainda abre os candidatos para decidir quem ficou pendente', () => {
+      card('Analista Financeiro').within(() => {
+        cy.findByRole('button', { name: 'Ver Candidatos' }).click();
+      });
+      cy.location('pathname').should('eq', '/vagas/v-3/candidatos');
     });
 
     it('"Nova Vaga" do cabeçalho abre o formulário', () => {

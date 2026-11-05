@@ -439,7 +439,6 @@ describe('Recrutador — formulário de vaga', () => {
       secaoQuestionario().findByLabelText('Título *').should('have.value', 'Avaliação técnica inicial');
 
       cy.findByRole('button', { name: 'Salvar Alterações' }).click();
-      // Status inalterado não é reenviado.
       cy.wait('@salvarVaga').its('request.body').should('not.have.property', 'status');
       cy.location('pathname').should('eq', '/vagas');
       cy.get('@ativoQuest.all').should('have.length', 0);
@@ -504,6 +503,39 @@ describe('Recrutador — formulário de vaga', () => {
 
       cy.findByRole('combobox', { name: 'Status *' }).click();
       cy.findAllByRole('option').should('have.length', 1).first().should('have.text', 'Encerrada');
+    });
+
+    it('questionário já respondido trava as perguntas e salva só o cabeçalho', () => {
+      cy.fixture(`${FIX}/questionario-completo.json`).then((fx) => {
+        cy.intercept(
+          { method: 'GET', pathname: '/api/questionario/q-100' },
+          { ...fx, data: { ...fx.data, respondido: true } },
+        ).as('questCompleto');
+      });
+      cy.intercept({ method: 'GET', pathname: '/api/vagas/v-100' }, { fixture: `${FIX}/vaga-existente.json` }).as('vaga');
+      cy.intercept(
+        { method: 'GET', pathname: '/api/questionario', query: { vagaId: 'v-100' } },
+        { fixture: `${FIX}/questionarios-da-vaga.json` },
+      ).as('questLista');
+      stubEdicao();
+      cy.visitComo('recrutador', '/vagas/v-100/editar');
+      cy.wait('@questCompleto');
+
+      cy.findByRole('note').should('contain.text', 'Candidatos já responderam a este questionário');
+      cy.findByRole('button', { name: /Adicionar Pergunta/ }).should('be.disabled');
+      secaoQuestionario().find('fieldset').should('be.disabled');
+
+      secaoQuestionario().findByLabelText('Título *').clear().type('Avaliação revisada');
+      cy.findByRole('button', { name: 'Salvar Alterações' }).click();
+
+      cy.wait('@salvarQuest').its('request.body').should('deep.equal', {
+        titulo: 'Avaliação revisada',
+        instrucoes: 'Responda com calma.',
+      });
+      cy.location('pathname').should('eq', '/vagas');
+      cy.get('@salvarPergunta.all').should('have.length', 0);
+      cy.get('@reordenar.all').should('have.length', 0);
+      cy.get('@atualizarOpcao.all').should('have.length', 0);
     });
 
     it('questionário carregado sem opção correta bloqueia o envio', () => {

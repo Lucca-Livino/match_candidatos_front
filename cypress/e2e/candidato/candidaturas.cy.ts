@@ -112,6 +112,71 @@ describe('Candidato — detalhe da candidatura', () => {
     cy.findByText('Candidatura não encontrada.').should('be.visible');
     cy.findByRole('button', { name: 'Voltar para candidaturas' }).should('be.visible');
   });
+
+  it('cancela a candidatura em análise depois de confirmar e volta para a lista', () => {
+    cy.stubJson('GET', `${CANDIDATURAS}/v1`, 'candidato/candidatura-v1.json', 'candidatura');
+    cy.stubJson('GET', '**/api/vagas/v1', 'candidato/vaga-v1.json', 'vaga');
+    cy.stubJson('DELETE', `${CANDIDATURAS}/v1`, { success: true, data: { vagaId: 'v1', cancelada: true } }, 'cancelar');
+    cy.visitComo('candidato', '/minhas-candidaturas/v1');
+    cy.wait('@candidatura');
+
+    cy.findByRole('button', { name: 'Cancelar candidatura' }).click();
+    cy.findByRole('dialog').within(() => {
+      cy.findByText(/Você deixará o processo seletivo de "Desenvolvedor React Pleno"/).should('be.visible');
+      cy.findByRole('button', { name: 'Cancelar' }).click();
+    });
+    cy.get('@cancelar.all').should('have.length', 0);
+
+    cy.findByRole('button', { name: 'Cancelar candidatura' }).click();
+    cy.findByRole('dialog').findByRole('button', { name: 'Cancelar candidatura' }).click();
+    cy.wait('@cancelar');
+    cy.location('pathname').should('eq', '/minhas-candidaturas');
+  });
+
+  it('candidatura decidida não pode ser cancelada', () => {
+    cy.stubJson(
+      'GET',
+      `${CANDIDATURAS}/v1`,
+      { success: true, data: { id: 'cand-1', usuarioId: 'u-candidato', vagaId: 'v1', status: 'aprovado' } },
+      'candidatura',
+    );
+    cy.stubJson('GET', '**/api/vagas/v1', 'candidato/vaga-v1.json', 'vaga');
+    cy.visitComo('candidato', '/minhas-candidaturas/v1');
+    cy.wait('@candidatura');
+
+    cy.findByText('Aprovado').should('be.visible');
+    cy.findByRole('button', { name: 'Cancelar candidatura' }).should('not.exist');
+  });
+
+  it('avisa quando a vaga foi pausada', () => {
+    cy.stubJson('GET', `${CANDIDATURAS}/v1`, 'candidato/candidatura-v1.json', 'candidatura');
+    cy.fixture('candidato/vaga-v1.json').then((fx) => {
+      cy.stubJson('GET', '**/api/vagas/v1', { ...fx, data: { ...fx.data, status: 'pausada' } }, 'vaga');
+    });
+    cy.visitComo('candidato', '/minhas-candidaturas/v1');
+    cy.wait(['@candidatura', '@vaga']);
+
+    cy.findByRole('status').should('contain.text', 'Vaga pausada: não recebe novas candidaturas.');
+  });
+});
+
+describe('Candidato — situação da vaga na lista', () => {
+  it('marca vaga encerrada e questionário pendente', () => {
+    cy.stubJson('GET', CANDIDATURAS, {
+      success: true,
+      data: [{ id: 'cand-1', usuarioId: 'u-candidato', vagaId: 'v1', status: 'inscrito', questionarioPendente: true }],
+    }, 'candidaturas');
+    cy.fixture('candidato/vaga-v1.json').then((fx) => {
+      cy.stubJson('GET', '**/api/vagas/v1', { ...fx, data: { ...fx.data, status: 'arquivada' } }, 'vaga');
+    });
+    cy.visitComo('candidato', '/minhas-candidaturas');
+    cy.wait(['@candidaturas', '@vaga']);
+
+    cy.findByRole('button', { name: /Desenvolvedor React Pleno/ }).within(() => {
+      cy.findByText('Vaga encerrada').should('be.visible');
+      cy.findByText('Questionário pendente').should('be.visible');
+    });
+  });
 });
 
 // Módulo isolado: sem isso as constantes de topo colidem entre specs no tsc.
