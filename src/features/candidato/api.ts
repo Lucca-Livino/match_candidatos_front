@@ -47,3 +47,7 @@ export async function getCandidaturasIds(userId: string): Promise<string[]> {
   const list = await listarCandidaturas(userId);
   return list.map(c => c.vagaId);
 }
+
+export async function cancelarCandidatura(userId: string, vagaId: string): Promise<void> {
+  await request(`/api/usuarios/${userId}/candidatura/${vagaId}`, { method: 'DELETE' });
+}

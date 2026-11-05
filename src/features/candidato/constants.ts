@@ -15,3 +15,5 @@ export const VAGA_FORA_DO_AR: Record<string, string> = {
   pausada:   'Vaga pausada',
   arquivada: 'Vaga encerrada',
 };
+
+export const CANCELAVEIS: StatusCandidatura[] = ['inscrito', 'em_analise'];
